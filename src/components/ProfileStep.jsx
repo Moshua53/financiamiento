@@ -1,5 +1,8 @@
 import React from 'react';
-import { Building2, DollarSign, TrendingUp, Sparkles, ArrowRight, Info, CheckCircle2 } from 'lucide-react';
+import { 
+  Building2, DollarSign, TrendingUp, Sparkles, ArrowRight, 
+  Info, ShieldCheck, MapPin, Users, Briefcase, Calendar 
+} from 'lucide-react';
 import { formatCOP } from '../utils/financialCalculations';
 
 export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo }) {
@@ -16,77 +19,84 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
     : 0;
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-80 h-full bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold mb-3 border border-blue-400/20">
+    <div className="space-y-6 animate-fadeIn">
+      {/* Hero Welcome Banner */}
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
+        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
+            <ShieldCheck className="w-3.5 h-3.5" />
             <span>Historias de Usuario: HU-01 & HU-02</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">
-            Paso 1: Perfil del Emprendimiento & Capacidad Financiera
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+            Perfil del Emprendimiento & Capacidad Financiera
           </h1>
-          <p className="text-sm text-blue-100 leading-relaxed">
-            Ingresa la identidad de tu negocio y tus cifras básicas. Con esta información, la plataforma 
-            evalúa tu capacidad de pago y filtra las fuentes que realmente aceptan tu perfil.
+          <p className="text-sm text-slate-300 leading-relaxed">
+            Estructura los datos formales de tu empresa y tus métricas operativas. La plataforma utiliza estas variables para contrastar tu perfil contra los requisitos de aprobación de los bancos y fintechs en Colombia.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Form Column (2/3) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* HU-01: Datos del Negocio */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Main Forms (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* HU-01: Registro del Emprendimiento */}
+          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/20">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 text-base">HU-01: Registrar Emprendimiento</h2>
-                  <p className="text-xs text-slate-500">Datos comerciales y operacionales de tu proyecto</p>
+                  <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
+                    HU-01: Registrar Emprendimiento
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Información mercantil y operacional del negocio
+                  </p>
                 </div>
               </div>
-              <span className="text-xs font-medium text-slate-400">Campos obligatorios</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                Paso 1.1
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Nombre del Emprendimiento / Empresa *
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Nombre Comercial o Razón Social *
                 </label>
                 <input
                   type="text"
                   value={profile.name || ''}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="Ej: EcoModa Sostenible SAS"
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Nombre del Fundador / Representante *
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Fundador / Representante Legal *
                 </label>
                 <input
                   type="text"
                   value={profile.founder || ''}
                   onChange={(e) => handleChange('founder', e.target.value)}
                   placeholder="Ej: Moises Galindo"
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Sector o Industria *
                 </label>
                 <select
                   value={profile.sector || 'Moda y Manufactura'}
                   onChange={(e) => handleChange('sector', e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                 >
                   <option value="Moda y Manufactura">Moda y Manufactura</option>
                   <option value="Tecnología y Software">Tecnología y Software</option>
@@ -99,13 +109,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Etapa del Negocio *
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Etapa del Emprendimiento *
                 </label>
                 <select
                   value={profile.stage || 'Crecimiento Temprano'}
                   onChange={(e) => handleChange('stage', e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                 >
                   <option value="Idea / Prototipo">Idea / Prototipo (Menos de 6 meses)</option>
                   <option value="Semilla / Validación">Semilla / Validación (Con ventas iniciales)</option>
@@ -115,7 +125,7 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Ciudad / Municipio *
                 </label>
                 <input
@@ -123,14 +133,14 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
                   placeholder="Ej: Medellín, Antioquia"
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Años operando
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Años Operando
                   </label>
                   <input
                     type="number"
@@ -138,60 +148,67 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     max="50"
                     value={profile.yearsOperating ?? 2}
                     onChange={(e) => handleChange('yearsOperating', Number(e.target.value))}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                     Empleados
                   </label>
                   <input
                     type="number"
                     min="1"
-                    max="200"
+                    max="500"
                     value={profile.employees ?? 3}
                     onChange={(e) => handleChange('employees', Number(e.target.value))}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Breve descripción del modelo de negocio
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Descripción del Producto o Propuesta de Valor
                 </label>
                 <textarea
                   rows={2}
                   value={profile.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
-                  placeholder="Describe qué producto o servicio ofreces y a qué clientes atiendes..."
-                  className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Resume brevemente qué vendes y a quién va dirigido tu producto..."
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
-          {/* HU-02: Información Financiera */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+          {/* HU-02: Información Financiera Base */}
+          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 text-base">HU-02: Información Financiera</h2>
-                  <p className="text-xs text-slate-500">Variables mensuales promedio para evaluar capacidad de endeudamiento</p>
+                  <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
+                    HU-02: Información Financiera Mensual
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Cifras promedio para simular solvencia y liquidez
+                  </p>
                 </div>
               </div>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                Paso 1.2
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Ventas / Ingresos Mensuales Promedio (COP) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-semibold">$</span>
+                  <span className="absolute left-3.5 top-3 text-xs text-slate-400 font-bold">$</span>
                   <input
                     type="number"
                     step="500000"
@@ -199,20 +216,20 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlySales || ''}
                     onChange={(e) => handleChange('monthlySales', Number(e.target.value))}
                     placeholder="18000000"
-                    className="w-full pl-7 pr-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Formato: {formatCOP(profile.monthlySales)}
+                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono mt-1.5">
+                  Equivale a: {formatCOP(profile.monthlySales)}
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Costos & Gastos Operativos Mensuales (COP) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-semibold">$</span>
+                  <span className="absolute left-3.5 top-3 text-xs text-slate-400 font-bold">$</span>
                   <input
                     type="number"
                     step="500000"
@@ -220,82 +237,90 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlyCosts || ''}
                     onChange={(e) => handleChange('monthlyCosts', Number(e.target.value))}
                     placeholder="11500000"
-                    className="w-full pl-7 pr-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Formato: {formatCOP(profile.monthlyCosts)}
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1.5">
+                  Equivale a: {formatCOP(profile.monthlyCosts)}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar Diagnostics Column (1/3) */}
-        <div className="space-y-6">
-          {/* Quick Financial Health Preview */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-              <TrendingUp className="w-4 h-4 text-blue-600" />
-              <span>Diagnóstico Financiero Rápido</span>
+        {/* Diagnostic Sidebar (4 cols) */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* Real-Time Financial Metric Card */}
+          <div className="bg-white dark:bg-[#0B1120] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+              <TrendingUp className="w-4 h-4 text-emerald-500" />
+              <span>Diagnóstico de Solvencia en Vivo</span>
             </div>
 
-            <div className="space-y-3">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-xs text-slate-500 block">Flujo de Caja Operativo Neto</span>
-                <span className="text-base font-bold text-slate-900">
+            <div className="space-y-3.5">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-100 dark:border-slate-800/80">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">
+                  Flujo de Caja Operativo Neto
+                </span>
+                <span className="text-xl font-black text-slate-900 dark:text-white font-mono tabular-nums mt-0.5 block">
                   {formatCOP(netMonthlyCash)}
                 </span>
-                <span className="text-[11px] text-slate-500 block mt-0.5">
-                  Dinero libre mensual antes de nueva financiación
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-1">
+                  Excedente libre mensual antes de deuda
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <span className="text-xs text-slate-500 block">Margen Operativo Bruto</span>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-base font-bold text-emerald-600">{operatingMargin}%</span>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                    operatingMargin >= 25 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                  }`}>
-                    {operatingMargin >= 25 ? 'Rentabilidad Fuerte' : 'Rentabilidad Moderada'}
-                  </span>
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-100 dark:border-slate-800/80 space-y-2">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Margen Operativo Bruto:</span>
+                  <span className="font-bold text-emerald-500 font-mono">{operatingMargin}%</span>
                 </div>
+                <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    style={{ width: `${Math.min(100, Math.max(0, operatingMargin))}%` }} 
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  {operatingMargin >= 25 ? '✓ Saludable para apalancar deuda' : '⚠️ Margen ajustado, requiere plazos amplios'}
+                </p>
               </div>
 
-              <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100 flex items-start gap-2 text-xs text-blue-900">
-                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                <p>
-                  Con estos números, tu cuota mensual recomendada no debería superar el 30% del flujo libre ({formatCOP(netMonthlyCash * 0.3)}/mes).
+              <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-950 dark:text-blue-200 flex items-start gap-2.5">
+                <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                <p className="leading-relaxed">
+                  Para no comprometer tu operación, la cuota mensual máxima sugerida es de <strong className="text-blue-900 dark:text-white font-mono">{formatCOP(netMonthlyCash * 0.35)}</strong> (35% del flujo neto).
                 </p>
               </div>
             </div>
 
-            <div className="pt-2">
-              <button
-                onClick={onLoadDemo}
-                className="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-colors"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Rellenar con datos de prueba reales
-              </button>
-            </div>
+            <button
+              onClick={onLoadDemo}
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-2xl transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Autocompletar con Datos Ejemplo</span>
+            </button>
           </div>
 
-          {/* Next Button Card */}
-          <div className="bg-gradient-to-br from-slate-900 to-blue-950 p-5 rounded-2xl text-white shadow-md space-y-3">
-            <h3 className="font-bold text-sm">¿Listo con tus datos?</h3>
-            <p className="text-xs text-slate-300">
-              Avanza para definir cuánto dinero necesitas, el plazo estimado y el destino del crédito.
+          {/* Forward CTA Card */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 text-slate-950 shadow-lg shadow-emerald-500/20 space-y-3">
+            <h3 className="font-extrabold text-base text-slate-950">
+              ¿Datos completados?
+            </h3>
+            <p className="text-xs text-slate-900/80 font-medium leading-relaxed">
+              Pasa al Paso 2 para indicar el monto de capital que requieres y el plazo para tu plan de inversión.
             </p>
             <button
               onClick={onNext}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-blue-500/25"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-slate-950 hover:bg-slate-900 text-white font-bold text-sm rounded-2xl transition-all shadow-md focus-visible:ring-2 focus-visible:ring-white"
             >
               <span>Continuar al Paso 2</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+
         </div>
       </div>
     </div>

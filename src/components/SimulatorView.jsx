@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Calculator, DollarSign, Calendar, Percent, CheckCircle2, 
-  AlertTriangle, AlertCircle, Sparkles, Printer, ArrowLeft, Layers, ShieldCheck
+  AlertTriangle, AlertCircle, Sparkles, Printer, ArrowLeft, Layers, ShieldCheck, Zap
 } from 'lucide-react';
 import { 
   formatCOP, calculateLoanSummary, evaluateFinancialCapacity 
@@ -15,19 +15,16 @@ export default function SimulatorView({
   setActiveOption, 
   onBackToCatalog 
 }) {
-  // Estado local del simulador (inicia con la opción activa o necesidad definida)
   const [simAmount, setSimAmount] = useState(need?.amount || 35000000);
   const [simTerm, setSimTerm] = useState(need?.termMonths || 24);
   const [simRateEA, setSimRateEA] = useState(activeOption ? activeOption.rateEA : 22.5);
 
-  // Si cambia la opción activa desde el catálogo
   useEffect(() => {
     if (activeOption) {
       setSimRateEA(activeOption.rateEA);
     }
   }, [activeOption]);
 
-  // Cálculos reactivos
   const summary = calculateLoanSummary(simAmount, simRateEA, simTerm);
   const capacity = evaluateFinancialCapacity(
     summary.monthlyPayment, 
@@ -41,46 +38,52 @@ export default function SimulatorView({
   const interestPercent = 100 - capitalPercent;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fadeIn">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-md">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold mb-3 border border-blue-400/20">
-          <span>Historia de Usuario: HU-11 (Simulación Financiera)</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">
-              Simulador Interactivo de Financiación
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
+        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Historia de Usuario: HU-11</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+              Simulador Financiero en Tiempo Real
             </h1>
-            <p className="text-sm text-blue-100 max-w-2xl leading-relaxed">
-              Modifica en tiempo real el monto, plazo y tasa para calcular tus pagos mensuales 
-              y evaluar cómo impactará el flujo de caja de {profile?.name || 'tu emprendimiento'}.
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Modula de forma interactiva el monto, plazo y tasa de interés para calcular tu cuota mensual
+              y evaluar cómo impactará la solvencia de <strong className="text-emerald-400">{profile?.name || 'tu negocio'}</strong>.
             </p>
           </div>
 
           <button
             onClick={() => window.print()}
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold transition-colors shrink-0"
           >
             <Printer className="w-4 h-4" />
-            <span>Imprimir Resumen</span>
+            <span>Imprimir Ficha</span>
           </button>
         </div>
       </div>
 
-      {/* Selector de Alternativa a Simular */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Layers className="w-5 h-5 text-blue-600 shrink-0" />
+      {/* Selector Bar */}
+      <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
+            <Layers className="w-5 h-5" />
+          </div>
           <div>
-            <span className="text-xs font-bold text-slate-800 block">Opción Base de Simulación:</span>
-            <span className="text-xs text-slate-500">
+            <span className="text-xs font-bold text-slate-900 dark:text-white block">
+              Entidad o Alternativa Activa:
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               {activeOption ? `${activeOption.name} (${activeOption.institution})` : 'Simulación Libre / Personalizada'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <select
             value={activeOption ? activeOption.id : 'custom'}
             onChange={(e) => {
@@ -95,42 +98,43 @@ export default function SimulatorView({
                 }
               }
             }}
-            className="px-3 py-1.5 text-xs font-semibold border border-slate-300 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500"
+            className="px-3.5 py-2 text-xs font-bold border border-slate-300 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 cursor-pointer"
           >
-            <option value="custom">⚙️ Parámetros Libres / Personalizado</option>
+            <option value="custom">⚙️ Parámetros Libres / Ajuste Manual</option>
             {options.map(opt => (
               <option key={opt.id} value={opt.id}>
-                {opt.institution} - {opt.name} ({opt.rateEA}% E.A.)
+                {opt.institution} — {opt.name} ({opt.rateEA}% E.A.)
               </option>
             ))}
           </select>
 
           <button
             onClick={onBackToCatalog}
-            className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors shrink-0"
+            className="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0"
           >
             Ver Catálogo
           </button>
         </div>
       </div>
 
-      {/* Main Grid: Controls (1/2) & Results (1/2) */}
+      {/* Main Simulation Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Interactive Controls (6 cols) */}
+        
+        {/* Sliders Form (6 cols) */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
-            <h2 className="font-bold text-slate-900 text-base pb-3 border-b border-slate-100 flex items-center gap-2">
-              <Calculator className="w-5 h-5 text-indigo-600" />
-              <span>Variables de la Simulación</span>
+          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+            <h2 className="font-extrabold text-slate-900 dark:text-white text-base pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <Calculator className="w-5 h-5 text-emerald-500" />
+              <span>Controles Dinámicos de Financiación</span>
             </h2>
 
             {/* Slider 1: Monto */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                   Monto Solicitado (COP)
                 </label>
-                <span className="text-base font-extrabold text-indigo-600">
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
                   {formatCOP(simAmount)}
                 </span>
               </div>
@@ -141,9 +145,9 @@ export default function SimulatorView({
                 step="1000000"
                 value={simAmount}
                 onChange={(e) => setSimAmount(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+              <div className="flex justify-between text-[11px] font-mono text-slate-400 font-medium px-1">
                 <span>$2M</span>
                 <span>$50M</span>
                 <span>$100M</span>
@@ -154,10 +158,10 @@ export default function SimulatorView({
             {/* Slider 2: Plazo */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700">
-                  Plazo de Amortización (Meses)
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Plazo de Pago (Meses)
                 </label>
-                <span className="text-base font-extrabold text-blue-600">
+                <span className="text-lg font-black text-blue-600 dark:text-blue-400 font-mono">
                   {simTerm} Meses ({(simTerm / 12).toFixed(1)} años)
                 </span>
               </div>
@@ -168,7 +172,7 @@ export default function SimulatorView({
                 step="6"
                 value={simTerm}
                 onChange={(e) => setSimTerm(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
               <div className="grid grid-cols-6 gap-1.5 pt-1">
                 {[6, 12, 18, 24, 36, 48].map((t) => (
@@ -176,8 +180,10 @@ export default function SimulatorView({
                     key={t}
                     type="button"
                     onClick={() => setSimTerm(t)}
-                    className={`py-1 text-[11px] font-bold rounded-lg border text-center transition-colors ${
-                      simTerm === t ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    className={`py-1.5 text-xs font-bold font-mono rounded-xl border text-center transition-colors ${
+                      simTerm === t 
+                        ? 'bg-blue-600 text-white border-blue-600 shadow-glow-blue' 
+                        : 'bg-slate-50 dark:bg-[#020617] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-blue-500/40'
                     }`}
                   >
                     {t}m
@@ -189,10 +195,10 @@ export default function SimulatorView({
             {/* Slider 3: Tasa de Interés */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700">
-                  Tasa de Interés Efectiva Anual (% E.A.)
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Tasa Efectiva Anual (% E.A.)
                 </label>
-                <span className="text-base font-extrabold text-emerald-600">
+                <span className="text-lg font-black text-amber-500 font-mono">
                   {simRateEA}% E.A.
                 </span>
               </div>
@@ -203,109 +209,119 @@ export default function SimulatorView({
                 step="0.5"
                 value={simRateEA}
                 onChange={(e) => setSimRateEA(Number(e.target.value))}
-                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
               />
-              <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+              <div className="flex justify-between text-[11px] font-mono text-slate-400 font-medium px-1">
                 <span>0% (Semilla)</span>
-                <span>15% (Banca)</span>
+                <span>21% (Banca)</span>
                 <span>28% (Fintech)</span>
                 <span>45% (Usura)</span>
               </div>
-              <p className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                Tasa mensual equivalente calculada: <strong className="text-slate-800">{summary.monthlyRatePercent}% M.V.</strong>
-              </p>
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex justify-between items-center">
+                <span>Tasa mensual vencida equivalente:</span>
+                <strong className="text-slate-900 dark:text-white font-mono text-sm">{summary.monthlyRatePercent}% M.V.</strong>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Dynamic Results (6 cols) */}
+        {/* Dynamic Financial Results Display (6 cols) */}
         <div className="lg:col-span-6 space-y-6">
-          {/* Main Card: Monthly Payment Display */}
-          <div className="bg-gradient-to-br from-slate-900 to-indigo-950 p-6 rounded-2xl text-white shadow-lg space-y-4">
-            <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider block">
-              Resultado Proyectado (Sistema Francés)
-            </span>
+          
+          {/* Main Hero Calculation Box */}
+          <div className="relative overflow-hidden rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-[#0B1120] via-slate-900 to-[#020617] border border-slate-800 text-white shadow-2xl space-y-5">
+            <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+            
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                Sistema Francés de Cuota Fija
+              </span>
+              <span className="text-xs text-slate-400 font-mono">
+                {simTerm} cuotas mensuales
+              </span>
+            </div>
 
             <div>
               <span className="text-xs text-slate-400 block mb-1">Cuota Mensual Fija Estimada:</span>
-              <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+              <div className="text-3xl sm:text-5xl font-black text-white tracking-tight font-mono tabular-nums">
                 {formatCOP(summary.monthlyPayment)}
-                <span className="text-base font-semibold text-slate-300"> / mes</span>
+                <span className="text-sm sm:text-base font-normal text-slate-400 ml-1">/ mes</span>
               </div>
             </div>
 
-            {/* Quick Metrics Ribbon */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800 text-xs">
-              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
-                <span className="text-slate-400 block text-[10px]">Intereses Totales</span>
-                <span className="font-bold text-amber-300 text-sm">
+            {/* Metrics Ribbon */}
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-800/80 text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Intereses Totales</span>
+                <span className="font-extrabold text-amber-400 text-base font-mono tabular-nums mt-0.5 block">
                   {formatCOP(summary.totalInterest)}
                 </span>
               </div>
 
-              <div className="bg-white/5 p-2.5 rounded-xl border border-white/10">
-                <span className="text-slate-400 block text-[10px]">Total a Pagar Final</span>
-                <span className="font-bold text-white text-sm">
+              <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
+                <span className="text-slate-400 block text-[10px] uppercase font-bold">Total a Desembolsar</span>
+                <span className="font-extrabold text-white text-base font-mono tabular-nums mt-0.5 block">
                   {formatCOP(summary.totalPayment)}
                 </span>
               </div>
             </div>
 
-            {/* Visual Breakdown Bar */}
-            <div className="space-y-1.5 pt-2">
-              <div className="flex justify-between text-[11px]">
-                <span className="text-blue-300">Capital: {capitalPercent}%</span>
-                <span className="text-amber-300">Intereses: {interestPercent}%</span>
+            {/* Amortization Split Bar */}
+            <div className="space-y-2 pt-2">
+              <div className="flex justify-between text-xs font-mono">
+                <span className="text-blue-400">Capital: {capitalPercent}%</span>
+                <span className="text-amber-400">Intereses: {interestPercent}%</span>
               </div>
-              <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden flex">
-                <div style={{ width: `${capitalPercent}%` }} className="bg-blue-500 h-full transition-all" />
-                <div style={{ width: `${interestPercent}%` }} className="bg-amber-500 h-full transition-all" />
+              <div className="w-full h-3.5 bg-slate-800 rounded-full overflow-hidden flex p-[2px]">
+                <div style={{ width: `${capitalPercent}%` }} className="bg-blue-500 h-full rounded-l-full transition-all duration-300" />
+                <div style={{ width: `${interestPercent}%` }} className="bg-amber-500 h-full rounded-r-full transition-all duration-300" />
               </div>
             </div>
           </div>
 
-          {/* Semaforo de Capacidad Financiera (Integración con HU-02) */}
-          <div className={`p-5 rounded-2xl border-2 shadow-xs space-y-3 ${
+          {/* Solvency Semaphore (HU-13 & HU-14 integrated) */}
+          <div className={`p-6 rounded-3xl border-2 transition-all space-y-3 ${
             capacity.color === 'emerald' 
-              ? 'bg-emerald-50/70 border-emerald-300'
+              ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] border-emerald-500 shadow-glow-sm'
               : capacity.color === 'amber'
-              ? 'bg-amber-50/70 border-amber-300'
-              : 'bg-rose-50/70 border-rose-300'
+              ? 'bg-amber-500/[0.04] dark:bg-amber-500/[0.08] border-amber-500'
+              : 'bg-rose-500/[0.04] dark:bg-rose-500/[0.08] border-rose-500'
           }`}>
-            <div className="flex items-center gap-2">
-              {capacity.color === 'emerald' && <CheckCircle2 className="w-5 h-5 text-emerald-600" />}
-              {capacity.color === 'amber' && <AlertTriangle className="w-5 h-5 text-amber-600" />}
-              {capacity.color === 'rose' && <AlertCircle className="w-5 h-5 text-rose-600" />}
-              <span className="font-extrabold text-sm text-slate-900">
+            <div className="flex items-center gap-2.5">
+              {capacity.color === 'emerald' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+              {capacity.color === 'amber' && <AlertTriangle className="w-5 h-5 text-amber-500" />}
+              {capacity.color === 'rose' && <AlertCircle className="w-5 h-5 text-rose-500" />}
+              <span className="font-black text-sm text-slate-900 dark:text-white">
                 {capacity.label}
               </span>
             </div>
 
-            <p className="text-xs text-slate-700 leading-relaxed">
+            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
               {capacity.description}
             </p>
 
             {profile?.monthlySales > 0 && (
-              <div className="pt-2 border-t border-slate-200/60 flex justify-between text-xs font-semibold text-slate-700">
-                <span>Ventas registradas: {formatCOP(profile.monthlySales)}</span>
-                <span>Compromiso: {capacity.debtRatio}%</span>
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between text-xs font-mono font-bold text-slate-800 dark:text-slate-200">
+                <span>Ventas mensuales: {formatCOP(profile.monthlySales)}</span>
+                <span className="text-emerald-500">Compromiso: {capacity.debtRatio}%</span>
               </div>
             )}
           </div>
 
-          {/* Decision Summary Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3 text-xs">
-            <h3 className="font-bold text-slate-900 flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-blue-600" />
-              <span>Conclusión para tu Comité o Pitch</span>
+          {/* Institutional Pitch Conclusion */}
+          <div className="bg-white dark:bg-[#0B1120] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3 text-xs">
+            <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <span>Dictamen para Comité de Crédito</span>
             </h3>
-            <p className="text-slate-600 leading-relaxed">
-              Para adquirir <strong className="text-slate-900">{need?.purpose || 'los activos requeridos'}</strong>, 
-              una financiación de <strong className="text-slate-900">{formatCOP(simAmount)}</strong> a un plazo de <strong className="text-slate-900">{simTerm} meses</strong> con 
-              tasa de <strong className="text-slate-900">{simRateEA}% E.A.</strong> exige una caja mensual de <strong className="text-slate-900">{formatCOP(summary.monthlyPayment)}</strong>.
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+              Para financiar <strong className="text-slate-900 dark:text-white">{need?.purpose || 'la inversión de capital'}</strong> por un valor de <strong className="text-slate-900 dark:text-white font-mono">{formatCOP(simAmount)}</strong> a <strong className="text-slate-900 dark:text-white font-mono">{simTerm} meses</strong> con 
+              tasa del <strong className="text-slate-900 dark:text-white font-mono">{simRateEA}% E.A.</strong>, el flujo de caja del negocio debe reservar mensualmente <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{formatCOP(summary.monthlyPayment)}</strong>.
             </p>
           </div>
+
         </div>
+
       </div>
     </div>
   );

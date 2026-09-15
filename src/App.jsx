@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Stepper from './components/Stepper';
 import ProfileStep from './components/ProfileStep';
@@ -21,22 +21,35 @@ export default function App() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [activeOptionForSim, setActiveOptionForSim] = useState(null);
   const [notification, setNotification] = useState(null);
+  
+  // Dark mode conforme a MASTER.md de ui-ux-pro-max (Default: Dark OLED)
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('theme_preference');
+    return saved !== null ? saved === 'dark' : true;
+  });
 
-  // Muestra una notificación temporal
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme_preference', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme_preference', 'light');
+    }
+  }, [darkMode]);
+
   const showNotification = (msg) => {
     setNotification(msg);
     setTimeout(() => setNotification(null), 3500);
   };
 
-  // Cargar datos demo instantáneos
   const handleLoadDemo = () => {
     setProfile(mockDefaultProfile);
     setNeed(mockDefaultNeed);
     setSelectedForCompare(['bancolombia-pyme', 'sempli-fintech']);
-    showNotification('✨ Datos de ejemplo cargados exitosamente (EcoModa Sostenible SAS)');
+    showNotification('✨ Datos de ejemplo cargados (EcoModa Sostenible SAS)');
   };
 
-  // Reiniciar datos a blanco
   const handleReset = () => {
     setProfile({
       name: '',
@@ -60,10 +73,9 @@ export default function App() {
     setSelectedForCompare([]);
     setActiveOptionForSim(null);
     setCurrentStep(1);
-    showNotification('Formularios restablecidos a valores iniciales');
+    showNotification('Formularios restablecidos a valores limpios');
   };
 
-  // Toggle de opción para comparar (máximo 3)
   const handleToggleCompare = (id) => {
     setSelectedForCompare(prev => {
       if (prev.includes(id)) {
@@ -77,7 +89,6 @@ export default function App() {
     });
   };
 
-  // Ir directo al simulador con una opción
   const handleSelectForSimulation = (option) => {
     setActiveOptionForSim(option);
     setCurrentStep(4);
@@ -85,10 +96,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+      
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl border border-slate-700 text-xs font-semibold animate-fade-in flex items-center gap-2">
+        <div className="fixed top-20 right-4 z-50 bg-[#0B1120] text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/30 text-xs font-bold animate-fadeIn flex items-center gap-2">
           <span>{notification}</span>
         </div>
       )}
@@ -101,6 +113,8 @@ export default function App() {
         onReset={handleReset}
         profile={profile}
         need={need}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
       />
 
       {/* Stepper de navegación */}
@@ -109,13 +123,16 @@ export default function App() {
         setCurrentStep={setCurrentStep}
       />
 
-      {/* Contenido Principal */}
+      {/* Main Screen Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentStep === 1 && (
           <ProfileStep
             profile={profile}
             setProfile={setProfile}
-            onNext={() => setCurrentStep(2)}
+            onNext={() => {
+              setCurrentStep(2);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             onLoadDemo={handleLoadDemo}
           />
         )}
@@ -124,8 +141,14 @@ export default function App() {
           <NeedStep
             need={need}
             setNeed={setNeed}
-            onNext={() => setCurrentStep(3)}
-            onBack={() => setCurrentStep(1)}
+            onNext={() => {
+              setCurrentStep(3);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onBack={() => {
+              setCurrentStep(1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 
@@ -137,8 +160,14 @@ export default function App() {
             onToggleCompare={handleToggleCompare}
             onOpenCompare={() => setIsCompareOpen(true)}
             onSelectForSimulation={handleSelectForSimulation}
-            onNext={() => setCurrentStep(4)}
-            onBack={() => setCurrentStep(2)}
+            onNext={() => {
+              setCurrentStep(4);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onBack={() => {
+              setCurrentStep(2);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 
@@ -149,12 +178,15 @@ export default function App() {
             need={need}
             activeOption={activeOptionForSim}
             setActiveOption={setActiveOptionForSim}
-            onBackToCatalog={() => setCurrentStep(3)}
+            onBackToCatalog={() => {
+              setCurrentStep(3);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
       </main>
 
-      {/* Modal de Comparativa (HU-07) */}
+      {/* Side-by-side Comparison Modal (HU-07) */}
       <CompareModal
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
@@ -164,22 +196,29 @@ export default function App() {
         onSelectForSimulation={handleSelectForSimulation}
       />
 
-      {/* Footer Académico */}
-      <footer className="bg-white border-t border-slate-200 py-6 text-xs text-slate-500 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+      {/* Institutional Academic Footer */}
+      <footer className="bg-white dark:bg-[#020617] border-t border-slate-200 dark:border-slate-800/80 py-8 text-xs text-slate-500 dark:text-slate-400 mt-auto transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div>
-            <span className="font-bold text-slate-700">
-              Búsqueda de alternativas de financiamiento para emprendedores
-            </span>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <span className="font-extrabold text-slate-900 dark:text-white">
+                FinanEmprende
+              </span>
+              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold px-2 py-0.5 rounded">
+                UI/UX Redesign (ui-ux-pro-max)
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
               Equipo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
             </p>
           </div>
-          <div className="text-[11px] text-slate-400">
-            Mockup de primera entrega • Sin dependencias de base de datos
+
+          <div className="text-[11px] text-slate-400 font-mono">
+            Búsqueda de alternativas de financiamiento • Entrega 1
           </div>
         </div>
       </footer>
+
     </div>
   );
 }

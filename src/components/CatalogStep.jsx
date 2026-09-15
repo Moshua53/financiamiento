@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Layers, Search, Filter, Check, Plus, ExternalLink, Calculator, 
-  Sparkles, CheckCircle2, XCircle, ArrowRight, ArrowLeft, Clock, ShieldCheck, Tag
+  Sparkles, CheckCircle2, ArrowRight, Clock, ShieldCheck, Tag, X
 } from 'lucide-react';
 import { formatCOP, calculateMonthlyPayment } from '../utils/financialCalculations';
 
@@ -21,14 +21,12 @@ export default function CatalogStep({
   const [searchTerm, setSearchTerm] = useState('');
   const [onlyMatchAmount, setOnlyMatchAmount] = useState(false);
 
-  // Filtrado reactivo de alternativas (HU-06)
+  // Filtrado reactivo de opciones (HU-06)
   const filteredOptions = useMemo(() => {
     return options.filter(opt => {
-      // Filtro por categoría
       if (selectedCategory !== 'Todas' && opt.category !== selectedCategory) {
         return false;
       }
-      // Filtro por búsqueda de texto
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase();
         const matchesName = opt.name.toLowerCase().includes(query);
@@ -36,7 +34,6 @@ export default function CatalogStep({
         const matchesDesc = opt.description.toLowerCase().includes(query);
         if (!matchesName && !matchesInst && !matchesDesc) return false;
       }
-      // Filtro por monto de la necesidad (HU-04)
       if (onlyMatchAmount && need?.amount) {
         if (need.amount < opt.minAmount || need.amount > opt.maxAmount) {
           return false;
@@ -47,92 +44,108 @@ export default function CatalogStep({
   }, [options, selectedCategory, searchTerm, onlyMatchAmount, need]);
 
   return (
-    <div className="space-y-6 pb-20">
+    <div className="space-y-6 pb-24 animate-fadeIn">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 rounded-2xl p-6 text-white shadow-md">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-200 text-xs font-semibold mb-3 border border-blue-400/20">
-          <span>Historias de Usuario: HU-05 & HU-06</span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight mb-2">
-              Paso 3: Catálogo y Filtros de Financiación
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
+        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Historias de Usuario: HU-05 & HU-06</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+              Catálogo de Alternativas de Financiación
             </h1>
-            <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Explora las fuentes de financiación disponibles en el ecosistema. Filtra según tus necesidades, 
-              selecciona hasta 3 opciones para comparar lado a lado, o simula directamente cualquiera de ellas.
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Consulta las fuentes disponibles en Colombia. Puedes filtrar por categoría, 
+              seleccionar hasta 3 para compararlas lado a lado, o simular cualquier opción con 1 clic.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="shrink-0">
             <button
               onClick={() => onSelectForSimulation(null)}
-              className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5"
+              className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold rounded-2xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2"
             >
-              <Calculator className="w-3.5 h-3.5" />
+              <Calculator className="w-4 h-4" />
               <span>Ir al Simulador Libre</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Control Bar: Búsqueda y Filtros */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
+      {/* Control Bar: Filtros y Búsqueda */}
+      <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3.5">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-          {/* Input de búsqueda */}
+          
+          {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por entidad (ej: Bancolombia, Sempli, Fondo Emprender)..."
-              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Buscar por entidad o palabra clave (ej: Bancolombia, Sempli, Subsidio)..."
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')} 
+                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          {/* Toggle de monto acorde a necesidad */}
-          <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none bg-slate-50 px-3 py-2 rounded-xl border border-slate-200">
+          {/* Amount match filter toggle */}
+          <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none bg-slate-50 dark:bg-[#020617] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 transition-colors">
             <input
               type="checkbox"
               checked={onlyMatchAmount}
               onChange={(e) => setOnlyMatchAmount(e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 rounded-xs"
+              className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500"
             />
-            <span>Solo opciones que cubran mi monto ({formatCOP(need.amount)})</span>
+            <span>Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
           </label>
         </div>
 
-        {/* Categorías (Pills) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 scrollbar-none">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
-                selectedCategory === cat
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* Categories Chips */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all select-none ${
+                  isSelected
+                    ? 'bg-emerald-500 text-slate-950 shadow-glow-sm'
+                    : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Grid de Alternativas */}
+      {/* Grid of Financing Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {filteredOptions.length === 0 ? (
-          <div className="col-span-full bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3">
-            <Layers className="w-10 h-10 text-slate-300 mx-auto" />
-            <h3 className="font-bold text-slate-700 text-base">No hay alternativas con los filtros actuales</h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto">
-              Intenta desmarcar el filtro de monto estricto o buscar otra categoría para ver más opciones disponibles.
+          <div className="col-span-full bg-white dark:bg-[#0B1120] p-12 rounded-3xl border border-slate-200 dark:border-slate-800 text-center space-y-4">
+            <Layers className="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto" />
+            <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">
+              No hay alternativas con los filtros aplicados
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              Desmarca el filtro de monto o prueba con otra categoría para visualizar más opciones de financiamiento.
             </p>
             <button
               onClick={() => { setSelectedCategory('Todas'); setSearchTerm(''); setOnlyMatchAmount(false); }}
-              className="px-4 py-2 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg hover:bg-blue-100 transition-colors"
+              className="px-4 py-2 bg-emerald-500/10 text-emerald-500 font-bold text-xs rounded-xl hover:bg-emerald-500/20 transition-colors"
             >
               Restablecer Filtros
             </button>
@@ -147,84 +160,88 @@ export default function CatalogStep({
             return (
               <div
                 key={opt.id}
-                className={`bg-white rounded-2xl border-2 flex flex-col justify-between transition-all duration-200 shadow-xs hover:shadow-md ${
-                  isSelected ? 'border-blue-600 ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-slate-300'
+                className={`bg-white dark:bg-[#0B1120] rounded-3xl border-2 flex flex-col justify-between transition-all duration-200 shadow-xs hover:shadow-xl hover:-translate-y-1 ${
+                  isSelected 
+                    ? 'border-emerald-500 dark:border-emerald-500 ring-2 ring-emerald-500/20 shadow-glow-sm' 
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 {/* Card Top */}
-                <div className="p-5 space-y-3">
+                <div className="p-6 space-y-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[11px] font-bold tracking-wide uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
                         {opt.category}
                       </span>
-                      <h3 className="font-bold text-slate-900 text-base mt-1.5 leading-snug">
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg mt-2 leading-snug">
                         {opt.name}
                       </h3>
-                      <p className="text-xs font-semibold text-slate-500">
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
                         {opt.institution}
                       </p>
                     </div>
 
                     {opt.badge && (
-                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 shrink-0">
+                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
                         {opt.badge}
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
                     {opt.description}
                   </p>
 
-                  {/* Financial Metrics Strip */}
-                  <div className="grid grid-cols-2 gap-2 p-2.5 bg-slate-50 rounded-xl text-xs border border-slate-100">
+                  {/* Financial Data Strip */}
+                  <div className="grid grid-cols-2 gap-2.5 p-3 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-100 dark:border-slate-800/80 text-xs">
                     <div>
-                      <span className="text-slate-600 block text-[10px]">Tasa Referencia</span>
-                      <span className="font-bold text-slate-900 text-sm">
-                        {opt.rateEA === 0 ? '0% (No reembolsable/Equity)' : `${opt.rateEA}% E.A.`}
+                      <span className="text-[10px] text-slate-400 block font-medium">Tasa Referencial</span>
+                      <span className="font-black text-slate-900 dark:text-white text-sm font-mono mt-0.5 block">
+                        {opt.rateEA === 0 ? '0% (Semilla/Equity)' : `${opt.rateEA}% E.A.`}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-slate-600 block text-[10px]">Tiempo Desembolso</span>
-                      <span className="font-semibold text-slate-800 text-xs flex items-center gap-1 mt-0.5">
-                        <Clock className="w-3 h-3 text-slate-600" />
+                      <span className="text-[10px] text-slate-400 block font-medium">Tiempo Respuesta</span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs flex items-center gap-1 mt-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
                         {opt.approvalTime}
                       </span>
                     </div>
 
-                    <div className="col-span-2 pt-1 border-t border-slate-200/60 flex justify-between items-center text-[11px]">
-                      <span className="text-slate-600">Rango montos:</span>
-                      <span className="font-semibold text-slate-800">
+                    <div className="col-span-2 pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center text-[11px]">
+                      <span className="text-slate-400">Rango montos:</span>
+                      <span className="font-bold text-slate-800 dark:text-slate-200 font-mono">
                         ${(opt.minAmount / 1000000).toFixed(0)}M - ${(opt.maxAmount / 1000000).toFixed(0)}M COP
                       </span>
                     </div>
                   </div>
 
-                  {/* Estimación de Cuota para el monto de necesidad */}
+                  {/* Estimación de cuota si aplica */}
                   {opt.rateEA > 0 && need?.amount && (
-                    <div className="p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center justify-between text-xs">
+                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
                       <div>
-                        <span className="text-[10px] text-indigo-700 block font-medium">
+                        <span className="text-[10px] text-emerald-700 dark:text-emerald-400 block font-semibold">
                           Cuota aprox. ({need.termMonths}m):
                         </span>
-                        <span className="font-bold text-indigo-950 text-sm">
+                        <span className="font-black text-slate-950 dark:text-white text-sm font-mono tabular-nums">
                           {formatCOP(estimatedInstallment)} / mes
                         </span>
                       </div>
-                      <span className="text-[10px] bg-indigo-200 text-indigo-900 font-semibold px-1.5 py-0.5 rounded">
-                        Estimada
+                      <span className="text-[10px] bg-emerald-500 text-slate-950 font-extrabold px-2 py-0.5 rounded-md">
+                        Simulada
                       </span>
                     </div>
                   )}
 
-                  {/* Requisitos clave (2 bullets) */}
+                  {/* Requisitos clave */}
                   <div className="space-y-1.5 pt-1">
-                    <span className="text-[11px] font-bold text-slate-700 block">Requisitos clave:</span>
+                    <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">
+                      Requisitos clave:
+                    </span>
                     {opt.requirements.slice(0, 2).map((req, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-600">
-                        <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                         <span className="line-clamp-1">{req}</span>
                       </div>
                     ))}
@@ -232,13 +249,13 @@ export default function CatalogStep({
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="p-4 bg-slate-50/80 border-t border-slate-100 rounded-b-2xl flex items-center gap-2">
+                <div className="p-4 bg-slate-50/80 dark:bg-[#020617]/80 border-t border-slate-100 dark:border-slate-800 rounded-b-3xl flex items-center gap-2">
                   <button
                     onClick={() => onToggleCompare(opt.id)}
-                    className={`flex-1 py-2 px-2.5 text-xs font-semibold rounded-xl border transition-all flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 select-none ${
                       isSelected
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                        ? 'bg-emerald-500 text-slate-950 border-emerald-500 shadow-glow-sm'
+                        : 'bg-white dark:bg-[#0B1120] text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:border-emerald-500/50'
                     }`}
                   >
                     {isSelected ? (
@@ -256,8 +273,8 @@ export default function CatalogStep({
 
                   <button
                     onClick={() => onSelectForSimulation(opt)}
-                    className="py-2 px-3 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-colors flex items-center gap-1"
-                    title="Simular cuotas con esta opción"
+                    className="py-2.5 px-3.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors flex items-center gap-1.5"
+                    title="Simular en tiempo real"
                   >
                     <Calculator className="w-3.5 h-3.5" />
                     <span>Simular</span>
@@ -269,32 +286,30 @@ export default function CatalogStep({
         )}
       </div>
 
-      {/* Floating Compare Action Bar (Sticky at Bottom when items selected) */}
+      {/* Floating Compare Drawer (Sticky at Bottom) */}
       {selectedForCompare.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-3xl bg-slate-900 text-white p-3.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center justify-between gap-3 animate-bounce-short">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center text-xs font-bold">
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-3xl bg-[#020617] text-white p-4 rounded-3xl shadow-2xl border border-emerald-500/30 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black">
               {selectedForCompare.length}
             </div>
             <div>
-              <p className="text-xs sm:text-sm font-bold">
-                {selectedForCompare.length === 1 ? '1 alternativa seleccionada' : `${selectedForCompare.length} alternativas seleccionadas`}
+              <p className="text-xs sm:text-sm font-bold text-white">
+                {selectedForCompare.length === 1 ? '1 alternativa lista para comparar' : `${selectedForCompare.length} alternativas listas para comparar`}
               </p>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                Compara tasas, ventajas, desventajas y costos lado a lado (HU-07).
+                Contrasta costos, plazos, ventajas y desventajas lado a lado (HU-07 a HU-10).
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onOpenCompare}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-blue-500/30 flex items-center gap-1.5"
-            >
-              <span>Ver Comparativa (HU-07)</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <button
+            onClick={onOpenCompare}
+            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-2"
+          >
+            <span>Ver Comparativa (HU-07)</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       )}
     </div>
