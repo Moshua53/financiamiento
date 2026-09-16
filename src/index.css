@@ -7,10 +7,10 @@
     --color-primary: #0F172A;
     --color-on-primary: #FFFFFF;
     --color-accent: #22C55E;
-    --color-background: #020617;
-    --color-foreground: #F8FAFC;
-    --color-card: #0E162B;
-    --color-border: #1E293B;
+    --color-background: #F8FAFC;
+    --color-foreground: #0F172A;
+    --color-card: #FFFFFF;
+    --color-border: #E2E8F0;
   }
 
   body {
@@ -21,22 +21,6 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
-}
-
-/* Custom Scrollbars para Dark Mode */
-.dark ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-.dark ::-webkit-scrollbar-track {
-  background: #020617;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
-}
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
 }
 
 /* Custom Scrollbars para Light Mode */

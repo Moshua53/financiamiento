@@ -1,4 +1,4 @@
-# 🚀 FinanEmprende — Búsqueda & Simulación de Financiamiento para Emprendedores
+# 🚀 Financia+ — Búsqueda & Simulación de Financiamiento para Emprendedores
 
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Entrega_1-Completa-10B981)](#-historias-de-usuario-implementadas)
 
-> **FinanEmprende** es una plataforma web interactiva diseñada para guiar a emprendedores y MiPymes colombianas en el descubrimiento, comparación y simulación de alternativas de financiamiento formal (banca tradicional, fintechs, fondos públicos y capital semilla).
+> **Financia+** es una plataforma web interactiva diseñada para guiar a emprendedores y MiPymes colombianas en el descubrimiento, comparación y simulación de alternativas de financiamiento formal (banca tradicional, fintechs, fondos públicos y capital semilla).
 
 ---
 

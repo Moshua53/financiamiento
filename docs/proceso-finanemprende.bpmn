@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  id="Definitions_FinanEmprende"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler / Antigravity"
+                  exporterVersion="5.0.0">
+
+  <!-- ==================== COLABORACIÓN / POOL ==================== -->
+  <bpmn:collaboration id="Collaboration_FinanEmprende">
+    <bpmn:participant id="Participant_FinanEmprende" 
+                      name="FinanEmprende — Proceso Principal de Financiamiento" 
+                      processRef="Process_FinanEmprende" />
+  </bpmn:collaboration>
+
+  <!-- ==================== PROCESO PRINCIPAL ==================== -->
+  <bpmn:process id="Process_FinanEmprende" isExecutable="false">
+    
+    <!-- Definición de Carriles (Lanes) -->
+    <bpmn:laneSet id="LaneSet_1">
+      
+      <!-- Carril: Emprendedor -->
+      <bpmn:lane id="Lane_Emprendedor" name="Emprendedor (Usuario)">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Profile</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Need</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Catalog</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Compare</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Compare</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Sim</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Finish</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+      <!-- Carril: Plataforma FinanEmprende -->
+      <bpmn:lane id="Lane_Sistema" name="Plataforma FinanEmprende (Sistema)">
+        <bpmn:flowNodeRef>Task_Validate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Valid</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Calc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Viable</bpmn:flowNodeRef>
+      </bpmn:lane>
+
+    </bpmn:laneSet>
+
+    <!-- 1. Evento de Inicio -->
+    <bpmn:startEvent id="StartEvent_1" name="Inicio: Necesidad de Capital">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- 2. Tarea 1: Registrar Datos y Finanzas (HU-01, HU-02) -->
+    <bpmn:userTask id="Task_Profile" name="Registrar Datos del Negocio y Finanzas (HU-01, HU-02)">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 3. Tarea 2: Validar y Diagnosticar -->
+    <bpmn:serviceTask id="Task_Validate" name="Validar Datos y Diagnosticar Flujo Neto">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- 4. Compuerta 1: ¿Datos Válidos? -->
+    <bpmn:exclusiveGateway id="Gateway_Valid" name="¿Datos Válidos?">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- 5. Tarea 3: Definir Necesidad (HU-04) -->
+    <bpmn:userTask id="Task_Need" name="Definir Necesidad: Monto, Plazo y Destino (HU-04)">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 6. Tarea 4: Explorar y Filtrar Catálogo (HU-05, HU-06) -->
+    <bpmn:userTask id="Task_Catalog" name="Consultar y Filtrar Catálogo (HU-05, HU-06)">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 7. Compuerta 2: ¿Desea Comparar? -->
+    <bpmn:exclusiveGateway id="Gateway_Compare" name="¿Desea Comparar Alternativas?">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+      <bpmn:outgoing>Flow_10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- 8. Tarea 5: Comparar Alternativas (HU-07, HU-08, HU-09) -->
+    <bpmn:userTask id="Task_Compare" name="Comparar Alternativas Frente a Frente (HU-07, HU-08, HU-09)">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 9. Tarea 6: Simular Financiación (HU-11) -->
+    <bpmn:userTask id="Task_Sim" name="Simular Financiación en Tiempo Real (HU-11)">
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+      <bpmn:incoming>Flow_10</bpmn:incoming>
+      <bpmn:incoming>Flow_13</bpmn:incoming>
+      <bpmn:outgoing>Flow_11</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 10. Tarea 7: Motor Financiero & Semáforo -->
+    <bpmn:serviceTask id="Task_Calc" name="Calcular Cuota Fija y Semáforo de Capacidad (Sistema Francés)">
+      <bpmn:incoming>Flow_11</bpmn:incoming>
+      <bpmn:outgoing>Flow_12</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <!-- 11. Compuerta 3: ¿Capacidad Viable? -->
+    <bpmn:exclusiveGateway id="Gateway_Viable" name="¿Capacidad de Endeudamiento Viable?">
+      <bpmn:incoming>Flow_12</bpmn:incoming>
+      <bpmn:outgoing>Flow_13</bpmn:outgoing>
+      <bpmn:outgoing>Flow_14</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <!-- 12. Tarea 8: Exportar y Contactar (HU-10) -->
+    <bpmn:userTask id="Task_Finish" name="Exportar Resumen y Contactar Entidad (HU-10)">
+      <bpmn:incoming>Flow_14</bpmn:incoming>
+      <bpmn:outgoing>Flow_15</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- 13. Evento de Fin -->
+    <bpmn:endEvent id="EndEvent_1" name="Fin: Alternativa Lista para Radicación">
+      <bpmn:incoming>Flow_15</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- ==================== FLUJOS DE SECUENCIA ==================== -->
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_Profile" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_Profile" targetRef="Task_Validate" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_Validate" targetRef="Gateway_Valid" />
+    <bpmn:sequenceFlow id="Flow_4" name="No: Faltan datos" sourceRef="Gateway_Valid" targetRef="Task_Profile" />
+    <bpmn:sequenceFlow id="Flow_5" name="Sí: Válido" sourceRef="Gateway_Valid" targetRef="Task_Need" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_Need" targetRef="Task_Catalog" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Task_Catalog" targetRef="Gateway_Compare" />
+    <bpmn:sequenceFlow id="Flow_8" name="Sí: Comparar" sourceRef="Gateway_Compare" targetRef="Task_Compare" />
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Task_Compare" targetRef="Task_Sim" />
+    <bpmn:sequenceFlow id="Flow_10" name="No: Directo" sourceRef="Gateway_Compare" targetRef="Task_Sim" />
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="Task_Sim" targetRef="Task_Calc" />
+    <bpmn:sequenceFlow id="Flow_12" sourceRef="Task_Calc" targetRef="Gateway_Viable" />
+    <bpmn:sequenceFlow id="Flow_13" name="Riesgo (>35%): Reajustar" sourceRef="Gateway_Viable" targetRef="Task_Sim" />
+    <bpmn:sequenceFlow id="Flow_14" name="Saludable (≤35%)" sourceRef="Gateway_Viable" targetRef="Task_Finish" />
+    <bpmn:sequenceFlow id="Flow_15" sourceRef="Task_Finish" targetRef="EndEvent_1" />
+
+  </bpmn:process>
+
+  <!-- ==================== BPMN DIAGRAM (BPMNDI) ==================== -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_FinanEmprende">
+      
+      <!-- Pool / Participant Shape -->
+      <bpmndi:BPMNShape id="Participant_FinanEmprende_di" bpmnElement="Participant_FinanEmprende" isHorizontal="true">
+        <dc:Bounds x="140" y="80" width="1620" height="500" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane: Emprendedor Shape -->
+      <bpmndi:BPMNShape id="Lane_Emprendedor_di" bpmnElement="Lane_Emprendedor" isHorizontal="true">
+        <dc:Bounds x="170" y="80" width="1590" height="250" />
+      </bpmndi:BPMNShape>
+
+      <!-- Lane: Sistema Shape -->
+      <bpmndi:BPMNShape id="Lane_Sistema_di" bpmnElement="Lane_Sistema" isHorizontal="true">
+        <dc:Bounds x="170" y="330" width="1590" height="250" />
+      </bpmndi:BPMNShape>
+
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="210" y="165" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="208" width="86" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task Profile -->
+      <bpmndi:BPMNShape id="Task_Profile_di" bpmnElement="Task_Profile">
+        <dc:Bounds x="290" y="150" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task Validate -->
+      <bpmndi:BPMNShape id="Task_Validate_di" bpmnElement="Task_Validate">
+        <dc:Bounds x="290" y="400" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Valid -->
+      <bpmndi:BPMNShape id="Gateway_Valid_di" bpmnElement="Gateway_Valid" isMarkerVisible="true">
+        <dc:Bounds x="485" y="410" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="470" y="467" width="81" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task Need -->
+      <bpmndi:BPMNShape id="Task_Need_di" bpmnElement="Task_Need">
+        <dc:Bounds x="570" y="150" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task Catalog -->
+      <bpmndi:BPMNShape id="Task_Catalog_di" bpmnElement="Task_Catalog">
+        <dc:Bounds x="760" y="150" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Compare -->
+      <bpmndi:BPMNShape id="Gateway_Compare_di" bpmnElement="Gateway_Compare" isMarkerVisible="true">
+        <dc:Bounds x="950" y="160" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="933" y="217" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task Compare -->
+      <bpmndi:BPMNShape id="Task_Compare_di" bpmnElement="Task_Compare">
+        <dc:Bounds x="1030" y="95" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task Sim -->
+      <bpmndi:BPMNShape id="Task_Sim_di" bpmnElement="Task_Sim">
+        <dc:Bounds x="1220" y="150" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Task Calc -->
+      <bpmndi:BPMNShape id="Task_Calc_di" bpmnElement="Task_Calc">
+        <dc:Bounds x="1220" y="400" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- Gateway Viable -->
+      <bpmndi:BPMNShape id="Gateway_Viable_di" bpmnElement="Gateway_Viable" isMarkerVisible="true">
+        <dc:Bounds x="1410" y="410" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1395" y="467" width="81" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Task Finish -->
+      <bpmndi:BPMNShape id="Task_Finish_di" bpmnElement="Task_Finish">
+        <dc:Bounds x="1490" y="150" width="150" height="70" />
+      </bpmndi:BPMNShape>
+
+      <!-- End Event -->
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="1680" y="167" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1656" y="210" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Flow 1 -->
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="246" y="183" />
+        <di:waypoint x="290" y="183" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 2 -->
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="365" y="220" />
+        <di:waypoint x="365" y="400" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 3 -->
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="440" y="435" />
+        <di:waypoint x="485" y="435" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 4 (Loop back) -->
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="510" y="460" />
+        <di:waypoint x="510" y="495" />
+        <di:waypoint x="260" y="495" />
+        <di:waypoint x="260" y="185" />
+        <di:waypoint x="290" y="185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="345" y="505" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 5 -->
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="510" y="410" />
+        <di:waypoint x="510" y="185" />
+        <di:waypoint x="570" y="185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="520" y="240" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 6 -->
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="720" y="185" />
+        <di:waypoint x="760" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 7 -->
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="910" y="185" />
+        <di:waypoint x="950" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 8 -->
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="975" y="160" />
+        <di:waypoint x="975" y="130" />
+        <di:waypoint x="1030" y="130" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="970" y="110" width="67" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 9 -->
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9">
+        <di:waypoint x="1180" y="130" />
+        <di:waypoint x="1200" y="130" />
+        <di:waypoint x="1200" y="185" />
+        <di:waypoint x="1220" y="185" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 10 -->
+      <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10">
+        <di:waypoint x="1000" y="185" />
+        <di:waypoint x="1220" y="185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1080" y="167" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 11 -->
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11">
+        <di:waypoint x="1295" y="220" />
+        <di:waypoint x="1295" y="400" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 12 -->
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12">
+        <di:waypoint x="1370" y="435" />
+        <di:waypoint x="1410" y="435" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 13 (Loop back) -->
+      <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13">
+        <di:waypoint x="1435" y="460" />
+        <di:waypoint x="1435" y="495" />
+        <di:waypoint x="1190" y="495" />
+        <di:waypoint x="1190" y="185" />
+        <di:waypoint x="1220" y="185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1270" y="505" width="85" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 14 -->
+      <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14">
+        <di:waypoint x="1435" y="410" />
+        <di:waypoint x="1435" y="185" />
+        <di:waypoint x="1490" y="185" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1440" y="240" width="86" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Flow 15 -->
+      <bpmndi:BPMNEdge id="Flow_15_di" bpmnElement="Flow_15">
+        <di:waypoint x="1640" y="185" />
+        <di:waypoint x="1680" y="185" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

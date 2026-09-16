@@ -40,21 +40,21 @@ export default function SimulatorView({
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Selector & Actions Bar */}
-      <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5">
+      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
             <Calculator className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-white block">
+              <span className="text-xs font-bold text-slate-900 block">
                 Simulación de Crédito & Capacidad
               </span>
-              <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
+              <span className="text-[10px] bg-emerald-500/10 text-emerald-600 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
                 Paso 4
               </span>
             </div>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+            <span className="text-xs text-slate-500 font-medium">
               {activeOption ? `${activeOption.name} (${activeOption.institution})` : 'Simulación Libre / Parámetros Personalizados'}
             </span>
           </div>
@@ -75,7 +75,7 @@ export default function SimulatorView({
                 }
               }
             }}
-            className="px-3.5 py-2 text-xs font-bold border border-slate-300 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 cursor-pointer flex-1 sm:flex-none"
+            className="px-3.5 py-2 text-xs font-bold border border-slate-300 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 cursor-pointer flex-1 sm:flex-none"
           >
             <option value="custom">⚙️ Parámetros Libres / Ajuste Manual</option>
             {options.map(opt => (
@@ -87,7 +87,7 @@ export default function SimulatorView({
 
           <button
             onClick={() => window.print()}
-            className="px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Imprimir Ficha</span>
@@ -95,7 +95,7 @@ export default function SimulatorView({
 
           <button
             onClick={onBackToCatalog}
-            className="px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Volver al Catálogo</span>
@@ -108,8 +108,8 @@ export default function SimulatorView({
         
         {/* Sliders Form (6 cols) */}
         <div className="lg:col-span-6 space-y-6">
-          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
-            <h2 className="font-extrabold text-slate-900 dark:text-white text-base pb-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-6">
+            <h2 className="font-extrabold text-slate-900 text-base pb-3 border-b border-slate-100 flex items-center gap-2">
               <Calculator className="w-5 h-5 text-emerald-500" />
               <span>Controles Dinámicos de Financiación</span>
             </h2>
@@ -117,10 +117,10 @@ export default function SimulatorView({
             {/* Slider 1: Monto */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="text-xs font-bold text-slate-700">
                   Monto Solicitado (COP)
                 </label>
-                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
+                <span className="text-lg font-black text-emerald-600 font-mono tabular-nums">
                   {formatCOP(simAmount)}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export default function SimulatorView({
                 step="1000000"
                 value={simAmount}
                 onChange={(e) => setSimAmount(Number(e.target.value))}
-                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-500"
               />
               <div className="flex justify-between text-[11px] font-mono text-slate-400 font-medium px-1">
                 <span>$2M</span>
@@ -144,10 +144,10 @@ export default function SimulatorView({
             {/* Slider 2: Plazo */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="text-xs font-bold text-slate-700">
                   Plazo de Pago (Meses)
                 </label>
-                <span className="text-lg font-black text-blue-600 dark:text-blue-400 font-mono">
+                <span className="text-lg font-black text-blue-600 font-mono">
                   {simTerm} Meses ({(simTerm / 12).toFixed(1)} años)
                 </span>
               </div>
@@ -158,7 +158,7 @@ export default function SimulatorView({
                 step="6"
                 value={simTerm}
                 onChange={(e) => setSimTerm(Number(e.target.value))}
-                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
               <div className="grid grid-cols-6 gap-1.5 pt-1">
                 {[6, 12, 18, 24, 36, 48].map((t) => (
@@ -169,7 +169,7 @@ export default function SimulatorView({
                     className={`py-1.5 text-xs font-bold font-mono rounded-xl border text-center transition-colors ${
                       simTerm === t 
                         ? 'bg-blue-600 text-white border-blue-600 shadow-glow-blue' 
-                        : 'bg-slate-50 dark:bg-[#020617] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-blue-500/40'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-500/40'
                     }`}
                   >
                     {t}m
@@ -181,7 +181,7 @@ export default function SimulatorView({
             {/* Slider 3: Tasa de Interés */}
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="text-xs font-bold text-slate-700">
                   Tasa Efectiva Anual (% E.A.)
                 </label>
                 <span className="text-lg font-black text-amber-500 font-mono">
@@ -195,7 +195,7 @@ export default function SimulatorView({
                 step="0.5"
                 value={simRateEA}
                 onChange={(e) => setSimRateEA(Number(e.target.value))}
-                className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
               />
               <div className="flex justify-between text-[11px] font-mono text-slate-400 font-medium px-1">
                 <span>0% (Semilla)</span>
@@ -203,9 +203,9 @@ export default function SimulatorView({
                 <span>28% (Fintech)</span>
                 <span>45% (Usura)</span>
               </div>
-              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex justify-between items-center">
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex justify-between items-center">
                 <span>Tasa mensual vencida equivalente:</span>
-                <strong className="text-slate-900 dark:text-white font-mono text-sm">{summary.monthlyRatePercent}% M.V.</strong>
+                <strong className="text-slate-900 font-mono text-sm">{summary.monthlyRatePercent}% M.V.</strong>
               </div>
             </div>
           </div>
@@ -215,7 +215,7 @@ export default function SimulatorView({
         <div className="lg:col-span-6 space-y-6">
           
           {/* Main Hero Calculation Box */}
-          <div className="relative overflow-hidden rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-[#0B1120] via-slate-900 to-[#020617] border border-slate-800 text-white shadow-2xl space-y-5">
+          <div className="relative overflow-hidden rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800 text-white shadow-2xl space-y-5">
             <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
             
             <div className="flex items-center justify-between">
@@ -268,26 +268,26 @@ export default function SimulatorView({
           {/* Solvency Semaphore (HU-13 & HU-14 integrated) */}
           <div className={`p-6 rounded-3xl border-2 transition-all space-y-3 ${
             capacity.color === 'emerald' 
-              ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.08] border-emerald-500 shadow-glow-sm'
+              ? 'bg-emerald-500/[0.04] border-emerald-500 shadow-glow-sm'
               : capacity.color === 'amber'
-              ? 'bg-amber-500/[0.04] dark:bg-amber-500/[0.08] border-amber-500'
-              : 'bg-rose-500/[0.04] dark:bg-rose-500/[0.08] border-rose-500'
+              ? 'bg-amber-500/[0.04] border-amber-500'
+              : 'bg-rose-500/[0.04] border-rose-500'
           }`}>
             <div className="flex items-center gap-2.5">
               {capacity.color === 'emerald' && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
               {capacity.color === 'amber' && <AlertTriangle className="w-5 h-5 text-amber-500" />}
               {capacity.color === 'rose' && <AlertCircle className="w-5 h-5 text-rose-500" />}
-              <span className="font-black text-sm text-slate-900 dark:text-white">
+              <span className="font-black text-sm text-slate-900">
                 {capacity.label}
               </span>
             </div>
 
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-700 leading-relaxed">
               {capacity.description}
             </p>
 
             {profile?.monthlySales > 0 && (
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex justify-between text-xs font-mono font-bold text-slate-800 dark:text-slate-200">
+              <div className="pt-2 border-t border-slate-200 flex justify-between text-xs font-mono font-bold text-slate-800">
                 <span>Ventas mensuales: {formatCOP(profile.monthlySales)}</span>
                 <span className="text-emerald-500">Compromiso: {capacity.debtRatio}%</span>
               </div>
@@ -295,14 +295,14 @@ export default function SimulatorView({
           </div>
 
           {/* Institutional Pitch Conclusion */}
-          <div className="bg-white dark:bg-[#0B1120] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3 text-xs">
-            <h3 className="font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-3 text-xs">
+            <h3 className="font-extrabold text-slate-900 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               <span>Dictamen para Comité de Crédito</span>
             </h3>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Para financiar <strong className="text-slate-900 dark:text-white">{need?.purpose || 'la inversión de capital'}</strong> por un valor de <strong className="text-slate-900 dark:text-white font-mono">{formatCOP(simAmount)}</strong> a <strong className="text-slate-900 dark:text-white font-mono">{simTerm} meses</strong> con 
-              tasa del <strong className="text-slate-900 dark:text-white font-mono">{simRateEA}% E.A.</strong>, el flujo de caja del negocio debe reservar mensualmente <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{formatCOP(summary.monthlyPayment)}</strong>.
+            <p className="text-slate-600 leading-relaxed">
+              Para financiar <strong className="text-slate-900">{need?.purpose || 'la inversión de capital'}</strong> por un valor de <strong className="text-slate-900 font-mono">{formatCOP(simAmount)}</strong> a <strong className="text-slate-900 font-mono">{simTerm} meses</strong> con 
+              tasa del <strong className="text-slate-900 font-mono">{simRateEA}% E.A.</strong>, el flujo de caja del negocio debe reservar mensualmente <strong className="text-emerald-600 font-mono">{formatCOP(summary.monthlyPayment)}</strong>.
             </p>
           </div>
 

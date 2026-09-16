@@ -45,29 +45,29 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
         <div className="lg:col-span-8 space-y-6">
           
           {/* HU-01: Registro del Emprendimiento */}
-          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/20">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center border border-blue-500/20">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
+                  <h2 className="font-bold text-slate-900 text-base sm:text-lg">
                     1. Información General del Emprendimiento
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Información mercantil y operacional del negocio
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
                 Paso 1.1
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Nombre Comercial o Razón Social *
                 </label>
                 <input
@@ -75,12 +75,12 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.name || ''}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="Ej: EcoModa Sostenible SAS"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Fundador / Representante Legal *
                 </label>
                 <input
@@ -88,18 +88,18 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.founder || ''}
                   onChange={(e) => handleChange('founder', e.target.value)}
                   placeholder="Ej: Moises Galindo"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Sector o Industria *
                 </label>
                 <select
                   value={profile.sector || 'Moda y Manufactura'}
                   onChange={(e) => handleChange('sector', e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                 >
                   <option value="Moda y Manufactura">Moda y Manufactura</option>
                   <option value="Tecnología y Software">Tecnología y Software</option>
@@ -112,13 +112,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Etapa del Emprendimiento *
                 </label>
                 <select
                   value={profile.stage || 'Crecimiento Temprano'}
                   onChange={(e) => handleChange('stage', e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
                 >
                   <option value="Idea / Prototipo">Idea / Prototipo (Menos de 6 meses)</option>
                   <option value="Semilla / Validación">Semilla / Validación (Con ventas iniciales)</option>
@@ -128,7 +128,7 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Ciudad / Municipio *
                 </label>
                 <input
@@ -136,13 +136,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
                   placeholder="Ej: Medellín, Antioquia"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     Años Operando
                   </label>
                   <input
@@ -151,11 +151,11 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     max="50"
                     value={profile.yearsOperating ?? 2}
                     onChange={(e) => handleChange('yearsOperating', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     Empleados
                   </label>
                   <input
@@ -164,13 +164,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     max="500"
                     value={profile.employees ?? 3}
                     onChange={(e) => handleChange('employees', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Descripción del Producto o Propuesta de Valor
                 </label>
                 <textarea
@@ -178,36 +178,36 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Resume brevemente qué vendes y a quién va dirigido tu producto..."
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
             </div>
           </div>
 
           {/* HU-02: Información Financiera Base */}
-          <div className="bg-white dark:bg-[#0B1120] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/20">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
+                  <h2 className="font-bold text-slate-900 text-base sm:text-lg">
                     2. Capacidad Financiera & Flujo Mensual
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Cifras promedio para evaluar solvencia y liquidez
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
                 Paso 1.2
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Ventas / Ingresos Mensuales Promedio (COP) *
                 </label>
                 <div className="relative">
@@ -219,16 +219,16 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlySales || ''}
                     onChange={(e) => handleChange('monthlySales', Number(e.target.value))}
                     placeholder="18000000"
-                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono mt-1.5">
+                <p className="text-[11px] text-emerald-600 font-mono mt-1.5">
                   Equivale a: {formatCOP(profile.monthlySales)}
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
                   Costos & Gastos Operativos Mensuales (COP) *
                 </label>
                 <div className="relative">
@@ -240,10 +240,10 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlyCosts || ''}
                     onChange={(e) => handleChange('monthlyCosts', Number(e.target.value))}
                     placeholder="11500000"
-                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-[#020617] border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-1.5">
+                <p className="text-[11px] text-slate-500 font-mono mt-1.5">
                   Equivale a: {formatCOP(profile.monthlyCosts)}
                 </p>
               </div>
@@ -255,31 +255,31 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
         <div className="lg:col-span-4 space-y-6">
           
           {/* Real-Time Financial Metric Card */}
-          <div className="bg-white dark:bg-[#0B1120] p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-5">
-            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-5">
+            <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
               <TrendingUp className="w-4 h-4 text-emerald-500" />
               <span>Diagnóstico de Solvencia en Vivo</span>
             </div>
 
             <div className="space-y-3.5">
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-100 dark:border-slate-800/80">
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                <span className="text-[11px] text-slate-500 block font-medium">
                   Flujo de Caja Operativo Neto
                 </span>
-                <span className="text-xl font-black text-slate-900 dark:text-white font-mono tabular-nums mt-0.5 block">
+                <span className="text-xl font-black text-slate-900 font-mono tabular-nums mt-0.5 block">
                   {formatCOP(netMonthlyCash)}
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold block mt-1">
+                <span className="text-[10px] text-emerald-600 font-semibold block mt-1">
                   Excedente libre mensual antes de deuda
                 </span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#020617] border border-slate-100 dark:border-slate-800/80 space-y-2">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Margen Operativo Bruto:</span>
+                  <span className="text-slate-500 font-medium">Margen Operativo Bruto:</span>
                   <span className="font-bold text-emerald-500 font-mono">{operatingMargin}%</span>
                 </div>
-                <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div 
                     style={{ width: `${Math.min(100, Math.max(0, operatingMargin))}%` }} 
                     className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300"
@@ -290,17 +290,17 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-950 dark:text-blue-200 flex items-start gap-2.5">
+              <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-950 flex items-start gap-2.5">
                 <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  Para no comprometer tu operación, la cuota mensual máxima sugerida es de <strong className="text-blue-900 dark:text-white font-mono">{formatCOP(netMonthlyCash * 0.35)}</strong> (35% del flujo neto).
+                  Para no comprometer tu operación, la cuota mensual máxima sugerida es de <strong className="text-blue-900 font-mono">{formatCOP(netMonthlyCash * 0.35)}</strong> (35% del flujo neto).
                 </p>
               </div>
             </div>
 
             <button
               onClick={onLoadDemo}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-2xl transition-all"
+              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-emerald-600 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-2xl transition-all"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Autocompletar con Datos Ejemplo</span>

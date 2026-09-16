@@ -22,35 +22,15 @@ export default function App() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [activeOptionForSim, setActiveOptionForSim] = useState(null);
   const [notification, setNotification] = useState(null);
-  
-  // Dark mode conforme a MASTER.md de ui-ux-pro-max (Default: Dark OLED)
-  const [darkMode, setDarkMode] = useState(() => {
-    try {
-      const saved = localStorage.getItem('theme_preference');
-      return saved !== null ? saved === 'dark' : true;
-    } catch {
-      return true;
-    }
-  });
-
+  // Limpieza inicial de preferencias residuales de tema
   useEffect(() => {
     try {
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme_preference', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme_preference', 'light');
-      }
+      localStorage.removeItem('theme_preference');
+      document.documentElement.classList.remove('dark');
     } catch {
-      // localStorage unavailable, just toggle the class
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      // ignore
     }
-  }, [darkMode]);
+  }, []);
 
   const showNotification = (msg) => {
     setNotification(msg);
@@ -113,11 +93,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
       
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed top-20 right-4 z-50 bg-[#0B1120] text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/30 text-xs font-bold animate-fadeIn flex items-center gap-2">
+        <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/60 text-xs font-bold animate-fadeIn flex items-center gap-2">
           <span>{notification}</span>
         </div>
       )}
@@ -136,8 +116,6 @@ export default function App() {
         onReset={handleReset}
         profile={profile}
         need={need}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
       />
 
       {/* Stepper de navegación con candados secuenciales */}
@@ -230,18 +208,18 @@ export default function App() {
       />
 
       {/* Institutional Academic Footer */}
-      <footer className="bg-white dark:bg-[#020617] border-t border-slate-200 dark:border-slate-800/80 py-8 text-xs text-slate-500 dark:text-slate-400 mt-auto transition-colors">
+      <footer className="bg-white border-t border-slate-200 py-8 text-xs text-slate-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div>
             <div className="flex items-center justify-center md:justify-start gap-2">
-              <span className="font-extrabold text-slate-900 dark:text-white">
-                FinanEmprende
+              <span className="font-black text-slate-900 text-sm tracking-tight">
+                financia<span className="text-emerald-500 font-black">+</span>
               </span>
-              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold px-2 py-0.5 rounded">
-                UI/UX Redesign (ui-ux-pro-max)
+              <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded">
+                Plataforma Fintech
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-500 mt-1">
               Equipo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
             </p>
           </div>

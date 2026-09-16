@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -13,18 +12,18 @@ export default {
       },
       colors: {
         fintech: {
-          bg: '#020617',         // Deep slate black
-          surface: '#0B1120',    // Dark card surface
-          card: '#0E162B',       // Elevated card surface
-          border: '#1E293B',     // Subtle slate border
-          borderLight: '#334155',// Hover border
-          accent: '#22C55E',     // Emerald primary solvency
+          bg: '#F8FAFC',          // Light slate background
+          surface: '#FFFFFF',     // Clean card surface
+          card: '#FFFFFF',        // Elevated card surface
+          border: '#E2E8F0',      // Subtle slate border
+          borderLight: '#CBD5E1', // Hover border
+          accent: '#22C55E',      // Emerald primary solvency
           accentHover: '#16A34A',
           accentLight: 'rgba(34, 197, 94, 0.12)',
-          blue: '#3B82F6',       // Trust blue
-          indigo: '#6366F1',     // Modern tech
-          gold: '#F59E0B',       // Warning / interest
-          rose: '#EF4444',       // Danger / risk
+          blue: '#3B82F6',        // Trust blue
+          indigo: '#6366F1',      // Modern tech
+          gold: '#F59E0B',        // Warning / interest
+          rose: '#EF4444',        // Danger / risk
         }
       },
       boxShadow: {

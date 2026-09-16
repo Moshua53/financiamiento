@@ -1,0 +1,202 @@
+<mxfile host="app.diagrams.net" modified="2026-09-15T23:20:00.000Z" agent="Antigravity" version="24.7.8" type="device">
+  <diagram id="FinanEmprende_BPMN_Core" name="Proceso Principal FinanEmprende">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1920" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ==================== POOL CONTAINER ==================== -->
+        <!-- Pool Header Title -->
+        <mxCell id="pool_title" value="&lt;b&gt;POOL: PROCESO SIMPLIFICADO DE BÚSQUEDA Y SIMULACIÓN DE FINANCIAMIENTO — FINANEMPRENDE&lt;/b&gt;" style="swimlane;html=1;childLayout=stackLayout;horizontal=0;startSize=30;horizontalFlip=0;fillColor=#0F172A;fontColor=#FFFFFF;strokeColor=#334155;strokeWidth=1.5;rounded=1;arcSize=3;fontStyle=1;fontSize=12;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1700" height="520" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 1: Emprendedor (Usuario) -->
+        <mxCell id="lane_emprendedor" value="&lt;b&gt;👤 EMPRENDEDOR / USUARIO&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9px; font-weight: normal; color: #94A3B8;&quot;&gt;(Decisiones, formularios e interacción)&lt;/font&gt;" style="swimlane;html=1;startSize=30;horizontal=0;fillColor=#090D1A;fontColor=#60A5FA;strokeColor=#1E293B;strokeWidth=1;fontSize=11;collapsible=0;" vertex="1" parent="pool_title">
+          <mxGeometry x="30" y="0" width="1670" height="260" as="geometry" />
+        </mxCell>
+
+        <!-- Lane 2: Plataforma FinanEmprende -->
+        <mxCell id="lane_sistema" value="&lt;b&gt;⚙️ PLATAFORMA FINANEMPRENDE&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9px; font-weight: normal; color: #94A3B8;&quot;&gt;(Validaciones, amortización y semáforo)&lt;/font&gt;" style="swimlane;html=1;startSize=30;horizontal=0;fillColor=#050914;fontColor=#4ADE80;strokeColor=#1E293B;strokeWidth=1;fontSize=11;collapsible=0;" vertex="1" parent="pool_title">
+          <mxGeometry x="30" y="260" width="1670" height="260" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== ELEMENTOS EN CARRIL 1 (EMPRENDEDOR) ==================== -->
+
+        <!-- 1. Evento de Inicio -->
+        <mxCell id="start_event" value="&lt;b&gt;Inicio&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Necesidad de Capital&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=2.5;fontColor=#065F46;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="110" y="135" width="45" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- 2. Tarea 1: Registrar Datos y Finanzas (HU-01, HU-02) -->
+        <mxCell id="task_profile" value="&lt;b&gt;👤 T1: Registrar Datos y Finanzas&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-01, HU-02]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Ventas, costos, sector, etapa y ciudad del negocio&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="200" y="122" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 5. Tarea 2: Definir Necesidad (HU-04) -->
+        <mxCell id="task_need" value="&lt;b&gt;👤 T2: Definir Necesidad&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-04]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Monto requerido, plazo en meses y destino de fondos&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="490" y="122" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 6. Tarea 3: Explorar & Filtrar Catálogo (HU-05, HU-06) -->
+        <mxCell id="task_catalog" value="&lt;b&gt;👤 T3: Explorar Catálogo&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-05, HU-06]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Filtrar por categoría, monto y consultar cuota estimada&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="700" y="122" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 7. Compuerta 2: ¿Desea Comparar? -->
+        <mxCell id="gw_compare" value="&lt;b&gt;¿Desea&lt;br&gt;Comparar?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#92400E;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="905" y="132" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 8. Tarea 4: Comparar Alternativas (HU-07, HU-08, HU-09) -->
+        <mxCell id="task_compare" value="&lt;b&gt;👤 T4: Comparar Opciones&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-07, HU-08, HU-09]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Matriz frente a frente: tasas, cuotas, pros y contras&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="990" y="55" width="165" height="68" as="geometry" />
+        </mxCell>
+
+        <!-- 9. Tarea 5: Simular Financiación (HU-11) -->
+        <mxCell id="task_sim" value="&lt;b&gt;👤 T5: Simular Financiación&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-11]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Ajustar sliders de monto, plazo y tasa en tiempo real&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="122" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 12. Tarea 6: Exportar y Contactar (HU-10) -->
+        <mxCell id="task_finish" value="&lt;b&gt;👤 T6: Exportar y Contactar&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #38BDF8; font-size: 9px; font-weight: bold;&quot;&gt;[HU-10]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Imprimir reporte financiero y redirigir a portal oficial&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#1E293B;strokeColor=#3B82F6;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1485" y="122" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 13. Evento de Fin -->
+        <mxCell id="end_event" value="&lt;b&gt;Fin&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;Listo para Radicación&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FEE2E2;strokeColor=#DC2626;strokeWidth=3.5;fontColor=#991B1B;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="1685" y="135" width="45" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== ELEMENTOS EN CARRIL 2 (SISTEMA) ==================== -->
+
+        <!-- 3. Tarea Servicio 1: Validar & Diagnosticar -->
+        <mxCell id="task_validate" value="&lt;b&gt;⚙️ S1: Validar &amp; Diagnosticar&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #4ADE80; font-size: 9px; font-weight: bold;&quot;&gt;[Control de Integridad]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Validar ventas &gt; 0, costos y calcular margen operativo&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#0F172A;strokeColor=#10B981;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="200" y="380" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Compuerta 1: ¿Datos Válidos? -->
+        <mxCell id="gw_valid" value="&lt;b&gt;¿Datos&lt;br&gt;Válidos?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#92400E;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="405" y="390" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- 10. Tarea Servicio 2: Motor Financiero & Semáforo -->
+        <mxCell id="task_calc" value="&lt;b&gt;⚙️ S2: Motor Financiero&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;color: #4ADE80; font-size: 9px; font-weight: bold;&quot;&gt;[Sistema Francés &amp; Semáforo]&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px; color: #CBD5E1;&quot;&gt;Amortización cuota fija y ratio: Cuota / Ventas (%)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=14;fillColor=#0F172A;strokeColor=#10B981;strokeWidth=2;fontColor=#F8FAFC;fontSize=11;spacing=4;" vertex="1" parent="1">
+          <mxGeometry x="1195" y="380" width="165" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- 11. Compuerta 3: ¿Endeudamiento Viable? -->
+        <mxCell id="gw_viable" value="&lt;b&gt;¿Capacidad&lt;br&gt;Viable?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=2;fontColor=#92400E;fontSize=10;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="390" width="50" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ==================== FLUJOS Y FLECHAS (EDGES) ==================== -->
+
+        <!-- Flow 1: start_event -> task_profile -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#60A5FA;strokeWidth=2;" edge="1" parent="1" source="start_event" target="task_profile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 2: task_profile -> task_validate -->
+        <mxCell id="e2" value="Enviar datos" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;fontColor=#CBD5E1;fontSize=10;" edge="1" parent="1" source="task_profile" target="task_validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 3: task_validate -> gw_valid -->
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="task_validate" target="gw_valid">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 4: gw_valid [No] -> task_profile (Loop back) -->
+        <mxCell id="e4" value="[No: Faltan datos]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EF4444;strokeWidth=2;fontColor=#F87171;fontSize=10;" edge="1" parent="1" source="gw_valid" target="task_profile">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="475" />
+              <mxPoint x="165" y="475" />
+              <mxPoint x="165" y="157" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 5: gw_valid [Sí] -> task_need -->
+        <mxCell id="e5" value="[Sí: Válido]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#4ADE80;fontSize=10;" edge="1" parent="1" source="gw_valid" target="task_need">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="157" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 6: task_need -> task_catalog -->
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#60A5FA;strokeWidth=2;" edge="1" parent="1" source="task_need" target="task_catalog">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 7: task_catalog -> gw_compare -->
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#60A5FA;strokeWidth=2;" edge="1" parent="1" source="task_catalog" target="gw_compare">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 8: gw_compare [Sí] -> task_compare -->
+        <mxCell id="e8" value="[Sí: Comparar]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38BDF8;strokeWidth=2;fontColor=#38BDF8;fontSize=10;" edge="1" parent="1" source="gw_compare" target="task_compare">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="89" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 9: task_compare -> task_sim -->
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#60A5FA;strokeWidth=2;" edge="1" parent="1" source="task_compare" target="task_sim">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1170" y="89" />
+              <mxPoint x="1170" y="157" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 10: gw_compare [No] -> task_sim -->
+        <mxCell id="e10" value="[No: Directo]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;fontColor=#CBD5E1;fontSize=10;" edge="1" parent="1" source="gw_compare" target="task_sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 11: task_sim -> task_calc -->
+        <mxCell id="e11" value="Parámetros" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#94A3B8;strokeWidth=2;fontColor=#CBD5E1;fontSize=10;" edge="1" parent="1" source="task_sim" target="task_calc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 12: task_calc -> gw_viable -->
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="task_calc" target="gw_viable">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 13: gw_viable [Riesgo] -> task_sim (Loop back) -->
+        <mxCell id="e13" value="[Riesgo &gt; 35%: Reajustar monto o plazo]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EF4444;strokeWidth=2;fontColor=#F87171;fontSize=10;" edge="1" parent="1" source="gw_viable" target="task_sim">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1425" y="475" />
+              <mxPoint x="1170" y="475" />
+              <mxPoint x="1170" y="175" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 14: gw_viable [Viable] -> task_finish -->
+        <mxCell id="e14" value="[Saludable ≤ 35%]" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;fontColor=#4ADE80;fontSize=10;" edge="1" parent="1" source="gw_viable" target="task_finish">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1425" y="157" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Flow 15: task_finish -> end_event -->
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10B981;strokeWidth=2;" edge="1" parent="1" source="task_finish" target="end_event">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
