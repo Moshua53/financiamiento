@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagrama BPMN 2.0 — Proceso FinanEmprende</title>
+  <!-- Google Fonts: IBM Plex Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #020617;
+      --card-bg: #0b1120;
+      --surface: #0f172a;
+      --border: #1e293b;
+      --border-highlight: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-subtle: #64748b;
+      --accent: #22c55e;
+      --accent-glow: rgba(34, 197, 94, 0.25);
+      --primary: #3b82f6;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --lane-bg-user: rgba(59, 130, 246, 0.03);
+      --lane-bg-system: rgba(34, 197, 94, 0.03);
+      --lane-bg-entity: rgba(168, 85, 247, 0.03);
+      --grid-dot: #1e293b;
+    }
+
+    html.light {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --surface: #f1f5f9;
+      --border: #cbd5e1;
+      --border-highlight: #94a3b8;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      --accent: #16a34a;
+      --accent-glow: rgba(22, 163, 74, 0.2);
+      --primary: #2563eb;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --lane-bg-user: rgba(37, 99, 235, 0.02);
+      --lane-bg-system: rgba(22, 163, 74, 0.02);
+      --lane-bg-entity: rgba(147, 51, 234, 0.02);
+      --grid-dot: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      z-index: 30;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-bpmn {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--border-highlight);
+      background: var(--border);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #020617;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-accent:hover {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #020617;
+    }
+
+    /* Main Diagram Canvas Area */
+    .viewport-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--grid-dot) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      cursor: grab;
+    }
+
+    .viewport-container:active {
+      cursor: grabbing;
+    }
+
+    #diagramSvg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* Floating Legend and Info Drawer */
+    .floating-stepper {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      z-index: 20;
+    }
+
+    .step-indicator {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 140px;
+      text-align: center;
+    }
+
+    .inspector-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 360px;
+      max-height: calc(100vh - 120px);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+      z-index: 25;
+      overflow-y: auto;
+      display: none;
+      animation: slideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(20px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .inspector-panel.visible {
+      display: block;
+    }
+
+    .inspector-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .inspector-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .inspector-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .badge-user { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-system { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+    .badge-entity { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-gateway { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .inspector-section {
+      margin-bottom: 14px;
+    }
+
+    .inspector-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .inspector-value {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .formula-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      overflow-x: auto;
+      margin-top: 6px;
+    }
+
+    /* Floating Legend Panel */
+    .legend-box {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 11px;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      max-width: 260px;
+    }
+
+    .legend-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .legend-symbol {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+    }
+
+    /* SVG Interactive Node Styles */
+    .bpmn-node {
+      cursor: pointer;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .bpmn-node:hover rect,
+    .bpmn-node:hover polygon,
+    .bpmn-node:hover circle {
+      filter: drop-shadow(0 0 8px var(--accent-glow));
+    }
+
+    .bpmn-node.active rect {
+      stroke: var(--accent) !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+    }
+
+    .bpmn-node.active polygon {
+      stroke: var(--accent) !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+    }
+
+    .bpmn-node.active circle {
+      stroke: var(--accent) !important;
+      stroke-width: 4px !important;
+      filter: drop-shadow(0 0 14px var(--accent-glow));
+    }
+
+    .flow-line {
+      stroke: #475569;
+      stroke-width: 2;
+      fill: none;
+      transition: stroke 0.2s ease;
+    }
+
+    .flow-line.message-flow {
+      stroke-dasharray: 6 4;
+    }
+
+    .flow-label {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      fill: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">FE</div>
+      <div>
+        <div class="brand-title">
+          FinanEmprende
+          <span class="badge-bpmn">BPMN 2.0 Process Map</span>
+        </div>
+        <div class="brand-subtitle">
+          Autores: Moises Herrera • Juan S. Molina • Miguel A. Gallego • Sebastián Rendón
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn" id="btnZoomIn" title="Acercar">🔍 +</button>
+      <button class="btn" id="btnZoomOut" title="Alejar">🔍 -</button>
+      <button class="btn" id="btnResetView" title="Restablecer Vista">⟲ Ajustar</button>
+      <div style="width: 1px; height: 20px; background: var(--border);"></div>
+      <button class="btn" id="btnPlayFlow" title="Recorrido Automático">▶ Reproducir Proceso</button>
+      <button class="btn" id="btnThemeToggle" title="Cambiar Tema">🌙 / ☀️</button>
+      <button class="btn btn-accent" onclick="window.print()" title="Imprimir o Guardar PDF">🖨️ Imprimir / PDF</button>
+    </div>
+  </header>
+
+  <!-- Canvas -->
+  <div class="viewport-container" id="viewport">
+    
+    <!-- Legend -->
+    <div class="legend-box">
+      <div class="legend-title">
+        <span>Simbología BPMN 2.0</span>
+        <span style="font-size: 9px; color: var(--accent);">Clic para inspeccionar</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 2px solid #10b981; border-radius: 50%;"></span>
+        <span>Evento de Inicio (Verde)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 3px double #ef4444; border-radius: 50%;"></span>
+        <span>Evento de Fin (Rojo)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 1.5px solid #3b82f6; border-radius: 4px; font-size: 9px;">👤</span>
+        <span>Tarea de Usuario (Emprendedor)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 1.5px solid #10b981; border-radius: 4px; font-size: 9px;">⚙️</span>
+        <span>Tarea de Servicio / Script (Sistema)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 1.5px solid #f59e0b; transform: rotate(45deg); width: 12px; height: 12px;"></span>
+        <span>Compuerta Exclusiva XOR (⨂)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-symbol" style="border: 1.5px dashed #64748b; font-size: 9px;">🗄️</span>
+        <span>Almacén de Datos (Portafolio)</span>
+      </div>
+    </div>
+
+    <!-- Inspector Panel -->
+    <div class="inspector-panel" id="inspector">
+      <div class="inspector-header">
+        <div>
+          <div class="inspector-title" id="inspTitle">Nombre del Elemento</div>
+          <span class="inspector-badge" id="inspBadge">User Task</span>
+        </div>
+        <button class="btn" style="padding: 2px 6px; font-size: 11px;" onclick="closeInspector()">✕</button>
+      </div>
+
+      <div class="inspector-section">
+        <div class="inspector-label">Carril / Responsable</div>
+        <div class="inspector-value" id="inspLane">Emprendedor (Usuario)</div>
+      </div>
+
+      <div class="inspector-section">
+        <div class="inspector-label">Historia de Usuario (HU)</div>
+        <div class="inspector-value" id="inspHU" style="color: var(--accent); font-weight: 600;">HU-01: Registrar Emprendimiento</div>
+      </div>
+
+      <div class="inspector-section">
+        <div class="inspector-label">Descripción de la Tarea</div>
+        <div class="inspector-value" id="inspDesc">Descripción detallada...</div>
+      </div>
+
+      <div class="inspector-section" id="inspFormulaSec" style="display: none;">
+        <div class="inspector-label">Lógica / Fórmula de Negocio</div>
+        <div class="formula-box" id="inspFormula"></div>
+      </div>
+
+      <div class="inspector-section">
+        <div class="inspector-label">Entradas y Salidas</div>
+        <div class="inspector-value" id="inspIO" style="font-size: 12px; color: var(--text-muted);"></div>
+      </div>
+    </div>
+
+    <!-- Interactive Flow Stepper at bottom -->
+    <div class="floating-stepper">
+      <button class="btn" id="btnPrevStep">◀ Anterior</button>
+      <div class="step-indicator" id="stepIndicator">Paso 1 de 14: Inicio</div>
+      <button class="btn" id="btnNextStep">Siguiente ▶</button>
+    </div>
+
+    <!-- SVG Master Diagram -->
+    <svg id="diagramSvg" width="2200" height="960" viewBox="0 0 2200 960" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Arrowhead Marker -->
+        <marker id="arrowhead" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="#64748b" />
+        </marker>
+        <marker id="arrowhead-accent" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <polygon points="0 0, 8 3.5, 0 7" fill="#22c55e" />
+        </marker>
+        <marker id="arrowhead-msg" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+          <circle cx="2" cy="3.5" r="2" fill="#94a3b8" />
+          <polygon points="4 1, 8 3.5, 4 6" fill="none" stroke="#94a3b8" stroke-width="1" />
+        </marker>
+        <!-- Filter glow for active step -->
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+
+      <!-- ================= POOL CONTAINER ================= -->
+      <rect x="40" y="40" width="2120" height="880" rx="16" fill="var(--card-bg)" stroke="var(--border)" stroke-width="1.5" />
+      
+      <!-- Pool Header Label -->
+      <rect x="40" y="40" width="50" height="880" rx="16" fill="var(--surface)" stroke="var(--border)" stroke-width="1.5" />
+      <text x="-480" y="72" transform="rotate(-90)" font-size="14" font-weight="700" fill="var(--text)" letter-spacing="1">
+        POOL: PROCESO INTEGRAL DE FINANCIAMIENTO — FINANEMPRENDE
+      </text>
+
+      <!-- ================= SWIMLANES ================= -->
+
+      <!-- SWIMLANE 1: Emprendedor / Usuario -->
+      <rect x="90" y="40" width="2070" height="300" fill="var(--lane-bg-user)" stroke="var(--border)" stroke-width="1" />
+      <rect x="90" y="40" width="36" height="300" fill="rgba(59, 130, 246, 0.08)" />
+      <text x="-190" y="112" transform="rotate(-90)" font-size="12" font-weight="700" fill="#60a5fa">
+        👤 EMPRENDEDOR / USUARIO
+      </text>
+
+      <!-- SWIMLANE 2: Plataforma FinanEmprende (Frontend & Motor Financiero) -->
+      <rect x="90" y="340" width="2070" height="360" fill="var(--lane-bg-system)" stroke="var(--border)" stroke-width="1" />
+      <rect x="90" y="340" width="36" height="360" fill="rgba(34, 197, 94, 0.08)" />
+      <text x="-520" y="112" transform="rotate(-90)" font-size="12" font-weight="700" fill="#4ade80">
+        ⚙️ SISTEMA FINANEMPRENDE
+      </text>
+
+      <!-- SWIMLANE 3: Entidades Financieras Externas -->
+      <rect x="90" y="700" width="2070" height="220" fill="var(--lane-bg-entity)" stroke="var(--border)" stroke-width="1" />
+      <rect x="90" y="700" width="36" height="220" fill="rgba(168, 85, 247, 0.08)" />
+      <text x="-810" y="112" transform="rotate(-90)" font-size="12" font-weight="700" fill="#c084fc">
+        🏛️ ENTIDADES FINANCIERAS
+      </text>
+
+      <!-- ================= SEQUENCE FLOW LINES ================= -->
+
+      <!-- 1. Start to U1 -->
+      <path d="M 180 180 L 220 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 2. U1 to U2 -->
+      <path d="M 360 180 L 400 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 3. U2 down to S1 (Validation) -->
+      <path d="M 470 220 L 470 380" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 4. S1 to S2 -->
+      <path d="M 540 420 L 580 420" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 5. S2 up to GW1 -->
+      <path d="M 650 380 L 650 205" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 6. GW1 [No] back to U1 -->
+      <path d="M 650 155 L 650 100 L 290 100 L 290 140" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="440" y="92" class="flow-label" fill="var(--danger)">[No: Datos Inválidos / Campos Faltantes]</text>
+
+      <!-- 7. GW1 [Sí] down to S3 (Unlock Step 2) -->
+      <path d="M 675 180 L 720 180 L 720 380" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="680" y="172" class="flow-label" fill="var(--accent)">[Sí]</text>
+
+      <!-- 8. S3 to U3 (Need Step) -->
+      <path d="M 770 380 L 770 180 L 800 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 9. U3 to GW2 -->
+      <path d="M 940 180 L 980 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 10. GW2 [No] loop to U3 -->
+      <path d="M 1005 155 L 1005 115 L 870 115 L 870 140" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="910" y="110" class="flow-label" fill="var(--danger)">[Monto ≤ 0]</text>
+
+      <!-- 11. GW2 [Sí] down to S4 & S5 -->
+      <path d="M 1005 205 L 1005 380" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="1012" y="240" class="flow-label" fill="var(--accent)">[Sí: Válido]</text>
+
+      <!-- 12. S4 (Catalog load) & Database association -->
+      <path d="M 1075 420 L 1120 420" class="flow-line" marker-end="url(#arrowhead)" />
+      <path d="M 1190 750 L 1190 460" class="flow-line message-flow" marker-end="url(#arrowhead-msg)" />
+
+      <!-- 13. S5 to U4 (Catalog view) -->
+      <path d="M 1190 380 L 1190 180 L 1230 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 14. U4 to U5 (Filter) -->
+      <path d="M 1370 180 L 1410 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 15. U5 to GW3 (Compare?) -->
+      <path d="M 1550 180 L 1590 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 16. GW3 [Sí: Comparar] down to S6 and U6 -->
+      <path d="M 1615 205 L 1615 280 L 1650 280" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="1622" y="245" class="flow-label" fill="#60a5fa">[Sí: Comparar]</text>
+
+      <!-- 17. U6 (Compare Modal) to S6 Matrix -->
+      <path d="M 1720 320 L 1720 380" class="flow-line" marker-end="url(#arrowhead)" />
+      <path d="M 1780 420 L 1820 420 L 1820 220" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 18. GW3 [No: Selección Directa] to U7 (Simulate) -->
+      <path d="M 1640 180 L 1780 180" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="1660" y="172" class="flow-label">[No: Directo]</text>
+
+      <!-- 19. U7 (Select for Sim) to S7 Motor Financiero -->
+      <path d="M 1850 220 L 1850 480" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 20. S7 to S8 (Semáforo) -->
+      <path d="M 1850 560 L 1850 600" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 21. S8 to GW4 (Semáforo Viable?) -->
+      <path d="M 1780 640 L 1640 640" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 22. GW4 [Riesgo > 35%] back to Simulation adjustments -->
+      <path d="M 1615 615 L 1615 520 L 1780 520" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="1625" y="560" class="flow-label" fill="var(--danger)">[Riesgo &gt; 35%]: Reajustar Plazo/Monto</text>
+
+      <!-- 23. GW4 [Saludable <= 35%] to Final Report -->
+      <path d="M 1590 640 L 1490 640 L 1490 220" class="flow-line" marker-end="url(#arrowhead)" />
+      <text x="1500" y="630" class="flow-label" fill="var(--accent)">[Saludable &le; 35%]</text>
+
+      <!-- 24. Report & External Redirection -->
+      <path d="M 1490 140 L 1490 100 L 1950 100 L 1950 160" class="flow-line" marker-end="url(#arrowhead)" />
+      <path d="M 2010 180 L 2050 180" class="flow-line" marker-end="url(#arrowhead)" />
+
+      <!-- 25. Redirection message flow down to External Entity -->
+      <path d="M 1980 220 L 1980 750" class="flow-line message-flow" marker-end="url(#arrowhead-msg)" />
+      <text x="1990" y="520" class="flow-label" fill="#c084fc">Redirección Portal Oficial (HU-10)</text>
+
+      <!-- 26. External Receive to End Entity -->
+      <path d="M 2040 790 L 2080 790" class="flow-line" marker-end="url(#arrowhead)" />
+
+
+      <!-- ================= NODES & ACTIVITIES ================= -->
+
+      <!-- 01. START EVENT -->
+      <g class="bpmn-node" id="node-0" onclick="selectNode(0)">
+        <circle cx="155" cy="180" r="24" fill="#10b981" stroke="#059669" stroke-width="2.5" />
+        <polygon points="150,170 164,180 150,190" fill="#ffffff" />
+        <text x="155" y="222" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">Inicio</text>
+        <text x="155" y="236" font-size="9" fill="var(--text-muted)" text-anchor="middle">Necesidad de Fondos</text>
+      </g>
+
+      <!-- 02. U1: Datos Generales (HU-01) -->
+      <g class="bpmn-node" id="node-1" onclick="selectNode(1)">
+        <rect x="220" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="226" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="236" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="290" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T1: Datos Generales</text>
+        <text x="290" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Nombre, sector, ciudad,</text>
+        <text x="290" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">etapa, empleados (HU-01)</text>
+      </g>
+
+      <!-- 03. U2: Info Financiera (HU-02) -->
+      <g class="bpmn-node" id="node-2" onclick="selectNode(2)">
+        <rect x="400" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="406" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="416" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="470" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T2: Info Financiera</text>
+        <text x="470" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Ventas y costos</text>
+        <text x="470" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">mensuales (HU-02)</text>
+      </g>
+
+      <!-- 04. S1: Validación del Sistema -->
+      <g class="bpmn-node" id="node-3" onclick="selectNode(3)">
+        <rect x="400" y="380" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="406" y="386" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="416" y="398" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="470" y="415" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S1: Validación</text>
+        <text x="470" y="430" font-size="9" fill="var(--text-muted)" text-anchor="middle">Verificar ventas > 0</text>
+        <text x="470" y="442" font-size="9" fill="var(--text-muted)" text-anchor="middle">y campos obligatorios</text>
+      </g>
+
+      <!-- 05. S2: Cálculo de Flujo y Margen -->
+      <g class="bpmn-node" id="node-4" onclick="selectNode(4)">
+        <rect x="580" y="380" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="586" y="386" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="596" y="398" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="650" y="415" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S2: Flujo & Margen</text>
+        <text x="650" y="430" font-size="9" fill="var(--text-muted)" text-anchor="middle">Flujo = Ventas - Costos</text>
+        <text x="650" y="442" font-size="9" fill="var(--text-muted)" text-anchor="middle">Margen Operacional %</text>
+      </g>
+
+      <!-- 06. GW1: Decisión Perfil Válido -->
+      <g class="bpmn-node" id="node-5" onclick="selectNode(5)">
+        <polygon points="650,155 675,180 650,205 625,180" fill="var(--card-bg)" stroke="#f59e0b" stroke-width="2" />
+        <text x="650" y="184" font-size="13" font-weight="800" fill="#f59e0b" text-anchor="middle">✕</text>
+        <text x="650" y="222" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">¿Perfil Válido?</text>
+      </g>
+
+      <!-- 07. S3: Desbloquear Paso 2 -->
+      <g class="bpmn-node" id="node-6" onclick="selectNode(6)">
+        <rect x="700" y="380" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="706" y="386" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="716" y="398" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="770" y="415" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S3: Desbloquear P2</text>
+        <text x="770" y="430" font-size="9" fill="var(--text-muted)" text-anchor="middle">Habilita Step Necesidad</text>
+        <text x="770" y="442" font-size="9" fill="var(--text-muted)" text-anchor="middle">en Stepper de App</text>
+      </g>
+
+      <!-- 08. U3: Necesidad de Fondos (HU-04) -->
+      <g class="bpmn-node" id="node-7" onclick="selectNode(7)">
+        <rect x="800" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="806" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="816" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="870" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T3: Requerimiento</text>
+        <text x="870" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Monto, plazo, destino</text>
+        <text x="870" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">y tasa máx. (HU-04)</text>
+      </g>
+
+      <!-- 09. GW2: Monto/Plazo Válidos -->
+      <g class="bpmn-node" id="node-8" onclick="selectNode(8)">
+        <polygon points="1005,155 1030,180 1005,205 980,180" fill="var(--card-bg)" stroke="#f59e0b" stroke-width="2" />
+        <text x="1005" y="184" font-size="13" font-weight="800" fill="#f59e0b" text-anchor="middle">✕</text>
+        <text x="1005" y="222" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">¿Monto > 0?</text>
+      </g>
+
+      <!-- 10. S4: Cargar Catálogo y Cuotas -->
+      <g class="bpmn-node" id="node-9" onclick="selectNode(9)">
+        <rect x="1050" y="380" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="1056" y="386" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="1066" y="398" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="1120" y="415" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S4: Cargar Ofertas</text>
+        <text x="1120" y="430" font-size="9" fill="var(--text-muted)" text-anchor="middle">Calcular cuota base</text>
+        <text x="1120" y="442" font-size="9" fill="var(--text-muted)" text-anchor="middle">para cada opción (HU-08)</text>
+      </g>
+
+      <!-- 11. Database: Ofertas Financieras -->
+      <g class="bpmn-node" id="node-10" onclick="selectNode(10)">
+        <rect x="1120" y="750" width="140" height="70" rx="8" fill="var(--surface)" stroke="#64748b" stroke-width="1.8" stroke-dasharray="4 3" />
+        <text x="1190" y="776" font-size="16" text-anchor="middle">🗄️</text>
+        <text x="1190" y="794" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">Catálogo Oficial</text>
+        <text x="1190" y="808" font-size="8.5" fill="var(--text-muted)" text-anchor="middle">Bancolombia, Sempli, SENA</text>
+      </g>
+
+      <!-- 12. U4: Explorar Catálogo (HU-05) -->
+      <g class="bpmn-node" id="node-11" onclick="selectNode(11)">
+        <rect x="1230" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1236" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1246" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1300" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T4: Ver Catálogo</text>
+        <text x="1300" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Bancario, Fintech,</text>
+        <text x="1300" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">Semilla, Micro (HU-05)</text>
+      </g>
+
+      <!-- 13. U5: Filtrar Alternativas (HU-06) -->
+      <g class="bpmn-node" id="node-12" onclick="selectNode(12)">
+        <rect x="1410" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1416" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1426" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1480" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T5: Filtrar Opciones</text>
+        <text x="1480" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Por categoría, monto</text>
+        <text x="1480" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">o buscador (HU-06)</text>
+      </g>
+
+      <!-- 14. GW3: ¿Desea Comparar? -->
+      <g class="bpmn-node" id="node-13" onclick="selectNode(13)">
+        <polygon points="1615,155 1640,180 1615,205 1590,180" fill="var(--card-bg)" stroke="#f59e0b" stroke-width="2" />
+        <text x="1615" y="184" font-size="13" font-weight="800" fill="#f59e0b" text-anchor="middle">✕</text>
+        <text x="1615" y="222" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">¿Comparar?</text>
+      </g>
+
+      <!-- 15. U6: Matriz Comparativa (HU-07) -->
+      <g class="bpmn-node" id="node-14" onclick="selectNode(14)">
+        <rect x="1650" y="240" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1656" y="246" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1666" y="258" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1720" y="272" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T6: Comparar (1-3)</text>
+        <text x="1720" y="288" font-size="9" fill="var(--text-muted)" text-anchor="middle">Matriz frente a frente,</text>
+        <text x="1720" y="300" font-size="9" fill="var(--text-muted)" text-anchor="middle">menor tasa E.A. (HU-07)</text>
+      </g>
+
+      <!-- 16. S6: Renderizar Comparativa -->
+      <g class="bpmn-node" id="node-15" onclick="selectNode(15)">
+        <rect x="1650" y="380" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="1656" y="386" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="1666" y="398" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="1720" y="415" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S6: Matriz de Costos</text>
+        <text x="1720" y="430" font-size="9" fill="var(--text-muted)" text-anchor="middle">Costos, requisitos,</text>
+        <text x="1720" y="442" font-size="9" fill="var(--text-muted)" text-anchor="middle">pros/contras (HU-08/09)</text>
+      </g>
+
+      <!-- 17. U7: Seleccionar y Ajustar Simulador (HU-11) -->
+      <g class="bpmn-node" id="node-16" onclick="selectNode(16)">
+        <rect x="1780" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1786" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1796" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1850" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T7: Simular Crédito</text>
+        <text x="1850" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Monto, plazo y tasa E.A.</text>
+        <text x="1850" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">Sliders dinámicos (HU-11)</text>
+      </g>
+
+      <!-- 18. S7: Motor de Amortización Francesa -->
+      <g class="bpmn-node" id="node-17" onclick="selectNode(17)">
+        <rect x="1780" y="480" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="1786" y="486" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="1796" y="498" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="1850" y="515" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S7: Motor Financiero</text>
+        <text x="1850" y="530" font-size="9" fill="var(--text-muted)" text-anchor="middle">i = (1+EA)^(1/12) - 1</text>
+        <text x="1850" y="542" font-size="9" fill="var(--text-muted)" text-anchor="middle">Cuota Fija (Francés)</text>
+      </g>
+
+      <!-- 19. S8: Semáforo de Capacidad -->
+      <g class="bpmn-node" id="node-18" onclick="selectNode(18)">
+        <rect x="1780" y="600" width="140" height="80" rx="10" fill="var(--surface)" stroke="#10b981" stroke-width="1.8" />
+        <rect x="1786" y="606" width="20" height="16" rx="4" fill="rgba(16,185,129,0.15)" />
+        <text x="1796" y="618" font-size="10" fill="#10b981" text-anchor="middle">⚙️</text>
+        <text x="1850" y="635" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">S8: Semáforo Ratio</text>
+        <text x="1850" y="650" font-size="9" fill="var(--text-muted)" text-anchor="middle">Ratio = Cuota / Ventas</text>
+        <text x="1850" y="662" font-size="9" fill="var(--text-muted)" text-anchor="middle">&lt;20% | 20-35% | &gt;35%</text>
+      </g>
+
+      <!-- 20. GW4: Decisión Semáforo Viable -->
+      <g class="bpmn-node" id="node-19" onclick="selectNode(19)">
+        <polygon points="1615,615 1640,640 1615,665 1590,640" fill="var(--card-bg)" stroke="#f59e0b" stroke-width="2" />
+        <text x="1615" y="644" font-size="13" font-weight="800" fill="#f59e0b" text-anchor="middle">✕</text>
+        <text x="1615" y="682" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">¿Capacidad Viable?</text>
+      </g>
+
+      <!-- 21. U8: Exportar Resumen e Impresión -->
+      <g class="bpmn-node" id="node-20" onclick="selectNode(20)">
+        <rect x="1420" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1426" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1436" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1490" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T8: Exportar Reporte</text>
+        <text x="1490" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Imprimir / PDF</text>
+        <text x="1490" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">Resumen validado</text>
+      </g>
+
+      <!-- 22. U9: Enlace Oficial Entidad (HU-10) -->
+      <g class="bpmn-node" id="node-21" onclick="selectNode(21)">
+        <rect x="1910" y="140" width="140" height="80" rx="10" fill="var(--card-bg)" stroke="#3b82f6" stroke-width="1.8" />
+        <rect x="1916" y="146" width="20" height="16" rx="4" fill="rgba(59,130,246,0.15)" />
+        <text x="1926" y="158" font-size="10" fill="#3b82f6" text-anchor="middle">👤</text>
+        <text x="1980" y="172" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">T9: Contactar Entidad</text>
+        <text x="1980" y="188" font-size="9" fill="var(--text-muted)" text-anchor="middle">Redirigir a portal</text>
+        <text x="1980" y="200" font-size="9" fill="var(--text-muted)" text-anchor="middle">oficial externo (HU-10)</text>
+      </g>
+
+      <!-- 23. END EVENT (Plataforma) -->
+      <g class="bpmn-node" id="node-22" onclick="selectNode(22)">
+        <circle cx="2090" cy="180" r="24" fill="#ef4444" stroke="#991b1b" stroke-width="3" />
+        <circle cx="2090" cy="180" r="17" fill="none" stroke="#ffffff" stroke-width="2" />
+        <text x="2090" y="222" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">Fin</text>
+        <text x="2090" y="236" font-size="9" fill="var(--text-muted)" text-anchor="middle">Alternativa Viable</text>
+      </g>
+
+      <!-- 24. External Receive in Bank/Fintech -->
+      <g class="bpmn-node" id="node-23" onclick="selectNode(23)">
+        <rect x="1910" y="750" width="140" height="80" rx="10" fill="var(--surface)" stroke="#a855f7" stroke-width="1.8" />
+        <rect x="1916" y="756" width="20" height="16" rx="4" fill="rgba(168,85,247,0.15)" />
+        <text x="1926" y="768" font-size="10" fill="#a855f7" text-anchor="middle">🏛️</text>
+        <text x="1980" y="785" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">E2: Radicación</text>
+        <text x="1980" y="800" font-size="9" fill="var(--text-muted)" text-anchor="middle">Recepción formal</text>
+        <text x="1980" y="812" font-size="9" fill="var(--text-muted)" text-anchor="middle">en canal bancario</text>
+      </g>
+
+      <!-- 25. END EVENT (External) -->
+      <g class="bpmn-node" id="node-24" onclick="selectNode(24)">
+        <circle cx="2110" cy="790" r="22" fill="#a855f7" stroke="#6b21a8" stroke-width="3" />
+        <circle cx="2110" cy="790" r="15" fill="none" stroke="#ffffff" stroke-width="2" />
+        <text x="2110" y="830" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">Radicación Formal</text>
+      </g>
+
+    </svg>
+  </div>
+
+  <script>
+    // Data dictionary for BPMN Nodes
+    const bpmnElements = [
+      {
+        id: 0,
+        title: "Evento de Inicio: Necesidad de Capital",
+        badge: "Start Event",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "Disparador del Proceso",
+        desc: "El emprendedor reconoce una necesidad de liquidez, inversión en activos fijos (maquinaria) o capital de trabajo para su negocio y accede a FinanEmprende.",
+        io: "Entrada: Intención de búsqueda de financiamiento.<br>Salida: Activación del Paso 1 (Formulario de Perfil)."
+      },
+      {
+        id: 1,
+        title: "T1: Registrar Datos Generales del Emprendimiento",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-01: Registrar Emprendimiento",
+        desc: "El usuario captura la información comercial del negocio: Nombre de la empresa, fundador o representante legal, sector económico (Tecnología, Comercio, Alimentos, etc.), etapa de desarrollo (Idea, Temprana, Crecimiento), ciudad, años de operación y número de empleados.",
+        io: "Entrada: Inputs del usuario en pantalla.<br>Salida: Objeto `profile` con datos mercantiles."
+      },
+      {
+        id: 2,
+        title: "T2: Registrar Información Financiera",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-02: Registrar Información Financiera",
+        desc: "El usuario declara sus ingresos operacionales mensuales promedio (ventas en COP) y sus costos y gastos mensuales recurrentes.",
+        io: "Entrada: Montos en pesos colombianos ($ COP).<br>Salida: Parámetros base para análisis de solvencia."
+      },
+      {
+        id: 3,
+        title: "S1: Validar Formato y Restricciones",
+        badge: "Service Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "Control de Integridad (Paso 1)",
+        desc: "El frontend valida que las ventas y costos sean mayores a cero y que los campos alfanuméricos obligatorios no contengan valores vacíos. Si falla, bloquea el avance y despliega bordes rojos y alertas.",
+        io: "Entrada: `profile`.<br>Salida: Booleano `isStepValid`."
+      },
+      {
+        id: 4,
+        title: "S2: Calcular Flujo de Caja y Margen Operacional",
+        badge: "Script Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "HU-02: Diagnóstico Financiero Reactivo",
+        desc: "Ejecuta cálculos reactivos en tiempo real para generar un preview visual del estado de salud del negocio.",
+        formula: "Flujo Neto = Ventas - Costos\nMargen Operativo = (Flujo Neto / Ventas) * 100",
+        io: "Entrada: `monthlySales`, `monthlyCosts`.<br>Salida: Panel de diagnóstico rápido en barra lateral."
+      },
+      {
+        id: 5,
+        title: "GW1: ¿Datos de Perfil Válidos?",
+        badge: "Exclusive Gateway (XOR)",
+        badgeClass: "badge-gateway",
+        lane: "Plataforma FinanEmprende",
+        hu: "Validación de Paso 1",
+        desc: "Bifurcación exclusiva. Si faltan datos, retorna al formulario y muestra alertas. Si todo es correcto, procede a habilitar el siguiente paso.",
+        io: "Condición: `sales > 0 && costs > 0 && name.trim() !== ''`."
+      },
+      {
+        id: 6,
+        title: "S3: Desbloquear Paso 2 en Stepper",
+        badge: "Service Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "Navegación Secuencial",
+        desc: "Actualiza el estado `maxUnlockedStep` permitiendo la navegación segura y activando el Paso 2 (Definición de Necesidad).",
+        io: "Salida: `maxUnlockedStep = 2`."
+      },
+      {
+        id: 7,
+        title: "T3: Definir Requerimiento de Financiación",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-04: Definir Necesidad de Financiación",
+        desc: "El emprendedor selecciona el monto que necesita financiar mediante slider o botones rápidos (10M a 120M COP), el plazo deseado (6 a 60 meses), el destino de los fondos y su tasa máxima aceptable.",
+        io: "Entrada: Slider de monto, plazo y destino.<br>Salida: Objeto `need`."
+      },
+      {
+        id: 8,
+        title: "GW2: ¿Monto y Plazo Válidos?",
+        badge: "Exclusive Gateway (XOR)",
+        badgeClass: "badge-gateway",
+        lane: "Plataforma FinanEmprende",
+        hu: "Validación de Paso 2",
+        desc: "Comprueba que el monto sea estrictamente positivo y que se haya seleccionado un plazo y destino de inversión válidos.",
+        io: "Condición: `amount > 0 && termMonths > 0`."
+      },
+      {
+        id: 9,
+        title: "S4: Cargar Catálogo y Calcular Cuotas Base",
+        badge: "Service Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "HU-05 & HU-08: Motor de Consulta",
+        desc: "Carga las fuentes financieras y calcula la cuota mensual proyectada en cada una para los valores de monto y plazo ingresados por el emprendedor.",
+        io: "Entrada: `mockFinancingOptions` + `need.amount` + `need.termMonths`.<br>Salida: Catálogo enriquecido con cuotas calculadas."
+      },
+      {
+        id: 10,
+        title: "Almacén: Ofertas del Ecosistema",
+        badge: "Data Store",
+        badgeClass: "badge-system",
+        lane: "Entidades Financieras",
+        hu: "Portafolio Nacional (Colombia)",
+        desc: "Base de conocimiento con información real de fuentes colombianas: Bancolombia Pyme, Sempli Fintech, Fondo Emprender (SENA), Microcrédito Bancamía, etc.",
+        io: "Atributos: Tasas E.A., montos mín/máx, plazos, requisitos legales, ventajas y desventajas."
+      },
+      {
+        id: 11,
+        title: "T4: Explorar Catálogo de Alternativas",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-05: Consultar Alternativas",
+        desc: "El usuario navega por las tarjetas de financiación organizadas por categorías del ecosistema: Bancario, Fintech, Capital Semilla, Microcrédito, Crowdfunding e Inversionistas Ángeles.",
+        io: "Salida: Inspección visual de opciones disponibles."
+      },
+      {
+        id: 12,
+        title: "T5: Aplicar Filtros Avanzados",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-06: Filtrar Alternativas",
+        desc: "El emprendedor filtra reactivamente por categoría específica, activa el filtro para ver sólo opciones que cubran exactamente su monto solicitado, o busca por texto libre.",
+        io: "Entrada: Parámetros de búsqueda y filtros.<br>Salida: Lista de opciones filtradas."
+      },
+      {
+        id: 13,
+        title: "GW3: ¿Desea Comparar Alternativas?",
+        badge: "Exclusive Gateway (XOR)",
+        badgeClass: "badge-gateway",
+        lane: "Emprendedor (Usuario)",
+        hu: "Bifurcación de Comparación",
+        desc: "El usuario decide si desea seleccionar entre 2 y 3 opciones para evaluarlas frente a frente en una matriz, o si prefiere seleccionar una opción directamente para simular.",
+        io: "Opciones: Abrir Modal Comparativo / Proceder a Simulación Directa."
+      },
+      {
+        id: 14,
+        title: "T6: Seleccionar hasta 3 Opciones para Matriz",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-07: Comparar Alternativas",
+        desc: "Marca checkboxes de comparación en el catálogo y abre el modal comparativo con desglose columnar.",
+        io: "Entrada: `selectedForCompare` (máximo 3 IDs)."
+      },
+      {
+        id: 15,
+        title: "S6: Renderizar Matriz Comparativa",
+        badge: "Service Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "HU-07, HU-08, HU-09",
+        desc: "El sistema organiza la tabla lado a lado, resalta con una insignia dorada la alternativa con menor tasa de interés comercial, y enumera requisitos, ventajas y desventajas.",
+        io: "Salida: Modal con tabla comparativa completa."
+      },
+      {
+        id: 16,
+        title: "T7: Simular Crédito & Parametrizar",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-11: Simular Financiación",
+        desc: "El emprendedor interactúa con los controles del simulador en el Paso 4. Puede escoger cualquier opción del catálogo o el modo libre, ajustando monto, plazo y tasa E.A.",
+        io: "Entrada: Sliders interactivos de simulación."
+      },
+      {
+        id: 17,
+        title: "S7: Motor Financiero (Sistema Francés)",
+        badge: "Script Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "Cálculos Financieros Reales",
+        desc: "Convierte la tasa Efectiva Anual a mensual vencida y calcula la cuota fija periódica, los intereses totales y el desglose de capital.",
+        formula: "Tasa Mensual: i = (1 + EA)^(1/12) - 1\nCuota Fija: P * (i * (1+i)^n) / ((1+i)^n - 1)\nInterés Total = (Cuota * n) - P",
+        io: "Entrada: `simAmount`, `simRateEA`, `simTerm`.<br>Salida: `loanSummary`."
+      },
+      {
+        id: 18,
+        title: "S8: Semáforo de Capacidad de Endeudamiento",
+        badge: "Script Task",
+        badgeClass: "badge-system",
+        lane: "Plataforma FinanEmprende",
+        hu: "HU-11: Semáforo de Capacidad",
+        desc: "Calcula el ratio de endeudamiento comparando la cuota mensual calculada contra los ingresos operacionales declarados en el Paso 1.",
+        formula: "Ratio = (Cuota Mensual / Ventas Mensuales) * 100\n• <= 20%: Verde (Saludable)\n• 20% - 35%: Amarillo (Moderado)\n• > 35%: Rojo (Riesgo Alto)",
+        io: "Salida: Nivel de semáforo y recomendación preventiva."
+      },
+      {
+        id: 19,
+        title: "GW4: ¿Capacidad de Endeudamiento Viable?",
+        badge: "Exclusive Gateway (XOR)",
+        badgeClass: "badge-gateway",
+        lane: "Emprendedor (Usuario)",
+        hu: "Decisión de Viabilidad Financiera",
+        desc: "Si el semáforo marca Riesgo (> 35%), el usuario debe ajustar las variables (mayor plazo para bajar cuota, menor monto o evaluar capital no reembolsable). Si es viable, avanza a concretar.",
+        io: "Ramas: Riesgo (reiterar simulación) / Viable (proceder a reporte y contacto)."
+      },
+      {
+        id: 20,
+        title: "T8: Exportar / Imprimir Reporte",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "Descarga de Resultados",
+        desc: "El emprendedor genera una vista imprimible formal con el plan financiero consolidado, costo total del crédito y semáforo de capacidad para presentar a socios o bancos.",
+        io: "Salida: Archivo impreso o PDF."
+      },
+      {
+        id: 21,
+        title: "T9: Contactar Entidad Otorgante",
+        badge: "User Task",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "HU-10: Consultar Entidades",
+        desc: "El usuario presiona el botón para ir a la URL oficial de la entidad financiera (Bancolombia, Sempli, Fondo Emprender) e iniciar formalmente su trámite legal.",
+        io: "Salida: Apertura de pestaña externa en sitio oficial."
+      },
+      {
+        id: 22,
+        title: "Evento de Fin: Simulación Exitosa",
+        badge: "End Event",
+        badgeClass: "badge-user",
+        lane: "Emprendedor (Usuario)",
+        hu: "Objetivo Cumplido",
+        desc: "El proceso en FinanEmprende culmina exitosamente: el emprendedor tiene una alternativa seleccionada con cuota validada según su capacidad financiera.",
+        io: "Estado Final: Emprendedor preparado para radicar solicitud formal."
+      },
+      {
+        id: 23,
+        title: "E2: Radicación en Portal de la Entidad",
+        badge: "Service Task",
+        badgeClass: "badge-entity",
+        lane: "Entidades Financieras",
+        hu: "Proceso Externo",
+        desc: "La entidad bancaria o fintech recibe al usuario en su propio sistema para el estudio de crédito formal y diligenciamiento documental.",
+        io: "Entrada: Solicitud formal en canal bancario."
+      },
+      {
+        id: 24,
+        title: "Fin Externo: Radicación Iniciada",
+        badge: "End Event",
+        badgeClass: "badge-entity",
+        lane: "Entidades Financieras",
+        hu: "Cierre Externo",
+        desc: "Trámite de crédito en curso en el sistema de la entidad financiera otorgante.",
+        io: "Estado: En estudio crediticio."
+      }
+    ];
+
+    // Canvas Pan & Zoom State
+    let scale = 0.92;
+    let pointX = 20;
+    let pointY = 20;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+
+    const viewport = document.getElementById('viewport');
+    const svg = document.getElementById('diagramSvg');
+
+    function updateTransform() {
+      svg.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+    }
+
+    viewport.onmousedown = function(e) {
+      if (e.target.closest('.bpmn-node') || e.target.closest('.legend-box') || e.target.closest('.inspector-panel') || e.target.closest('.floating-stepper')) {
+        return;
+      }
+      isPanning = true;
+      startX = e.clientX - pointX;
+      startY = e.clientY - pointY;
+    };
+
+    window.onmousemove = function(e) {
+      if (!isPanning) return;
+      pointX = e.clientX - startX;
+      pointY = e.clientY - startY;
+      updateTransform();
+    };
+
+    window.onmouseup = function() {
+      isPanning = false;
+    };
+
+    viewport.onwheel = function(e) {
+      e.preventDefault();
+      const xs = (e.clientX - pointX) / scale;
+      const ys = (e.clientY - pointY) / scale;
+      const delta = -e.deltaY;
+      if (delta > 0) {
+        scale *= 1.12;
+      } else {
+        scale /= 1.12;
+      }
+      scale = Math.min(Math.max(0.35, scale), 2.8);
+      pointX = e.clientX - xs * scale;
+      pointY = e.clientY - ys * scale;
+      updateTransform();
+    };
+
+    // Zoom buttons
+    document.getElementById('btnZoomIn').onclick = () => {
+      scale = Math.min(2.8, scale * 1.2);
+      updateTransform();
+    };
+    document.getElementById('btnZoomOut').onclick = () => {
+      scale = Math.max(0.35, scale / 1.2);
+      updateTransform();
+    };
+    document.getElementById('btnResetView').onclick = () => {
+      scale = 0.85;
+      pointX = 20;
+      pointY = 20;
+      updateTransform();
+    };
+
+    // Theme Toggle
+    document.getElementById('btnThemeToggle').onclick = () => {
+      document.documentElement.classList.toggle('dark');
+      document.documentElement.classList.toggle('light');
+    };
+
+    // Node Selection & Inspector
+    let currentActiveNodeId = null;
+
+    function selectNode(id) {
+      currentActiveNodeId = id;
+      const data = bpmnElements.find(el => el.id === id);
+      if (!data) return;
+
+      // Update classes
+      document.querySelectorAll('.bpmn-node').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`node-${id}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Populate Inspector
+      document.getElementById('inspTitle').textContent = data.title;
+      const badge = document.getElementById('inspBadge');
+      badge.textContent = data.badge;
+      badge.className = `inspector-badge ${data.badgeClass}`;
+
+      document.getElementById('inspLane').textContent = data.lane;
+      document.getElementById('inspHU').textContent = data.hu;
+      document.getElementById('inspDesc').textContent = data.desc;
+      document.getElementById('inspIO').innerHTML = data.io;
+
+      const formulaSec = document.getElementById('inspFormulaSec');
+      if (data.formula) {
+        formulaSec.style.display = 'block';
+        document.getElementById('inspFormula').textContent = data.formula;
+      } else {
+        formulaSec.style.display = 'none';
+      }
+
+      document.getElementById('inspector').classList.add('visible');
+    }
+
+    function closeInspector() {
+      document.getElementById('inspector').classList.remove('visible');
+      document.querySelectorAll('.bpmn-node').forEach(el => el.classList.remove('active'));
+    }
+
+    // Step-by-Step Flow Simulation
+    const sequenceOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+    let currentStepIndex = 0;
+
+    function updateStepperUI() {
+      const activeId = sequenceOrder[currentStepIndex];
+      const data = bpmnElements.find(el => el.id === activeId);
+      document.getElementById('stepIndicator').textContent = `Paso ${currentStepIndex + 1} de ${sequenceOrder.length}: ${data ? data.badge : ''}`;
+      selectNode(activeId);
+    }
+
+    document.getElementById('btnNextStep').onclick = () => {
+      if (currentStepIndex < sequenceOrder.length - 1) {
+        currentStepIndex++;
+        updateStepperUI();
+      }
+    };
+
+    document.getElementById('btnPrevStep').onclick = () => {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        updateStepperUI();
+      }
+    };
+
+    // Auto-play flow
+    let isPlaying = false;
+    let playInterval = null;
+
+    document.getElementById('btnPlayFlow').onclick = function() {
+      if (isPlaying) {
+        clearInterval(playInterval);
+        isPlaying = false;
+        this.textContent = '▶ Reproducir Proceso';
+        this.classList.remove('btn-accent');
+      } else {
+        isPlaying = true;
+        this.textContent = '⏸ Pausar Recorrido';
+        this.classList.add('btn-accent');
+        playInterval = setInterval(() => {
+          if (currentStepIndex >= sequenceOrder.length - 1) {
+            currentStepIndex = 0;
+          } else {
+            currentStepIndex++;
+          }
+          updateStepperUI();
+        }, 2200);
+      }
+    };
+
+    // Initial View
+    updateTransform();
+    selectNode(0);
+  </script>
+</body>
+</html>
