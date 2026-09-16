@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Building2, DollarSign, TrendingUp, Sparkles, ArrowRight, 
-  Info, ShieldCheck, MapPin, Users, Briefcase, Calendar 
+  Info, ShieldCheck, MapPin, Users, Briefcase, Calendar, AlertCircle 
 } from 'lucide-react';
 import { formatCOP } from '../utils/financialCalculations';
 
 export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo }) {
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+
   const handleChange = (field, value) => {
     setProfile(prev => ({
       ...prev,
@@ -18,24 +20,25 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
     ? Math.round((netMonthlyCash / Number(profile.monthlySales)) * 100) 
     : 0;
 
+  const isNameValid = Boolean(profile.name?.trim());
+  const isFounderValid = Boolean(profile.founder?.trim());
+  const isCityValid = Boolean(profile.city?.trim());
+  const isSalesValid = Number(profile.monthlySales) > 0;
+  const isCostsValid = Number(profile.monthlyCosts) > 0;
+
+  const isStepValid = isNameValid && isFounderValid && isCityValid && isSalesValid && isCostsValid;
+
+  const handleContinue = () => {
+    if (!isStepValid) {
+      setShowValidationErrors(true);
+      return;
+    }
+    setShowValidationErrors(false);
+    onNext();
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
-        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Historias de Usuario: HU-01 & HU-02</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-            Perfil del Emprendimiento & Capacidad Financiera
-          </h1>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Estructura los datos formales de tu empresa y tus métricas operativas. La plataforma utiliza estas variables para contrastar tu perfil contra los requisitos de aprobación de los bancos y fintechs en Colombia.
-          </p>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Forms (8 cols) */}
@@ -50,7 +53,7 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                 </div>
                 <div>
                   <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
-                    HU-01: Registrar Emprendimiento
+                    1. Información General del Emprendimiento
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Información mercantil y operacional del negocio
@@ -190,10 +193,10 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                 </div>
                 <div>
                   <h2 className="font-bold text-slate-900 dark:text-white text-base sm:text-lg">
-                    HU-02: Información Financiera Mensual
+                    2. Capacidad Financiera & Flujo Mensual
                   </h2>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Cifras promedio para simular solvencia y liquidez
+                    Cifras promedio para evaluar solvencia y liquidez
                   </p>
                 </div>
               </div>
@@ -312,9 +315,19 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
             <p className="text-xs text-slate-900/80 font-medium leading-relaxed">
               Pasa al Paso 2 para indicar el monto de capital que requieres y el plazo para tu plan de inversión.
             </p>
+
+            {showValidationErrors && !isStepValid && (
+              <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2 animate-shake">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span>
+                  Por favor completa todos los campos obligatorios (*) y asegura que las ventas y costos sean mayores a $0 antes de continuar.
+                </span>
+              </div>
+            )}
+
             <button
-              onClick={onNext}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-slate-950 hover:bg-slate-900 text-white font-bold text-sm rounded-2xl transition-all shadow-md focus-visible:ring-2 focus-visible:ring-white"
+              onClick={handleContinue}
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-slate-950 hover:bg-slate-900 active:scale-[0.99] text-white font-bold text-sm rounded-2xl transition-all shadow-md focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
             >
               <span>Continuar al Paso 2</span>
               <ArrowRight className="w-4 h-4" />

@@ -15,6 +15,7 @@ import {
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState(1);
   const [profile, setProfile] = useState(mockDefaultProfile);
   const [need, setNeed] = useState(mockDefaultNeed);
   const [selectedForCompare, setSelectedForCompare] = useState(['bancolombia-pyme', 'sempli-fintech']);
@@ -24,17 +25,30 @@ export default function App() {
   
   // Dark mode conforme a MASTER.md de ui-ux-pro-max (Default: Dark OLED)
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem('theme_preference');
-    return saved !== null ? saved === 'dark' : true;
+    try {
+      const saved = localStorage.getItem('theme_preference');
+      return saved !== null ? saved === 'dark' : true;
+    } catch {
+      return true;
+    }
   });
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme_preference', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme_preference', 'light');
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme_preference', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme_preference', 'light');
+      }
+    } catch {
+      // localStorage unavailable, just toggle the class
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, [darkMode]);
 
@@ -47,7 +61,8 @@ export default function App() {
     setProfile(mockDefaultProfile);
     setNeed(mockDefaultNeed);
     setSelectedForCompare(['bancolombia-pyme', 'sempli-fintech']);
-    showNotification('✨ Datos de ejemplo cargados (EcoModa Sostenible SAS)');
+    setMaxUnlockedStep(4);
+    showNotification('✨ Datos de ejemplo cargados — Flujo completo desbloqueado');
   };
 
   const handleReset = () => {
@@ -73,7 +88,8 @@ export default function App() {
     setSelectedForCompare([]);
     setActiveOptionForSim(null);
     setCurrentStep(1);
-    showNotification('Formularios restablecidos a valores limpios');
+    setMaxUnlockedStep(1);
+    showNotification('Formularios restablecidos — Paso 1 activo');
   };
 
   const handleToggleCompare = (id) => {
@@ -91,6 +107,7 @@ export default function App() {
 
   const handleSelectForSimulation = (option) => {
     setActiveOptionForSim(option);
+    setMaxUnlockedStep(prev => Math.max(prev, 4));
     setCurrentStep(4);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -108,7 +125,13 @@ export default function App() {
       {/* Navbar Superior */}
       <Navbar
         currentStep={currentStep}
-        setCurrentStep={setCurrentStep}
+        setCurrentStep={(step) => {
+          if (step <= maxUnlockedStep) {
+            setCurrentStep(step);
+          } else {
+            showNotification(`🔒 Completa los pasos anteriores para acceder al Paso ${step}`);
+          }
+        }}
         onLoadDemo={handleLoadDemo}
         onReset={handleReset}
         profile={profile}
@@ -117,10 +140,17 @@ export default function App() {
         setDarkMode={setDarkMode}
       />
 
-      {/* Stepper de navegación */}
+      {/* Stepper de navegación con candados secuenciales */}
       <Stepper
         currentStep={currentStep}
-        setCurrentStep={setCurrentStep}
+        setCurrentStep={(step) => {
+          setCurrentStep(step);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        maxUnlockedStep={maxUnlockedStep}
+        onLockedClick={(stepId) => {
+          showNotification(`🔒 El Paso ${stepId} está bloqueado. Completa el paso actual para continuar.`);
+        }}
       />
 
       {/* Main Screen Content */}
@@ -130,6 +160,7 @@ export default function App() {
             profile={profile}
             setProfile={setProfile}
             onNext={() => {
+              setMaxUnlockedStep(prev => Math.max(prev, 2));
               setCurrentStep(2);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
@@ -142,6 +173,7 @@ export default function App() {
             need={need}
             setNeed={setNeed}
             onNext={() => {
+              setMaxUnlockedStep(prev => Math.max(prev, 3));
               setCurrentStep(3);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
@@ -161,6 +193,7 @@ export default function App() {
             onOpenCompare={() => setIsCompareOpen(true)}
             onSelectForSimulation={handleSelectForSimulation}
             onNext={() => {
+              setMaxUnlockedStep(prev => Math.max(prev, 4));
               setCurrentStep(4);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}

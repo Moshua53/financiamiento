@@ -45,39 +45,9 @@ export default function CatalogStep({
 
   return (
     <div className="space-y-6 pb-24 animate-fadeIn">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
-        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
-              <Layers className="w-3.5 h-3.5" />
-              <span>Historias de Usuario: HU-05 & HU-06</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-              Catálogo de Alternativas de Financiación
-            </h1>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Consulta las fuentes disponibles en Colombia. Puedes filtrar por categoría, 
-              seleccionar hasta 3 para compararlas lado a lado, o simular cualquier opción con 1 clic.
-            </p>
-          </div>
-
-          <div className="shrink-0">
-            <button
-              onClick={() => onSelectForSimulation(null)}
-              className="px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold rounded-2xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2"
-            >
-              <Calculator className="w-4 h-4" />
-              <span>Ir al Simulador Libre</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Control Bar: Filtros y Búsqueda */}
+      {/* Control Bar: Filtros, Búsqueda y Acceso a Simulador */}
       <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3.5">
-        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           
           {/* Search Input */}
           <div className="relative flex-1">
@@ -92,23 +62,34 @@ export default function CatalogStep({
             {searchTerm && (
               <button 
                 onClick={() => setSearchTerm('')} 
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
           </div>
 
-          {/* Amount match filter toggle */}
-          <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none bg-slate-50 dark:bg-[#020617] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 transition-colors">
-            <input
-              type="checkbox"
-              checked={onlyMatchAmount}
-              onChange={(e) => setOnlyMatchAmount(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500"
-            />
-            <span>Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
-          </label>
+          <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+            {/* Amount match filter toggle */}
+            <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none bg-slate-50 dark:bg-[#020617] px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 transition-colors shrink-0">
+              <input
+                type="checkbox"
+                checked={onlyMatchAmount}
+                onChange={(e) => setOnlyMatchAmount(e.target.checked)}
+                className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500"
+              />
+              <span>Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
+            </label>
+
+            {/* Quick Access to General Simulator */}
+            <button
+              onClick={() => onSelectForSimulation(null)}
+              className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-slate-950 text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+            >
+              <Calculator className="w-4 h-4" />
+              <span>Simulador General</span>
+            </button>
+          </div>
         </div>
 
         {/* Categories Chips */}
@@ -298,16 +279,16 @@ export default function CatalogStep({
                 {selectedForCompare.length === 1 ? '1 alternativa lista para comparar' : `${selectedForCompare.length} alternativas listas para comparar`}
               </p>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                Contrasta costos, plazos, ventajas y desventajas lado a lado (HU-07 a HU-10).
+                Contrasta costos, plazos, ventajas y desventajas lado a lado.
               </p>
             </div>
           </div>
 
           <button
             onClick={onOpenCompare}
-            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-2"
+            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-2 cursor-pointer"
           >
-            <span>Ver Comparativa (HU-07)</span>
+            <span>Ver Comparativa Detallada</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

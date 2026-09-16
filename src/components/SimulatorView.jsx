@@ -39,51 +39,28 @@ export default function SimulatorView({
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
-        <div className="absolute right-0 top-0 w-96 h-full bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-3 border border-emerald-500/20">
-              <Calculator className="w-3.5 h-3.5" />
-              <span>Historia de Usuario: HU-11</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-              Simulador Financiero en Tiempo Real
-            </h1>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Modula de forma interactiva el monto, plazo y tasa de interés para calcular tu cuota mensual
-              y evaluar cómo impactará la solvencia de <strong className="text-emerald-400">{profile?.name || 'tu negocio'}</strong>.
-            </p>
-          </div>
-
-          <button
-            onClick={() => window.print()}
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold transition-colors shrink-0"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Imprimir Ficha</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Selector Bar */}
-      <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
+      {/* Selector & Actions Bar */}
+      <div className="bg-white dark:bg-[#0B1120] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
-            <Layers className="w-5 h-5" />
+            <Calculator className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-xs font-bold text-slate-900 dark:text-white block">
-              Entidad o Alternativa Activa:
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-900 dark:text-white block">
+                Simulación de Crédito & Capacidad
+              </span>
+              <span className="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
+                Paso 4
+              </span>
+            </div>
             <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-              {activeOption ? `${activeOption.name} (${activeOption.institution})` : 'Simulación Libre / Personalizada'}
+              {activeOption ? `${activeOption.name} (${activeOption.institution})` : 'Simulación Libre / Parámetros Personalizados'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           <select
             value={activeOption ? activeOption.id : 'custom'}
             onChange={(e) => {
@@ -98,7 +75,7 @@ export default function SimulatorView({
                 }
               }
             }}
-            className="px-3.5 py-2 text-xs font-bold border border-slate-300 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+            className="px-3.5 py-2 text-xs font-bold border border-slate-300 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 cursor-pointer flex-1 sm:flex-none"
           >
             <option value="custom">⚙️ Parámetros Libres / Ajuste Manual</option>
             {options.map(opt => (
@@ -109,10 +86,19 @@ export default function SimulatorView({
           </select>
 
           <button
-            onClick={onBackToCatalog}
-            className="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0"
+            onClick={() => window.print()}
+            className="px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
           >
-            Ver Catálogo
+            <Printer className="w-3.5 h-3.5" />
+            <span>Imprimir Ficha</span>
+          </button>
+
+          <button
+            onClick={onBackToCatalog}
+            className="px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Volver al Catálogo</span>
           </button>
         </div>
       </div>

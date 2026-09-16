@@ -32,7 +32,7 @@ export default function CompareModal({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-wider">
-                HU-07, HU-08, HU-09, HU-10
+                Análisis Comparativo
               </span>
               <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
                 Matriz Comparativa Frente a Frente
@@ -100,10 +100,10 @@ export default function CompareModal({
                       </p>
                     </div>
 
-                    {/* HU-08: Costos y Cuotas */}
+                    {/* Estructura Financiera y Cuotas */}
                     <div className="bg-white dark:bg-[#0B1120] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2.5 text-xs">
                       <span className="font-bold text-slate-900 dark:text-white block text-xs border-b border-slate-100 dark:border-slate-800 pb-1.5">
-                        HU-08: Estructura Financiera
+                        Estructura Financiera & Cuotas
                       </span>
 
                       <div className="flex justify-between">

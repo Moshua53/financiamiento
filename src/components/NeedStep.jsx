@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Target, DollarSign, Calendar, Compass, ArrowRight, ArrowLeft, 
-  CheckCircle2, Sparkles, ShieldCheck, Zap 
+  CheckCircle2, Sparkles, ShieldCheck, Zap, AlertCircle 
 } from 'lucide-react';
 import { formatCOP } from '../utils/financialCalculations';
 
@@ -16,6 +16,8 @@ const purposeOptions = [
 ];
 
 export default function NeedStep({ need, setNeed, onNext, onBack }) {
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
+
   const handleChange = (field, value) => {
     setNeed(prev => ({
       ...prev,
@@ -23,24 +25,22 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
     }));
   };
 
+  const isAmountValid = Number(need.amount) > 0;
+  const isTermValid = Number(need.termMonths) > 0;
+  const isPurposeValid = Boolean(need.purpose);
+  const isStepValid = isAmountValid && isTermValid && isPurposeValid;
+
+  const handleContinue = () => {
+    if (!isStepValid) {
+      setShowValidationErrors(true);
+      return;
+    }
+    setShowValidationErrors(false);
+    onNext();
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-[#0B1120] to-[#020617] border border-slate-800 text-white shadow-xl">
-        <div className="absolute right-0 top-0 w-96 h-full bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold mb-3 border border-blue-500/20">
-            <Target className="w-3.5 h-3.5" />
-            <span>Historia de Usuario: HU-04</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-            Definir Necesidad de Financiación
-          </h1>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Establece con precisión el capital requerido, el horizonte de amortización y la destinación económica de los recursos. Estos datos estructurarán los filtros del catálogo de crédito.
-          </p>
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Main Controls (8 cols) */}
@@ -251,9 +251,18 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
 
           {/* Action buttons */}
           <div className="space-y-3">
+            {showValidationErrors && !isStepValid && (
+              <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2 animate-shake">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span>
+                  Por favor ingresa un monto válido mayor a $0 y selecciona un plazo antes de continuar.
+                </span>
+              </div>
+            )}
+
             <button
-              onClick={onNext}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-md shadow-emerald-500/20 focus-visible:ring-2 focus-visible:ring-white"
+              onClick={handleContinue}
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-md shadow-emerald-500/20 focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
             >
               <span>Explorar Alternativas (Paso 3)</span>
               <ArrowRight className="w-4 h-4" />
@@ -261,7 +270,7 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
 
             <button
               onClick={onBack}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-2xl transition-colors"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-2xl transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Volver al Perfil</span>
