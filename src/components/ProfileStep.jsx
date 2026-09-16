@@ -65,9 +65,9 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Nombre Comercial o Razón Social *
                 </label>
                 <input
@@ -75,12 +75,12 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.name || ''}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="Ej: EcoModa Sostenible SAS"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Fundador / Representante Legal *
                 </label>
                 <input
@@ -88,18 +88,18 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.founder || ''}
                   onChange={(e) => handleChange('founder', e.target.value)}
                   placeholder="Ej: Moises Galindo"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-all"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Sector o Industria *
                 </label>
                 <select
                   value={profile.sector || 'Moda y Manufactura'}
                   onChange={(e) => handleChange('sector', e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none cursor-pointer transition-all shadow-2xs"
                 >
                   <option value="Moda y Manufactura">Moda y Manufactura</option>
                   <option value="Tecnología y Software">Tecnología y Software</option>
@@ -112,13 +112,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Etapa del Emprendimiento *
                 </label>
                 <select
                   value={profile.stage || 'Crecimiento Temprano'}
                   onChange={(e) => handleChange('stage', e.target.value)}
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none cursor-pointer transition-all shadow-2xs"
                 >
                   <option value="Idea / Prototipo">Idea / Prototipo (Menos de 6 meses)</option>
                   <option value="Semilla / Validación">Semilla / Validación (Con ventas iniciales)</option>
@@ -128,7 +128,7 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Ciudad / Municipio *
                 </label>
                 <input
@@ -136,13 +136,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                   value={profile.city || ''}
                   onChange={(e) => handleChange('city', e.target.value)}
                   placeholder="Ej: Medellín, Antioquia"
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 mb-2">
                     Años Operando
                   </label>
                   <input
@@ -151,11 +151,11 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     max="50"
                     value={profile.yearsOperating ?? 2}
                     onChange={(e) => handleChange('yearsOperating', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  <label className="block text-xs font-bold text-slate-700 mb-2">
                     Empleados
                   </label>
                   <input
@@ -164,21 +164,21 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     max="500"
                     value={profile.employees ?? 3}
                     onChange={(e) => handleChange('employees', Number(e.target.value))}
-                    className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                   />
                 </div>
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Descripción del Producto o Propuesta de Valor
                 </label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   value={profile.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Resume brevemente qué vendes y a quién va dirigido tu producto..."
-                  className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full px-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all min-h-[96px] resize-y shadow-2xs"
                 />
               </div>
             </div>
@@ -205,13 +205,13 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Ventas / Ingresos Mensuales Promedio (COP) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-3 text-xs text-slate-400 font-bold">$</span>
+                  <span className="absolute left-3.5 top-3.5 text-xs text-slate-400 font-bold select-none">$</span>
                   <input
                     type="number"
                     step="500000"
@@ -219,20 +219,20 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlySales || ''}
                     onChange={(e) => handleChange('monthlySales', Number(e.target.value))}
                     placeholder="18000000"
-                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                   />
                 </div>
-                <p className="text-[11px] text-emerald-600 font-mono mt-1.5">
+                <p className="text-[11px] text-emerald-600 font-mono mt-2 font-medium">
                   Equivale a: {formatCOP(profile.monthlySales)}
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 mb-2">
                   Costos & Gastos Operativos Mensuales (COP) *
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-3 text-xs text-slate-400 font-bold">$</span>
+                  <span className="absolute left-3.5 top-3.5 text-xs text-slate-400 font-bold select-none">$</span>
                   <input
                     type="number"
                     step="500000"
@@ -240,10 +240,10 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                     value={profile.monthlyCosts || ''}
                     onChange={(e) => handleChange('monthlyCosts', Number(e.target.value))}
                     placeholder="11500000"
-                    className="w-full pl-8 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    className="w-full pl-8 pr-4 py-3 text-sm bg-slate-50/60 border border-slate-300 rounded-xl text-slate-900 font-mono tabular-nums focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white focus:outline-none transition-all shadow-2xs"
                   />
                 </div>
-                <p className="text-[11px] text-slate-500 font-mono mt-1.5">
+                <p className="text-[11px] text-slate-500 font-mono mt-2 font-medium">
                   Equivale a: {formatCOP(profile.monthlyCosts)}
                 </p>
               </div>
@@ -307,19 +307,12 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
             </button>
           </div>
 
-          {/* Forward CTA Card */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 to-teal-700 text-slate-950 shadow-lg shadow-emerald-500/20 space-y-3">
-            <h3 className="font-extrabold text-base text-slate-950">
-              ¿Datos completados?
-            </h3>
-            <p className="text-xs text-slate-900/80 font-medium leading-relaxed">
-              Pasa al Paso 2 para indicar el monto de capital que requieres y el plazo para tu plan de inversión.
-            </p>
-
+          {/* Forward CTA Action */}
+          <div className="space-y-3">
             {showValidationErrors && !isStepValid && (
-              <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2 animate-shake">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-                <span>
+              <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2.5 animate-shake">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">
                   Por favor completa todos los campos obligatorios (*) y asegura que las ventas y costos sean mayores a $0 antes de continuar.
                 </span>
               </div>
@@ -327,7 +320,7 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
 
             <button
               onClick={handleContinue}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-slate-950 hover:bg-slate-900 active:scale-[0.99] text-white font-bold text-sm rounded-2xl transition-all shadow-md focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-md shadow-emerald-500/20 focus-visible:ring-2 focus-visible:ring-emerald-400 cursor-pointer"
             >
               <span>Continuar al Paso 2</span>
               <ArrowRight className="w-4 h-4" />

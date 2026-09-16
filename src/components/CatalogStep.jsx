@@ -69,16 +69,16 @@ export default function CatalogStep({
             )}
           </div>
 
-          <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             {/* Amount match filter toggle */}
-            <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer select-none bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-500/40 transition-colors shrink-0">
+            <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer select-none bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-500/40 transition-colors">
               <input
                 type="checkbox"
                 checked={onlyMatchAmount}
                 onChange={(e) => setOnlyMatchAmount(e.target.checked)}
-                className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500"
+                className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 shrink-0"
               />
-              <span>Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
+              <span className="truncate">Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
             </label>
 
             {/* Quick Access to General Simulator */}
@@ -269,27 +269,27 @@ export default function CatalogStep({
 
       {/* Floating Compare Drawer (Sticky at Bottom) */}
       {selectedForCompare.length > 0 && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 w-11/12 max-w-3xl bg-slate-900 text-white p-4 rounded-3xl shadow-2xl border border-slate-700/60 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black">
+        <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-1.5rem)] max-w-3xl bg-slate-900 text-white p-3.5 sm:p-4 rounded-3xl shadow-2xl border border-slate-700/60 flex flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black shrink-0">
               {selectedForCompare.length}
             </div>
-            <div>
-              <p className="text-xs sm:text-sm font-bold text-white">
-                {selectedForCompare.length === 1 ? '1 alternativa lista para comparar' : `${selectedForCompare.length} alternativas listas para comparar`}
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-bold text-white truncate">
+                {selectedForCompare.length === 1 ? '1 para comparar' : `${selectedForCompare.length} para comparar`}
               </p>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                Contrasta costos, plazos, ventajas y desventajas lado a lado.
+                Contrasta costos, plazos y requisitos lado a lado.
               </p>
             </div>
           </div>
 
           <button
             onClick={onOpenCompare}
-            className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-2 cursor-pointer"
+            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-1.5 sm:gap-2 shrink-0 cursor-pointer"
           >
-            <span>Ver Comparativa Detallada</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>Ver Comparativa</span>
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
       )}

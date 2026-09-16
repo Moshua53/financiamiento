@@ -28,13 +28,13 @@ export default function CompareModal({
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
         
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-wider">
                 Análisis Comparativo
               </span>
-              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+              <h2 className="text-base sm:text-xl font-extrabold text-slate-900">
                 Matriz Comparativa Frente a Frente
               </h2>
             </div>
@@ -45,7 +45,7 @@ export default function CompareModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Cerrar modal de comparativa"
           >
             <X className="w-5 h-5" />
@@ -53,13 +53,19 @@ export default function CompareModal({
         </div>
 
         {/* Scrollable Content Matrix */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
           {comparedOptions.length === 0 ? (
             <div className="text-center py-12 text-slate-400">
               No has seleccionado alternativas para comparar. Regresa al catálogo y marca hasta 3 opciones.
             </div>
           ) : (
-            <div className={`grid grid-cols-1 md:grid-cols-${Math.min(comparedOptions.length, 3)} gap-6`}>
+            <div className={`grid gap-6 ${
+              comparedOptions.length === 1 
+                ? 'grid-cols-1 max-w-lg mx-auto' 
+                : comparedOptions.length === 2 
+                ? 'grid-cols-1 md:grid-cols-2' 
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            }`}>
               {comparedOptions.map((opt) => {
                 const loanCalc = opt.rateEA > 0
                   ? calculateLoanSummary(need.amount, opt.rateEA, need.termMonths)

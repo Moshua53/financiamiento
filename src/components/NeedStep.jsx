@@ -48,9 +48,9 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
           
           {/* Card: Monto Requerido */}
           <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/20 shrink-0">
                   <DollarSign className="w-5 h-5" />
                 </div>
                 <div>
@@ -63,8 +63,8 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
                 </div>
               </div>
 
-              <div className="text-right">
-                <span className="text-lg sm:text-2xl font-black text-emerald-600 font-mono tabular-nums">
+              <div className="text-left sm:text-right">
+                <span className="text-xl sm:text-2xl font-black text-emerald-600 font-mono tabular-nums">
                   {formatCOP(need.amount)}
                 </span>
               </div>
@@ -114,9 +114,9 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
 
           {/* Card: Plazo Deseado */}
           <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center border border-blue-500/20">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center border border-blue-500/20 shrink-0">
                   <Calendar className="w-5 h-5" />
                 </div>
                 <div>
@@ -129,7 +129,7 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <span className="text-lg sm:text-xl font-black text-blue-600 font-mono">
                   {need.termMonths} Meses ({(need.termMonths / 12).toFixed(1)} años)
                 </span>
@@ -252,8 +252,8 @@ export default function NeedStep({ need, setNeed, onNext, onBack }) {
           {/* Action buttons */}
           <div className="space-y-3">
             {showValidationErrors && !isStepValid && (
-              <div className="p-3 rounded-xl bg-red-950/80 border border-red-500/40 text-red-200 text-xs flex items-start gap-2 animate-shake">
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2 animate-shake">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                 <span>
                   Por favor ingresa un monto válido mayor a $0 y selecciona un plazo antes de continuar.
                 </span>

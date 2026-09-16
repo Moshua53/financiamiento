@@ -60,7 +60,7 @@ export default function SimulatorView({
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
           <select
             value={activeOption ? activeOption.id : 'custom'}
             onChange={(e) => {
@@ -75,7 +75,7 @@ export default function SimulatorView({
                 }
               }
             }}
-            className="px-3.5 py-2 text-xs font-bold border border-slate-300 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 cursor-pointer flex-1 sm:flex-none"
+            className="w-full sm:w-auto px-3.5 py-2.5 text-xs font-bold border border-slate-300 rounded-xl bg-slate-50 text-slate-900 focus:ring-2 focus:ring-emerald-500 cursor-pointer"
           >
             <option value="custom">⚙️ Parámetros Libres / Ajuste Manual</option>
             {options.map(opt => (
@@ -85,21 +85,23 @@ export default function SimulatorView({
             ))}
           </select>
 
-          <button
-            onClick={() => window.print()}
-            className="px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Imprimir Ficha</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.print()}
+              className="flex-1 sm:flex-none justify-center px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Imprimir Ficha</span>
+            </button>
 
-          <button
-            onClick={onBackToCatalog}
-            className="px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Volver al Catálogo</span>
-          </button>
+            <button
+              onClick={onBackToCatalog}
+              className="flex-1 sm:flex-none justify-center px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Volver al Catálogo</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -160,13 +162,13 @@ export default function SimulatorView({
                 onChange={(e) => setSimTerm(Number(e.target.value))}
                 className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
               />
-              <div className="grid grid-cols-6 gap-1.5 pt-1">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 pt-1">
                 {[6, 12, 18, 24, 36, 48].map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setSimTerm(t)}
-                    className={`py-1.5 text-xs font-bold font-mono rounded-xl border text-center transition-colors ${
+                    className={`py-2 text-xs font-bold font-mono rounded-xl border text-center transition-colors select-none ${
                       simTerm === t 
                         ? 'bg-blue-600 text-white border-blue-600 shadow-glow-blue' 
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-500/40'
