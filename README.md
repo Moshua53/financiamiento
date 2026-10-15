@@ -63,17 +63,38 @@ El prototipo se centra en el rol de **Emprendedor** y cubre las historias de usu
 ## 🛠️ Tecnologías Utilizadas
 
 - **Frontend:** [React 18](https://react.dev/) + [Vite 5](https://vitejs.dev/)
+- **Base de Datos & Auth:** [Supabase](https://supabase.com/) (PostgreSQL con Row Level Security y triggers automáticos)
 - **Estilos:** [Tailwind CSS 3](https://tailwindcss.com/)
 - **Iconografía:** [Lucide React](https://lucide.dev/)
 - **Modelado:** Mermaid & BPMN 2.0
 
 ---
 
-## 📦 Instalación y Ejecución Local
+## 👥 Roles de Usuario y Experiencia
+
+1. **🚀 Rol Emprendedor:**
+   - Flujo secuencial guiado en 4 pasos (Perfil comercial, Información financiera, Necesidad de capital, Catálogo y Simulador).
+   - Capacidad de **guardar y publicar su solicitud** en la base de datos PostgreSQL de Supabase.
+   - Carga automática de proyectos previamente guardados al iniciar sesión.
+
+2. **💼 Rol Financiador / Inversionista:**
+   - **Dashboard analítico interactivo:** Explora todas las solicitudes subidas por los emprendedores.
+   - **Métricas agregadas (KPIs):** Capital total demandado, solicitudes activas, ticket promedio y sectores principales.
+   - **Filtros reactivos:** Búsqueda en tiempo real por nombre/ciudad, selector de sector y filtro por rango de monto.
+   - **Semáforo de salud financiera:** Evaluación algorítmica de riesgo de endeudamiento (Saludable 🟢, Moderado 🟡, Riesgoso 🔴).
+   - **Modal de ficha técnica detallada:** Información completa comercial, financiera y botón para manifestar interés de inversión.
+
+3. **⚡ Modo Acceso Rápido (Demo):**
+   - Botones de 1 clic en la pantalla de bienvenida para acceder como *Emprendedor Demo* o *Financiador Demo* sin necesidad de registro.
+
+---
+
+## 📦 Instalación y Configuración Local
 
 ### Prerrequisitos
 - [Node.js](https://nodejs.org/) v18.0 o superior
 - [npm](https://www.npmjs.com/) v9.0 o superior
+- Proyecto en [Supabase](https://supabase.com/) (opcional si se usa el modo Demo local)
 
 ### Pasos
 
@@ -88,20 +109,28 @@ El prototipo se centra en el rol de **Emprendedor** y cubre las historias de usu
    npm install
    ```
 
-3. **Iniciar el servidor local de desarrollo:**
+3. **Configurar variables de entorno:**
+   Copia el archivo `.env.example` a `.env` y coloca las credenciales de tu proyecto de Supabase:
+   ```bash
+   cp .env.example .env
+   ```
+   ```env
+   VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+   VITE_SUPABASE_ANON_KEY=tu-anon-key-aqui
+   ```
+
+4. **Inicializar la base de datos en Supabase:**
+   Copia y ejecuta el contenido del script [`supabase/schema.sql`](supabase/schema.sql) en el **SQL Editor** de tu consola de Supabase.
+
+5. **Iniciar el servidor local de desarrollo:**
    ```bash
    npm run dev
    ```
    Abre tu navegador en `http://localhost:5173`.
 
-4. **Compilar para producción:**
+6. **Compilar para producción:**
    ```bash
    npm run build
-   ```
-
-5. **Previsualizar la compilación de producción:**
-   ```bash
-   npm run preview
    ```
 
 ---
@@ -115,22 +144,32 @@ financiamiento/
 │   ├── HISTORIAS_DE_USUARIO.md       # Matriz detallada de cumplimiento HU-01 a HU-11
 │   ├── BPMN_PROCESO.md               # Modelo BPMN 2.0 y matriz de trazabilidad
 │   └── bpmn-proceso-finanemprende.html # Visualizador interactivo del diagrama BPMN
+├── supabase/
+│   └── schema.sql                    # Esquema DDL de PostgreSQL, triggers, RLS y datos semilla
 ├── src/
 │   ├── components/                   # Componentes React modularizados
+│   │   ├── AuthGate.jsx              # Pantalla de Login, Registro y selección de rol
+│   │   ├── FinancierDashboard.jsx    # Dashboard analítico para el rol Financiador
+│   │   ├── EmprendimientoDetailModal.jsx # Ficha técnica detallada del negocio
 │   │   ├── CatalogStep.jsx           # Catálogo de alternativas (HU-05, HU-06)
 │   │   ├── CompareModal.jsx          # Matriz comparativa lado a lado (HU-07, HU-08, HU-09)
-│   │   ├── Navbar.jsx                # Barra de navegación con botón Demo y Dark Mode
+│   │   ├── Navbar.jsx                # Barra de navegación con perfil, roles y publicación
 │   │   ├── NeedStep.jsx              # Definición de necesidad de capital (HU-04)
 │   │   ├── ProfileStep.jsx           # Datos del negocio y finanzas (HU-01, HU-02)
 │   │   ├── SimulatorView.jsx         # Simulador de cuotas y semáforo (HU-11)
 │   │   └── Stepper.jsx               # Navegación secuencial con candados
+│   ├── context/
+│   │   └── AuthContext.jsx           # Manejo global de autenticación, sesiones y roles
+│   ├── lib/
+│   │   └── supabase.js               # Cliente oficial de Supabase con fallback resiliente
 │   ├── data/
-│   │   └── financingOptions.js       # Base de conocimiento de opciones financieras en Colombia
+│   │   └── mockFinancingOptions.js   # Base de conocimiento de alternativas financieras
 │   ├── utils/
 │   │   └── financialCalculations.js  # Fórmulas de amortización, conversión de tasas y formato COP
-│   ├── App.jsx                       # Componente principal y gestión de estado global
+│   ├── App.jsx                       # Enrutamiento condicional por rol y lógica central
 │   ├── index.css                     # Estilos globales y utilidades personalizadas
 │   └── main.jsx                      # Punto de entrada de React
+├── .env.example                      # Plantilla de variables de entorno para Supabase
 ├── .gitignore                        # Reglas de exclusión de Git y seguridad
 ├── LICENSE                           # Licencia MIT
 ├── package.json                      # Dependencias y scripts del proyecto
@@ -143,3 +182,4 @@ financiamiento/
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia [MIT](LICENSE).
+
