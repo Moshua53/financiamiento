@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  Building2, DollarSign, TrendingUp, Sparkles, ArrowRight, 
+  Building2, DollarSign, TrendingUp, ArrowRight, 
   Info, ShieldCheck, MapPin, Users, Briefcase, Calendar, AlertCircle 
 } from 'lucide-react';
 import { formatCOP } from '../utils/financialCalculations';
 
-export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo }) {
+export default function ProfileStep({ profile, setProfile, onNext }) {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   const handleChange = (field, value) => {
@@ -297,14 +297,6 @@ export default function ProfileStep({ profile, setProfile, onNext, onLoadDemo })
                 </p>
               </div>
             </div>
-
-            <button
-              onClick={onLoadDemo}
-              className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold text-emerald-600 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-2xl transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Autocompletar con Datos Ejemplo</span>
-            </button>
           </div>
 
           {/* Forward CTA Action */}

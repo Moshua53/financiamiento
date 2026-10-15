@@ -1,5 +1,7 @@
 // Utilidades de cálculos financieros para emprendedores
 
+export const DEFAULT_REFERENCE_RATE_EA = 22.0;
+
 /**
  * Formatea un número como moneda en Pesos Colombianos (COP)
  */
@@ -69,7 +71,14 @@ export function calculateLoanSummary(principal, rateEA, termMonths) {
  */
 export function evaluateFinancialCapacity(monthlyPayment, monthlySales, monthlyCosts) {
   if (!monthlySales || monthlySales <= 0) {
-    return { status: 'neutral', label: 'Sin datos suficientes', percent: 0 };
+    return { 
+      status: 'neutral', 
+      color: 'slate',
+      label: 'Sin datos de ingresos', 
+      description: 'Ingresa las ventas mensuales en el Paso 1 para evaluar tu capacidad de endeudamiento.',
+      debtRatio: '0.0',
+      percent: 0 
+    };
   }
 
   const netIncome = Math.max(0, monthlySales - (monthlyCosts || 0));

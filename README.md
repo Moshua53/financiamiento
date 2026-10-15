@@ -51,12 +51,12 @@ El prototipo se centra en el rol de **Emprendedor** y cubre las historias de usu
 
 ---
 
-## 📐 Modelo de Procesos de Negocio (BPMN 2.0)
+## 📚 Documentación del Proyecto y Entregas
 
-La documentación de procesos de la plataforma sigue el estándar internacional **BPMN 2.0**:
-
-- 📄 **Especificación Detallada:** [docs/BPMN_PROCESO.md](docs/BPMN_PROCESO.md) (incluye piscinas, carriles, eventos, compuertas lógicas y matriz de trazabilidad HU-BPMN).
-- 🌐 **Diagrama Interactivo Standalone:** [docs/bpmn-proceso-finanemprende.html](docs/bpmn-proceso-finanemprende.html) (visualizable en cualquier navegador moderno con zoom y temas).
+- 📑 **Informe Formal de Entrega (Funcionalidades & Roadmap):** [docs/DOCUMENTO_ENTREGA_1.md](docs/DOCUMENTO_ENTREGA_1.md)
+- 📋 **Especificación de Historias de Usuario (HU-01 a HU-11):** [docs/HISTORIAS_DE_USUARIO.md](docs/HISTORIAS_DE_USUARIO.md)
+- 📄 **Especificación BPMN 2.0 Detallada:** [docs/BPMN_PROCESO.md](docs/BPMN_PROCESO.md)
+- 🌐 **Visor Interactivo BPMN 2.0 (HTML/SVG):** [docs/bpmn-proceso-finanemprende.html](docs/bpmn-proceso-finanemprende.html)
 
 ---
 
@@ -110,9 +110,11 @@ La documentación de procesos de la plataforma sigue el estándar internacional 
 
 ```text
 financiamiento/
-├── docs/                             # Documentación de procesos y BPMN 2.0
-│   ├── BPMN_PROCESO.md               # Modelo BPMN detallado y matriz de trazabilidad
-│   └── bpmn-proceso-finanemprende.html # Visualizador HTML del diagrama BPMN
+├── docs/                             # Documentación de entregas, requisitos y procesos
+│   ├── DOCUMENTO_ENTREGA_1.md        # Informe formal de entrega (Funcionalidades y Roadmap)
+│   ├── HISTORIAS_DE_USUARIO.md       # Matriz detallada de cumplimiento HU-01 a HU-11
+│   ├── BPMN_PROCESO.md               # Modelo BPMN 2.0 y matriz de trazabilidad
+│   └── bpmn-proceso-finanemprende.html # Visualizador interactivo del diagrama BPMN
 ├── src/
 │   ├── components/                   # Componentes React modularizados
 │   │   ├── CatalogStep.jsx           # Catálogo de alternativas (HU-05, HU-06)
