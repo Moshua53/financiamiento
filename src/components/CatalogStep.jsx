@@ -1,11 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import { 
-  Layers, Search, Filter, Check, Plus, ExternalLink, Calculator, 
-  Sparkles, CheckCircle2, ArrowRight, Clock, ShieldCheck, Tag, X
+  Layers, Search, Check, Plus, Calculator, 
+  Clock, ShieldCheck, ArrowRight, ArrowUpDown, X
 } from 'lucide-react';
 import { formatCOP, calculateMonthlyPayment } from '../utils/financialCalculations';
 
-const categories = ['Todas', 'Bancario', 'Fintech', 'Capital Semilla', 'Microcrédito', 'Crowdfunding', 'Inversionistas'];
+const categories = [
+  'Todas', 
+  'Bancario', 
+  'Fintech', 
+  'Capital Semilla', 
+  'Microcrédito', 
+  'Crowdfunding', 
+  'Inversionistas'
+];
 
 export default function CatalogStep({ 
   options, 
@@ -20,10 +28,11 @@ export default function CatalogStep({
   const [selectedCategory, setSelectedCategory] = useState('Todas');
   const [searchTerm, setSearchTerm] = useState('');
   const [onlyMatchAmount, setOnlyMatchAmount] = useState(false);
+  const [sortBy, setSortBy] = useState('rate'); // 'rate' | 'time'
 
-  // Filtrado reactivo de opciones (HU-06)
-  const filteredOptions = useMemo(() => {
-    return options.filter(opt => {
+  // Filtrado y ordenamiento reactivo institucional
+  const processedOptions = useMemo(() => {
+    let result = options.filter(opt => {
       if (selectedCategory !== 'Todas' && opt.category !== selectedCategory) {
         return false;
       }
@@ -31,7 +40,7 @@ export default function CatalogStep({
         const query = searchTerm.toLowerCase();
         const matchesName = opt.name.toLowerCase().includes(query);
         const matchesInst = opt.institution.toLowerCase().includes(query);
-        const matchesDesc = opt.description.toLowerCase().includes(query);
+        const matchesDesc = opt.description?.toLowerCase().includes(query) || false;
         if (!matchesName && !matchesInst && !matchesDesc) return false;
       }
       if (onlyMatchAmount && need?.amount) {
@@ -41,69 +50,106 @@ export default function CatalogStep({
       }
       return true;
     });
-  }, [options, selectedCategory, searchTerm, onlyMatchAmount, need]);
+
+    // Ordenamiento
+    if (sortBy === 'rate') {
+      result.sort((a, b) => a.rateEA - b.rateEA);
+    } else if (sortBy === 'time') {
+      result.sort((a, b) => (a.approvalTime || '').localeCompare(b.approvalTime || ''));
+    }
+
+    return result;
+  }, [options, selectedCategory, searchTerm, onlyMatchAmount, sortBy, need]);
 
   return (
-    <div className="space-y-6 pb-24 animate-fadeIn">
-      {/* Control Bar: Filtros, Búsqueda y Acceso a Simulador */}
-      <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-xs space-y-3.5">
+    <div className="space-y-6 pb-20">
+
+      {/* Encabezado Técnico de Sección */}
+      <div className="border-b border-neutral-200 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+              Módulo 03 / Arquitectura de Fuentes
+            </span>
+            <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
+              Matriz Técnica de Alternativas de Financiación
+            </h1>
+          </div>
+          <button
+            onClick={() => onSelectForSimulation(null)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded bg-neutral-900 text-white hover:bg-neutral-800 transition-colors cursor-pointer self-start sm:self-auto shadow-subtle"
+          >
+            <Calculator className="w-3.5 h-3.5" />
+            <span>Simulador Libre</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Barra de Herramientas y Filtros Analíticos */}
+      <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle space-y-3">
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           
-          {/* Search Input */}
+          {/* Campo de Búsqueda */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
+            <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por entidad o palabra clave (ej: Bancolombia, Sempli, Subsidio)..."
-              className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              placeholder="Buscar por institución, línea de crédito o palabra clave..."
+              className="w-full pl-8 pr-8 py-1.5 text-xs bg-neutral-50 border border-neutral-300 rounded text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none"
             />
             {searchTerm && (
               <button 
                 onClick={() => setSearchTerm('')} 
-                className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="absolute right-2.5 top-2 text-neutral-400 hover:text-neutral-700"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
-            {/* Amount match filter toggle */}
-            <label className="inline-flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer select-none bg-slate-50 px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-emerald-500/40 transition-colors">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Toggle de rango de monto */}
+            <label className="inline-flex items-center gap-2 text-xs font-medium text-neutral-700 cursor-pointer bg-neutral-50 px-2.5 py-1.5 rounded border border-neutral-200 hover:border-neutral-300">
               <input
                 type="checkbox"
                 checked={onlyMatchAmount}
                 onChange={(e) => setOnlyMatchAmount(e.target.checked)}
-                className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 shrink-0"
+                className="w-3.5 h-3.5 rounded text-neutral-900 focus:ring-0"
               />
-              <span className="truncate">Solo alternativas para mi monto ({formatCOP(need?.amount)})</span>
+              <span className="font-mono text-[11px]">
+                Admisibles para {need?.amount ? formatCOP(need.amount) : '$ 0'}
+              </span>
             </label>
 
-            {/* Quick Access to General Simulator */}
-            <button
-              onClick={() => onSelectForSimulation(null)}
-              className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-slate-950 text-xs font-bold rounded-xl transition-all shadow-xs flex items-center justify-center gap-2 shrink-0 cursor-pointer"
-            >
-              <Calculator className="w-4 h-4" />
-              <span>Simulador General</span>
-            </button>
+            {/* Ordenamiento por Tasa / Tiempo */}
+            <div className="flex items-center gap-1.5 bg-neutral-50 px-2.5 py-1.5 rounded border border-neutral-200 text-xs">
+              <ArrowUpDown className="w-3.5 h-3.5 text-neutral-500" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent text-neutral-800 text-xs font-medium outline-none cursor-pointer"
+              >
+                <option value="rate">Ordenar: Menor Tasa E.A.</option>
+                <option value="time">Ordenar: Tiempo Desembolso</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Categories Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {/* Chips de Categorías */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all select-none ${
+                className={`px-2.5 py-1 text-[11px] font-mono rounded border transition-colors whitespace-nowrap cursor-pointer ${
                   isSelected
-                    ? 'bg-emerald-500 text-slate-950 shadow-glow-sm'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    ? 'bg-neutral-900 text-white border-neutral-900 font-semibold'
+                    : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
                 }`}
               >
                 {cat}
@@ -113,140 +159,144 @@ export default function CatalogStep({
         </div>
       </div>
 
-      {/* Grid of Financing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredOptions.length === 0 ? (
-          <div className="col-span-full bg-white p-12 rounded-3xl border border-slate-200 text-center space-y-4">
-            <Layers className="w-12 h-12 text-slate-400 mx-auto" />
-            <h3 className="font-bold text-slate-800 text-lg">
-              No hay alternativas con los filtros aplicados
+      {/* Rejilla de Fichas Técnicas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {processedOptions.length === 0 ? (
+          <div className="col-span-full bg-white p-10 rounded border border-neutral-200 text-center space-y-3">
+            <Layers className="w-8 h-8 text-neutral-400 mx-auto" />
+            <h3 className="font-semibold text-neutral-900 text-sm">
+              Sin coincidencias con los parámetros especificados
             </h3>
-            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-              Desmarca el filtro de monto o prueba con otra categoría para visualizar más opciones de financiamiento.
+            <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+              Ajusta los filtros de búsqueda o desactiva la restricción de rango de monto para visualizar más opciones del mercado colombiano.
             </p>
             <button
               onClick={() => { setSelectedCategory('Todas'); setSearchTerm(''); setOnlyMatchAmount(false); }}
-              className="px-4 py-2 bg-emerald-500/10 text-emerald-500 font-bold text-xs rounded-xl hover:bg-emerald-500/20 transition-colors"
+              className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-medium text-xs rounded border border-neutral-200 transition-colors"
             >
-              Restablecer Filtros
+              Restablecer Criterios
             </button>
           </div>
         ) : (
-          filteredOptions.map((opt) => {
+          processedOptions.map((opt) => {
             const isSelected = selectedForCompare.includes(opt.id);
-            const estimatedInstallment = opt.rateEA > 0 && need?.amount
+            const calculatedInstallment = opt.rateEA > 0 && need?.amount
               ? calculateMonthlyPayment(need.amount, opt.rateEA, need.termMonths || 24)
               : 0;
 
             return (
               <div
                 key={opt.id}
-                className={`bg-white rounded-3xl border-2 flex flex-col justify-between transition-all duration-200 shadow-xs hover:shadow-xl hover:-translate-y-1 ${
+                className={`bg-white rounded border flex flex-col justify-between transition-colors shadow-subtle ${
                   isSelected 
-                    ? 'border-emerald-500 ring-2 ring-emerald-500/20 shadow-glow-sm' 
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? 'border-neutral-900 ring-1 ring-neutral-900' 
+                    : 'border-neutral-200 hover:border-neutral-300'
                 }`}
               >
-                {/* Card Top */}
-                <div className="p-6 space-y-4">
+                {/* Cuerpo de la Ficha Técnica */}
+                <div className="p-4 space-y-3.5">
+                  
+                  {/* Encabezado: Institución & Instrumento */}
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
-                        {opt.category}
-                      </span>
-                      <h3 className="font-bold text-slate-900 text-base sm:text-lg mt-2 leading-snug">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
+                          {opt.category}
+                        </span>
+                        {opt.badge && (
+                          <span className="text-[10px] font-mono text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                            {opt.badge}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-bold text-neutral-900 text-sm mt-1.5 leading-snug">
                         {opt.name}
                       </h3>
-                      <p className="text-xs font-semibold text-slate-500 mt-0.5">
+                      <p className="text-xs font-medium text-neutral-500">
                         {opt.institution}
                       </p>
                     </div>
-
-                    {opt.badge && (
-                      <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-500/30 shrink-0">
-                        {opt.badge}
-                      </span>
-                    )}
                   </div>
 
-                  <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-neutral-600 line-clamp-2 leading-relaxed">
                     {opt.description}
                   </p>
 
-                  {/* Financial Data Strip */}
-                  <div className="grid grid-cols-2 gap-2.5 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-medium">Tasa Referencial</span>
-                      <span className="font-black text-slate-900 text-sm font-mono mt-0.5 block">
-                        {opt.rateEA === 0 ? '0% (Semilla/Equity)' : `${opt.rateEA}% E.A.`}
+                  {/* Matriz Financiera de Ficha */}
+                  <div className="p-3 rounded bg-neutral-50 border border-neutral-200 space-y-2 text-xs">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-neutral-500 text-[11px]">Tasa de Referencia:</span>
+                      <span className="font-finance font-bold tabular-nums text-neutral-900 text-sm">
+                        {opt.rateEA === 0 ? '0.00% (Subvención/Equity)' : `${opt.rateEA.toFixed(2)}% E.A.`}
                       </span>
                     </div>
 
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-medium">Tiempo Respuesta</span>
-                      <span className="font-semibold text-slate-800 text-xs flex items-center gap-1 mt-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="text-neutral-500">Tiempo de Respuesta:</span>
+                      <span className="font-medium text-neutral-700 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-neutral-400" />
                         {opt.approvalTime}
                       </span>
                     </div>
 
-                    <div className="col-span-2 pt-2 border-t border-slate-200 flex justify-between items-center text-[11px]">
-                      <span className="text-slate-400">Rango montos:</span>
-                      <span className="font-bold text-slate-800 font-mono">
-                        ${(opt.minAmount / 1000000).toFixed(0)}M - ${(opt.maxAmount / 1000000).toFixed(0)}M COP
+                    <div className="pt-2 border-t border-neutral-200 flex justify-between items-center text-[11px]">
+                      <span className="text-neutral-500">Rango de Monto:</span>
+                      <span className="font-finance font-medium tabular-nums text-neutral-800">
+                        ${opt.minAmount / 1000000}M - ${opt.maxAmount / 1000000}M COP
                       </span>
                     </div>
                   </div>
 
-                  {/* Estimación de cuota si aplica */}
+                  {/* Cuota proyectada con los parámetros actuales del usuario */}
                   {opt.rateEA > 0 && need?.amount && (
-                    <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
+                    <div className="p-2.5 rounded bg-emerald-50/50 border border-emerald-200 flex items-center justify-between text-xs">
                       <div>
-                        <span className="text-[10px] text-emerald-700 block font-semibold">
-                          Cuota aprox. ({need.termMonths}m):
+                        <span className="text-[10px] text-emerald-900 block font-medium">
+                          Cuota proyectada ({need.termMonths}m):
                         </span>
-                        <span className="font-black text-slate-950 text-sm font-mono tabular-nums">
-                          {formatCOP(estimatedInstallment)} / mes
+                        <span className="font-finance font-bold tabular-nums text-emerald-950 text-sm">
+                          {formatCOP(calculatedInstallment)} / mes
                         </span>
                       </div>
-                      <span className="text-[10px] bg-emerald-500 text-slate-950 font-extrabold px-2 py-0.5 rounded-md">
-                        Simulada
+                      <span className="text-[10px] font-mono text-emerald-800 px-1.5 py-0.5 rounded bg-emerald-100 border border-emerald-200">
+                        Francés
                       </span>
                     </div>
                   )}
 
-                  {/* Requisitos clave */}
-                  <div className="space-y-1.5 pt-1">
-                    <span className="text-[11px] font-bold text-slate-700 block">
-                      Requisitos clave:
+                  {/* Lista de Requisitos de Admisibilidad */}
+                  <div className="space-y-1 pt-1">
+                    <span className="text-[11px] font-semibold text-neutral-700 block">
+                      Requisitos de admisibilidad:
                     </span>
                     {opt.requirements.slice(0, 2).map((req, i) => (
-                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-600">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-1.5 text-[11px] text-neutral-600">
+                        <ShieldCheck className="w-3 h-3 text-emerald-700 shrink-0 mt-0.5" />
                         <span className="line-clamp-1">{req}</span>
                       </div>
                     ))}
                   </div>
+
                 </div>
 
-                {/* Card Actions Footer */}
-                <div className="p-4 bg-slate-50/80 border-t border-slate-100 rounded-b-3xl flex items-center gap-2">
+                {/* Pie de Acciones de Ficha */}
+                <div className="p-3 bg-neutral-50 border-t border-neutral-200 flex items-center gap-2">
                   <button
                     onClick={() => onToggleCompare(opt.id)}
-                    className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-1.5 select-none ${
+                    className={`flex-1 py-1.5 px-2.5 text-xs font-semibold rounded border transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-500 text-slate-950 border-emerald-500 shadow-glow-sm'
-                        : 'bg-white text-slate-700 border-slate-300 hover:border-emerald-500/50'
+                        ? 'bg-neutral-900 text-white border-neutral-900'
+                        : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-400'
                     }`}
                   >
                     {isSelected ? (
                       <>
-                        <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        <span>Seleccionada</span>
+                        <Check className="w-3 h-3 stroke-[2.5]" />
+                        <span>En Comparativa</span>
                       </>
                     ) : (
                       <>
-                        <Plus className="w-3.5 h-3.5" />
+                        <Plus className="w-3 h-3" />
                         <span>Comparar</span>
                       </>
                     )}
@@ -254,45 +304,47 @@ export default function CatalogStep({
 
                   <button
                     onClick={() => onSelectForSimulation(opt)}
-                    className="py-2.5 px-3.5 text-xs font-bold text-emerald-600 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors flex items-center gap-1.5"
-                    title="Simular en tiempo real"
+                    className="py-1.5 px-3 text-xs font-semibold text-neutral-800 bg-white hover:bg-neutral-100 border border-neutral-300 rounded transition-colors flex items-center gap-1 cursor-pointer"
+                    title="Simular bajo estos parámetros"
                   >
-                    <Calculator className="w-3.5 h-3.5" />
+                    <Calculator className="w-3 h-3 text-neutral-600" />
                     <span>Simular</span>
                   </button>
                 </div>
+
               </div>
             );
           })
         )}
       </div>
 
-      {/* Floating Compare Drawer (Sticky at Bottom) */}
+      {/* Docking Bar Flotante de Comparativa */}
       {selectedForCompare.length > 0 && (
-        <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-1.5rem)] max-w-3xl bg-slate-900 text-white p-3.5 sm:p-4 rounded-3xl shadow-2xl border border-slate-700/60 flex flex-row items-center justify-between gap-3">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-2xl bg-neutral-900 text-white p-3 rounded border border-neutral-800 shadow-elevated flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-black shrink-0">
-              {selectedForCompare.length}
-            </div>
+            <span className="font-mono text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
+              {selectedForCompare.length} de 3
+            </span>
             <div className="min-w-0">
-              <p className="text-xs sm:text-sm font-bold text-white truncate">
-                {selectedForCompare.length === 1 ? '1 para comparar' : `${selectedForCompare.length} para comparar`}
+              <p className="text-xs font-semibold text-white truncate">
+                Alternativas seleccionadas para contraste técnico
               </p>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                Contrasta costos, plazos y requisitos lado a lado.
+              <p className="text-[11px] text-neutral-400 hidden sm:block">
+                Compara costo financiero total, requerimientos de garantías y tiempos de desembolso.
               </p>
             </div>
           </div>
 
           <button
             onClick={onOpenCompare}
-            className="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all shadow-glow-sm flex items-center gap-1.5 sm:gap-2 shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer shadow-subtle"
           >
-            <span>Ver Comparativa</span>
-            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span>Ver Matriz Comparativa</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
+
     </div>
   );
 }

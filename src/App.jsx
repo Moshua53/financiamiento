@@ -10,6 +10,7 @@ import AuthGate from './components/AuthGate';
 import FinancierDashboard from './components/FinancierDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 import { 
   mockFinancingOptions, 
@@ -40,8 +41,8 @@ function AppContent() {
     }
   }, []);
 
-  const showNotification = (msg) => {
-    setNotification(msg);
+  const showNotification = (msg, type = 'info') => {
+    setNotification({ text: msg, type });
     setTimeout(() => setNotification(null), 4000);
   };
 
@@ -81,7 +82,7 @@ function AppContent() {
               maxAcceptableRate: Number(data.max_acceptable_rate) || 24,
             });
             setMaxUnlockedStep(4);
-            showNotification('📂 Proyecto cargado automáticamente desde Supabase');
+            showNotification('Proyecto cargado automáticamente desde Supabase PostgreSQL', 'success');
           }
         }
       } catch (err) {
@@ -97,7 +98,7 @@ function AppContent() {
     setNeed(mockDefaultNeed);
     setSelectedForCompare(['bancolombia-pyme', 'sempli-fintech']);
     setMaxUnlockedStep(4);
-    showNotification('✨ Datos de ejemplo cargados — Flujo completo desbloqueado');
+    showNotification('Datos de prueba cargados: Flujo completo desbloqueado', 'success');
   };
 
   const handleReset = () => {
@@ -118,13 +119,13 @@ function AppContent() {
       termMonths: 12,
       purpose: 'Capital de Trabajo',
       purposeDetails: '',
-      maxAcceptableRate: 25
+      maxAcceptableRate: 22.0
     });
     setSelectedForCompare([]);
     setActiveOptionForSim(null);
     setCurrentStep(1);
     setMaxUnlockedStep(1);
-    showNotification('Formularios restablecidos — Paso 1 activo');
+    showNotification('Formularios restablecidos a valores por defecto (Paso 01)', 'info');
   };
 
   const handleToggleCompare = (id) => {
@@ -133,7 +134,7 @@ function AppContent() {
         return prev.filter(item => item !== id);
       }
       if (prev.length >= 3) {
-        showNotification('⚠️ Puedes comparar un máximo de 3 alternativas a la vez');
+        showNotification('Límite alcanzado: Puedes comparar un máximo de 3 alternativas a la vez', 'warning');
         return prev;
       }
       return [...prev, id];
@@ -150,7 +151,7 @@ function AppContent() {
   // Guardar y publicar solicitud de emprendimiento en Supabase
   const handlePublish = async () => {
     if (!profile.name || !profile.founder) {
-      showNotification('⚠️ Completa el Nombre y Fundador de tu emprendimiento en el Paso 1 antes de publicar.');
+      showNotification('Completa la Razón Social y el Fundador en el Paso 01 antes de publicar.', 'warning');
       setCurrentStep(1);
       return;
     }
@@ -184,7 +185,7 @@ function AppContent() {
         if (error) throw error;
       }
 
-      // Sincronizar también en almacenamiento local para que esté inmediatamente disponible
+      // Sincronizar también en almacenamiento local para disponibilidad inmediata
       const localSaved = localStorage.getItem('financia_local_emprendimientos');
       let list = [];
       if (localSaved) {
@@ -194,23 +195,23 @@ function AppContent() {
       list.unshift({ ...newRecord, id: demoId, created_at: new Date().toISOString() });
       localStorage.setItem('financia_local_emprendimientos', JSON.stringify(list));
 
-      showNotification('🚀 ¡Solicitud publicada con éxito! Visible ahora para Financiadores.');
+      showNotification('Solicitud publicada con éxito. Visible en la mesa de financiadores.', 'success');
     } catch (err) {
       console.error('Error publicando emprendimiento:', err);
-      showNotification(`❌ Error al publicar: ${err.message || 'Intenta de nuevo'}`);
+      showNotification(`Error al publicar: ${err.message || 'Intenta de nuevo'}`, 'danger');
     } finally {
       setIsPublishing(false);
     }
   };
 
-  // 1. Loading State
+  // 1. Estado de Carga
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500 mb-3"></div>
-          <p className="text-xs text-slate-400 font-semibold tracking-wider uppercase">
-            Cargando Financia+...
+      <div className="min-h-screen flex items-center justify-center bg-neutral-900 text-white">
+        <div className="text-center space-y-2">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+          <p className="text-xs font-mono text-neutral-400 tracking-wider uppercase">
+            Iniciando plataforma institucional Financia+...
           </p>
         </div>
       </div>
@@ -222,15 +223,19 @@ function AppContent() {
     return <AuthGate />;
   }
 
-  // 3. Si el rol es Financiador -> mostrar nuevo Dashboard con todos los emprendimientos subidos
+  // 3. Si el rol es Financiador -> Dashboard de Financiador
   if (role === 'financiador') {
     return (
-      <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+      <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900">
         
-        {/* Toast Notification */}
+        {/* Toast Notification Institucional */}
         {notification && (
-          <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/60 text-xs font-bold animate-fadeIn flex items-center gap-2">
-            <span>{notification}</span>
+          <div className="fixed top-16 right-4 z-50 bg-neutral-900 text-white px-3.5 py-2.5 rounded border border-neutral-700 shadow-elevated text-xs font-medium flex items-center gap-2">
+            {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+            {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
+            {notification.type === 'danger' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />}
+            {notification.type === 'info' && <Info className="w-4 h-4 text-neutral-400 shrink-0" />}
+            <span>{notification.text}</span>
           </div>
         )}
 
@@ -238,27 +243,27 @@ function AppContent() {
         <Navbar />
 
         {/* Main Content: Dashboard de Financiador */}
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <FinancierDashboard />
         </main>
 
-        {/* Institutional Academic Footer */}
-        <footer className="bg-white border-t border-slate-200 py-8 text-xs text-slate-500 mt-auto">
+        {/* Footer Institucional Académico */}
+        <footer className="bg-white border-t border-neutral-200 py-6 text-xs text-neutral-500 mt-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div>
               <div className="flex items-center justify-center md:justify-start gap-2">
-                <span className="font-black text-slate-900 text-sm tracking-tight">
-                  financia<span className="text-emerald-500 font-black">+</span>
+                <span className="font-bold text-neutral-900 text-sm tracking-tight">
+                  financia<span className="text-emerald-600 font-bold">+</span>
                 </span>
-                <span className="text-[10px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded">
+                <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-1.5 py-0.5 rounded border border-neutral-200">
                   Módulo Financiadores
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Equipo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
+              <p className="text-[11px] text-neutral-500 mt-1">
+                Equipo de Desarrollo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
               </p>
             </div>
-            <div className="text-[11px] text-slate-400 font-mono">
+            <div className="text-[11px] text-neutral-400 font-mono">
               Ecosistema de Financiamiento & Inversión • Supabase PostgreSQL
             </div>
           </div>
@@ -268,14 +273,18 @@ function AppContent() {
     );
   }
 
-  // 4. Si el rol es Emprendedor -> mostrar la pantalla de siempre (el flujo de 4 pasos)
+  // 4. Si el rol es Emprendedor -> Flujo de 4 pasos
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900">
       
-      {/* Toast Notification */}
+      {/* Toast Notification Institucional */}
       {notification && (
-        <div className="fixed top-20 right-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700/60 text-xs font-bold animate-fadeIn flex items-center gap-2">
-          <span>{notification}</span>
+        <div className="fixed top-16 right-4 z-50 bg-neutral-900 text-white px-3.5 py-2.5 rounded border border-neutral-700 shadow-elevated text-xs font-medium flex items-center gap-2">
+          {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+          {notification.type === 'warning' && <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />}
+          {notification.type === 'danger' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />}
+          {notification.type === 'info' && <Info className="w-4 h-4 text-neutral-400 shrink-0" />}
+          <span>{notification.text}</span>
         </div>
       )}
 
@@ -286,7 +295,7 @@ function AppContent() {
           if (step <= maxUnlockedStep) {
             setCurrentStep(step);
           } else {
-            showNotification(`🔒 Completa los pasos anteriores para acceder al Paso ${step}`);
+            showNotification(`Paso restringido: Completa los pasos anteriores para acceder al Paso 0${step}`, 'warning');
           }
         }}
         onLoadDemo={handleLoadDemo}
@@ -297,7 +306,7 @@ function AppContent() {
         isPublishing={isPublishing}
       />
 
-      {/* Stepper de navegación con candados secuenciales */}
+      {/* Stepper de navegación técnica */}
       <Stepper
         currentStep={currentStep}
         setCurrentStep={(step) => {
@@ -306,12 +315,12 @@ function AppContent() {
         }}
         maxUnlockedStep={maxUnlockedStep}
         onLockedClick={(stepId) => {
-          showNotification(`🔒 El Paso ${stepId} está bloqueado. Completa el paso actual para continuar.`);
+          showNotification(`Paso 0${stepId} bloqueado: Completa el paso actual para continuar el análisis.`, 'warning');
         }}
       />
 
-      {/* Main Screen Content (4 Pasos para el Emprendedor) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Contenido Principal (4 Pasos para el Emprendedor) */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {currentStep === 1 && (
           <ProfileStep
             profile={profile}
@@ -376,7 +385,7 @@ function AppContent() {
         )}
       </main>
 
-      {/* Side-by-side Comparison Modal (HU-07) */}
+      {/* Modal Comparativo Paralelo */}
       <CompareModal
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
@@ -386,24 +395,24 @@ function AppContent() {
         onSelectForSimulation={handleSelectForSimulation}
       />
 
-      {/* Institutional Academic Footer */}
-      <footer className="bg-white border-t border-slate-200 py-8 text-xs text-slate-500 mt-auto">
+      {/* Footer Institucional Académico */}
+      <footer className="bg-white border-t border-neutral-200 py-6 text-xs text-neutral-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div>
             <div className="flex items-center justify-center md:justify-start gap-2">
-              <span className="font-black text-slate-900 text-sm tracking-tight">
-                financia<span className="text-emerald-500 font-black">+</span>
+              <span className="font-bold text-neutral-900 text-sm tracking-tight">
+                financia<span className="text-emerald-600 font-bold">+</span>
               </span>
-              <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded">
+              <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-1.5 py-0.5 rounded border border-neutral-200">
                 Módulo Emprendedores
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">
-              Equipo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
+            <p className="text-[11px] text-neutral-500 mt-1">
+              Equipo de Desarrollo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
             </p>
           </div>
 
-          <div className="text-[11px] text-slate-400 font-mono">
+          <div className="text-[11px] text-neutral-400 font-mono">
             Búsqueda de alternativas de financiamiento • Supabase PostgreSQL
           </div>
         </div>

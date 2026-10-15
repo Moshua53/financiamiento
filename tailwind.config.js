@@ -8,27 +8,46 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace'],
+        mono: ['"IBM Plex Mono"', 'monospace'],
+        finance: ['"IBM Plex Mono"', 'monospace'],
       },
       colors: {
-        fintech: {
-          bg: '#F8FAFC',          // Light slate background
-          surface: '#FFFFFF',     // Clean card surface
-          card: '#FFFFFF',        // Elevated card surface
-          border: '#E2E8F0',      // Subtle slate border
-          borderLight: '#CBD5E1', // Hover border
-          accent: '#22C55E',      // Emerald primary solvency
-          accentHover: '#16A34A',
-          accentLight: 'rgba(34, 197, 94, 0.12)',
-          blue: '#3B82F6',        // Trust blue
-          indigo: '#6366F1',      // Modern tech
-          gold: '#F59E0B',        // Warning / interest
-          rose: '#EF4444',        // Danger / risk
+        institutional: {
+          bg: '#F8FAFC',
+          darkBg: '#0A0D12',
+          surface: '#FFFFFF',
+          darkSurface: '#12161F',
+          border: '#E2E8F0',
+          darkBorder: '#1E293B',
+          muted: '#64748B',
+        },
+        entrepreneur: {
+          forest: '#0F766E',
+          salvia: '#059669',
+          light: '#ECFDF5',
+          border: '#A7F3D0',
+        },
+        financier: {
+          navy: '#1D4ED8',
+          cobalt: '#2563EB',
+          light: '#EFF6FF',
+          border: '#BFDBFE',
+        },
+        risk: {
+          lowBg: '#ECFDF5',
+          lowText: '#065F46',
+          lowBorder: '#A7F3D0',
+          midBg: '#FFFBEB',
+          midText: '#92400E',
+          midBorder: '#FDE68A',
+          highBg: '#FFF1F2',
+          highText: '#9F1239',
+          highBorder: '#FECDD3',
         }
       },
       boxShadow: {
-        'glow-sm': '0 0 15px -3px rgba(34, 197, 94, 0.15)',
-        'glow-blue': '0 0 20px -3px rgba(59, 130, 246, 0.2)',
+        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'elevated': '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
       }
     },
   },

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  Building2, Search, Filter, SlidersHorizontal, ArrowUpRight, 
-  TrendingUp, ShieldCheck, AlertTriangle, ShieldAlert, Sparkles, 
-  DollarSign, Briefcase, RefreshCw, CheckCircle2, MapPin, Calendar, Users
+  Building2, Search, SlidersHorizontal, ArrowUpRight, 
+  ShieldCheck, AlertTriangle, ShieldAlert, 
+  Briefcase, RefreshCw, MapPin, LayoutGrid, Table, Calendar, Users
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -13,14 +13,14 @@ import {
 } from '../utils/financialCalculations';
 import EmprendimientoDetailModal from './EmprendimientoDetailModal';
 
-// Datos semilla de respaldo si Supabase está en modo local o la tabla está vacía
+// Datos institucionales de respaldo si Supabase está en modo local o la tabla está vacía
 const FALLBACK_SEED_EMPRENDIMIENTOS = [
   {
     id: 'a1111111-1111-1111-1111-111111111111',
     name: 'EcoModa Sostenible SAS',
     founder: 'Camila Morales & Moises Galindo',
-    sector: 'Manufactura e Industria',
-    stage: 'Crecimiento / Tracción',
+    sector: 'Moda y Manufactura',
+    stage: 'Crecimiento Temprano',
     city: 'Medellín, Antioquia',
     years_operating: 2,
     employees: 5,
@@ -40,7 +40,7 @@ const FALLBACK_SEED_EMPRENDIMIENTOS = [
     name: 'AgroTech Drones Colombia',
     founder: 'Alejandro Restrepo',
     sector: 'Tecnología y Software',
-    stage: 'Temprana / Validación',
+    stage: 'Semilla / Validación',
     city: 'Manizales, Caldas',
     years_operating: 1,
     employees: 3,
@@ -60,7 +60,7 @@ const FALLBACK_SEED_EMPRENDIMIENTOS = [
     name: 'BioSnacks Andinos',
     founder: 'Valentina Rojas',
     sector: 'Alimentos y Gastronomía',
-    stage: 'Consolidado / Expansión',
+    stage: 'Consolidación',
     city: 'Bogotá D.C.',
     years_operating: 4,
     employees: 8,
@@ -69,7 +69,7 @@ const FALLBACK_SEED_EMPRENDIMIENTOS = [
     description: 'Snacks saludables deshidratados a base de tubérculos y frutas exóticas colombianas con certificación INVIMA para exportación.',
     amount: 80000000,
     term_months: 48,
-    purpose: 'Capital de Trabajo / Stock',
+    purpose: 'Capital de Trabajo',
     purpose_details: 'Materia prima y empaques compostables para despachos a cadenas de retail nacional.',
     max_acceptable_rate: 20.5,
     status: 'activo',
@@ -79,8 +79,8 @@ const FALLBACK_SEED_EMPRENDIMIENTOS = [
     id: 'd4444444-4444-4444-4444-444444444444',
     name: 'ClinicaVet Móvil 24/7',
     founder: 'Dra. Luisa Fernanda Gómez',
-    sector: 'Salud y Bienestar',
-    stage: 'Crecimiento / Tracción',
+    sector: 'Salud y Farmacéutica',
+    stage: 'Crecimiento Temprano',
     city: 'Cali, Valle del Cauca',
     years_operating: 2,
     employees: 4,
@@ -104,11 +104,13 @@ export default function FinancierDashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSector, setSelectedSector] = useState('Todos');
+  const [selectedRisk, setSelectedRisk] = useState('Todos'); // 'Todos' | 'A-1' | 'B-2' | 'C-3'
   const [maxAmountFilter, setMaxAmountFilter] = useState(150000000);
+  const [viewMode, setViewMode] = useState('cards'); // 'cards' | 'grid'
   const [selectedEmprendimiento, setSelectedEmprendimiento] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  // Cargar emprendimientos desde Supabase o fallback local
+  // Consulta de solicitudes en Supabase con fallback local
   const fetchEmprendimientos = async () => {
     setLoading(true);
     try {
@@ -125,14 +127,12 @@ export default function FinancierDashboard() {
         }
       }
 
-      // Fallback a localStorage (donde el emprendedor puede haber guardado en modo local) + semillas
       const localSaved = localStorage.getItem('financia_local_emprendimientos');
       let combined = [...FALLBACK_SEED_EMPRENDIMIENTOS];
       if (localSaved) {
         try {
           const parsed = JSON.parse(localSaved);
           if (Array.isArray(parsed)) {
-            // Unir sin duplicados de id
             const existingIds = new Set(parsed.map(p => p.id));
             combined = [...parsed, ...FALLBACK_SEED_EMPRENDIMIENTOS.filter(s => !existingIds.has(s.id))];
           }
@@ -153,13 +153,12 @@ export default function FinancierDashboard() {
     fetchEmprendimientos();
   }, []);
 
-  // Lista de sectores únicos para el filtro
   const sectors = useMemo(() => {
     const set = new Set(emprendimientos.map(e => e.sector));
     return ['Todos', ...Array.from(set)];
   }, [emprendimientos]);
 
-  // Filtrado reactivo
+  // Filtrado reactivo con semántica de riesgo A-1, B-2, C-3
   const filteredList = useMemo(() => {
     return emprendimientos.filter(item => {
       const matchesSearch = 
@@ -171,24 +170,28 @@ export default function FinancierDashboard() {
       const matchesSector = selectedSector === 'Todos' || item.sector === selectedSector;
       const matchesAmount = Number(item.amount) <= maxAmountFilter;
 
-      return matchesSearch && matchesSector && matchesAmount;
-    });
-  }, [emprendimientos, searchQuery, selectedSector, maxAmountFilter]);
+      // Evaluación del riesgo
+      const monthlyPayment = calculateMonthlyPayment(
+        item.amount, 
+        item.max_acceptable_rate || 22.0, 
+        item.term_months || 12
+      );
+      const capacity = evaluateFinancialCapacity(monthlyPayment, item.monthly_sales, item.monthly_costs);
+      const matchesRisk = selectedRisk === 'Todos' || capacity.code === selectedRisk;
 
-  // Métricas agregadas para las tarjetas KPI
+      return matchesSearch && matchesSector && matchesAmount && matchesRisk;
+    });
+  }, [emprendimientos, searchQuery, selectedSector, selectedRisk, maxAmountFilter]);
+
+  // Métricas de mercado en tipografía mono
   const stats = useMemo(() => {
     const totalSolicitudes = emprendimientos.length;
     const totalCapital = emprendimientos.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
     const avgTicket = totalSolicitudes > 0 ? totalCapital / totalSolicitudes : 0;
-    
-    // Conteo por sector
-    const sectorCounts = {};
-    emprendimientos.forEach(e => {
-      sectorCounts[e.sector] = (sectorCounts[e.sector] || 0) + 1;
-    });
-    const topSector = Object.entries(sectorCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'N/A';
+    const totalRates = emprendimientos.reduce((acc, curr) => acc + (Number(curr.max_acceptable_rate) || 22), 0);
+    const avgRate = totalSolicitudes > 0 ? totalRates / totalSolicitudes : 0;
 
-    return { totalSolicitudes, totalCapital, avgTicket, topSector };
+    return { totalSolicitudes, totalCapital, avgTicket, avgRate };
   }, [emprendimientos]);
 
   const handleOpenDetail = (emp) => {
@@ -197,157 +200,257 @@ export default function FinancierDashboard() {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn pb-16">
+    <div className="space-y-6 pb-16">
       
-      {/* Top Banner de Bienvenida para el Financiador */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      {/* Encabezado Institucional del Portal */}
+      <div className="border-b border-neutral-200 pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-2">
-              <Briefcase className="w-3.5 h-3.5" />
-              Panel de Inversión & Evaluación Crediticia
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Ecosistema de Emprendimientos Subidos
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+              Portal Financiadores & Inversionistas / Mesa de Evaluación
+            </span>
+            <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
+              Pipeline de Oportunidades y Auditoría Crediticia
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 max-w-2xl">
-              Explora las solicitudes registradas por emprendedores en Colombia. Evalúa la viabilidad financiera, el margen operacional y el semáforo de endeudamiento antes de colocar capital.
-            </p>
           </div>
 
           <button
             onClick={fetchEmprendimientos}
             disabled={loading}
-            className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all active:scale-[0.98]"
-            title="Recargar solicitudes desde la base de datos"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded bg-neutral-900 text-white hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer self-start md:self-auto shadow-subtle"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Actualizar</span>
+            <span>Actualizar Pipeline</span>
           </button>
         </div>
-
-        {/* Global KPI Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-6 border-t border-slate-800">
-          <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-              Solicitudes Activas
-            </span>
-            <span className="text-2xl font-black text-white mt-1 block">
-              {stats.totalSolicitudes}
-            </span>
-            <span className="text-[10px] text-emerald-400 font-medium">100% verificadas</span>
-          </div>
-
-          <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-              Capital Requerido Total
-            </span>
-            <span className="text-2xl font-black text-indigo-300 mt-1 block tabular-nums">
-              ${(stats.totalCapital / 1000000).toFixed(0)}M <span className="text-xs text-slate-400 font-normal">COP</span>
-            </span>
-            <span className="text-[10px] text-slate-400">Demanda acumulada</span>
-          </div>
-
-          <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-              Ticket Promedio
-            </span>
-            <span className="text-2xl font-black text-white mt-1 block tabular-nums">
-              ${(stats.avgTicket / 1000000).toFixed(1)}M <span className="text-xs text-slate-400 font-normal">COP</span>
-            </span>
-            <span className="text-[10px] text-slate-400">Por solicitud</span>
-          </div>
-
-          <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
-            <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
-              Sector Dominante
-            </span>
-            <span className="text-base font-black text-white mt-2 block truncate">
-              {stats.topSector}
-            </span>
-            <span className="text-[10px] text-slate-400">Mayor volumen</span>
-          </div>
-        </div>
-
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      {/* KPI Bar Superior en Tipografía Mono */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+            Solicitudes Activas
+          </span>
+          <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
+            {stats.totalSolicitudes}
+          </span>
+          <span className="text-[10px] font-mono text-emerald-800 block mt-0.5">
+            Verificación en línea
+          </span>
+        </div>
+
+        <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+            Capital Agregado Solicitado
+          </span>
+          <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
+            ${(stats.totalCapital / 1000000).toFixed(0)}M COP
+          </span>
+          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
+            Demanda acumulada en pipeline
+          </span>
+        </div>
+
+        <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+            Ticket Promedio
+          </span>
+          <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
+            ${(stats.avgTicket / 1000000).toFixed(1)}M COP
+          </span>
+          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
+            Por solicitud empresarial
+          </span>
+        </div>
+
+        <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+            Tasa Promedio Esperada
+          </span>
+          <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
+            {stats.avgRate.toFixed(1)}% E.A.
+          </span>
+          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
+            Expectativa de mercado
+          </span>
+        </div>
+      </div>
+
+      {/* Barra de Herramientas Analítica: Filtros y Conmutador de Vista */}
+      <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         
-        {/* Real-time search */}
+        {/* Búsqueda textual */}
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+          <Search className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-2.5" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar por emprendimiento, fundador, ciudad o modelo..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+            placeholder="Buscar por razón social, fundador, sector o ciudad..."
+            className="w-full pl-8 pr-3 py-1.5 bg-neutral-50 border border-neutral-300 rounded text-xs text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none"
           />
         </div>
 
-        {/* Sector Filter */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-          <select
-            value={selectedSector}
-            onChange={(e) => setSelectedSector(e.target.value)}
-            className="bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-800 py-2.5 px-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none"
-          >
-            {sectors.map(sec => (
-              <option key={sec} value={sec}>
-                {sec === 'Todos' ? 'Todos los Sectores' : sec}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Max Amount Slider / Display */}
-        <div className="flex items-center gap-3 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
-          <SlidersHorizontal className="w-4 h-4 text-slate-400" />
-          <div className="text-xs">
-            <span className="text-[10px] text-slate-500 block leading-tight">Monto máx:</span>
-            <span className="font-bold text-slate-800 tabular-nums">
-              ${(maxAmountFilter / 1000000).toFixed(0)}M COP
-            </span>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Filtro de Calificación de Riesgo */}
+          <div className="flex items-center gap-1.5 bg-neutral-50 px-2.5 py-1.5 rounded border border-neutral-200 text-xs">
+            <span className="text-neutral-500 text-[11px] font-mono">Riesgo:</span>
+            <select
+              value={selectedRisk}
+              onChange={(e) => setSelectedRisk(e.target.value)}
+              className="bg-transparent text-neutral-900 text-xs font-semibold outline-none cursor-pointer"
+            >
+              <option value="Todos">Todos (A-1, B-2, C-3)</option>
+              <option value="A-1">A-1 / Solvencia Alta (≤20%)</option>
+              <option value="B-2">B-2 / Vigilancia (20-35%)</option>
+              <option value="C-3">C-3 / Límite Excedido (&gt;35%)</option>
+            </select>
           </div>
-          <input
-            type="range"
-            min={10000000}
-            max={150000000}
-            step={5000000}
-            value={maxAmountFilter}
-            onChange={(e) => setMaxAmountFilter(Number(e.target.value))}
-            className="w-24 accent-indigo-600 cursor-pointer"
-          />
+
+          {/* Filtro de Sector */}
+          <div className="flex items-center gap-1.5 bg-neutral-50 px-2.5 py-1.5 rounded border border-neutral-200 text-xs">
+            <select
+              value={selectedSector}
+              onChange={(e) => setSelectedSector(e.target.value)}
+              className="bg-transparent text-neutral-800 text-xs font-medium outline-none cursor-pointer"
+            >
+              {sectors.map(sec => (
+                <option key={sec} value={sec}>
+                  {sec === 'Todos' ? 'Todos los Sectores' : sec}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filtro de Monto Máximo */}
+          <div className="flex items-center gap-2 bg-neutral-50 px-2.5 py-1.5 rounded border border-neutral-200 text-xs">
+            <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-500" />
+            <span className="font-mono text-[11px] text-neutral-700">
+              Hasta ${(maxAmountFilter / 1000000).toFixed(0)}M COP
+            </span>
+            <input
+              type="range"
+              min={10000000}
+              max={150000000}
+              step={5000000}
+              value={maxAmountFilter}
+              onChange={(e) => setMaxAmountFilter(Number(e.target.value))}
+              className="w-16 h-1 accent-neutral-900 cursor-pointer"
+            />
+          </div>
+
+          {/* Conmutador de Vista: Tarjetas vs Data Grid */}
+          <div className="flex items-center rounded border border-neutral-200 bg-neutral-100 p-0.5">
+            <button
+              onClick={() => setViewMode('cards')}
+              className={`p-1.5 rounded text-xs transition-colors cursor-pointer ${
+                viewMode === 'cards' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-900'
+              }`}
+              title="Vista en Tarjetas de Análisis"
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded text-xs transition-colors cursor-pointer ${
+                viewMode === 'grid' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-900'
+              }`}
+              title="Vista en Tabla Densa (Data Grid)"
+            >
+              <Table className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
 
       </div>
 
-      {/* Grid of Emprendimientos */}
+      {/* Listado de Oportunidades: Tarjetas o Data Grid */}
       {loading ? (
-        <div className="py-20 text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
-          <p className="text-xs text-slate-500">Cargando oportunidades desde Supabase...</p>
+        <div className="p-12 text-center text-xs font-mono text-neutral-500 bg-white rounded border border-neutral-200">
+          Cargando solicitudes desde el repositorio central...
         </div>
       ) : filteredList.length === 0 ? (
-        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-xs">
-          <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-slate-800">No se encontraron emprendimientos</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            No hay solicitudes que coincidan con los criterios de búsqueda o filtros seleccionados.
+        <div className="bg-white p-12 rounded border border-neutral-200 text-center space-y-3">
+          <Building2 className="w-8 h-8 text-neutral-400 mx-auto" />
+          <h3 className="font-semibold text-neutral-900 text-sm">No hay solicitudes con los filtros aplicados</h3>
+          <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+            Prueba ajustando los rangos de riesgo, sector económico o monto máximo para ampliar el pipeline.
           </p>
           <button
-            onClick={() => { setSearchQuery(''); setSelectedSector('Todos'); setMaxAmountFilter(150000000); }}
-            className="mt-4 px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all"
+            onClick={() => { setSearchQuery(''); setSelectedSector('Todos'); setSelectedRisk('Todos'); setMaxAmountFilter(150000000); }}
+            className="px-3 py-1.5 text-xs font-medium text-neutral-800 bg-neutral-100 hover:bg-neutral-200 rounded border border-neutral-200 transition-colors"
           >
             Limpiar Filtros
           </button>
         </div>
+      ) : viewMode === 'grid' ? (
+        /* VISTA 1: Data Grid (Tabla Densa de Proyectos) */
+        <div className="bg-white rounded border border-neutral-200 shadow-subtle overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-neutral-100/70 border-b border-neutral-200 text-neutral-600 font-mono text-[10px] uppercase">
+                <th className="py-2.5 px-3">Razón Social & Fundador</th>
+                <th className="py-2.5 px-3">Sector</th>
+                <th className="py-2.5 px-3">Calificación</th>
+                <th className="py-2.5 px-3 text-right">Monto</th>
+                <th className="py-2.5 px-3 text-right">Plazo</th>
+                <th className="py-2.5 px-3 text-right">Ventas / mes</th>
+                <th className="py-2.5 px-3 text-right">Cuota Proyectada</th>
+                <th className="py-2.5 px-3 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              {filteredList.map((emp) => {
+                const sales = Number(emp.monthly_sales) || 0;
+                const costs = Number(emp.monthly_costs) || 0;
+                const amount = Number(emp.amount) || 0;
+                const term = Number(emp.term_months) || 12;
+                const rateEA = Number(emp.max_acceptable_rate) || 22.0;
+                const monthlyPayment = calculateMonthlyPayment(amount, rateEA, term);
+                const capacity = evaluateFinancialCapacity(monthlyPayment, sales, costs);
+
+                return (
+                  <tr key={emp.id} className="hover:bg-neutral-50 transition-colors">
+                    <td className="py-2 px-3">
+                      <span className="font-bold text-neutral-900 block truncate max-w-[200px]">{emp.name}</span>
+                      <span className="text-[10px] text-neutral-500 font-mono">{emp.founder} • {emp.city}</span>
+                    </td>
+                    <td className="py-2 px-3 text-neutral-700 text-[11px] whitespace-nowrap">{emp.sector}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
+                        <span>{capacity.code}</span>
+                      </span>
+                    </td>
+                    <td className="py-2 px-3 text-right font-finance font-bold tabular-nums text-neutral-900 whitespace-nowrap">
+                      {formatCOP(amount)}
+                    </td>
+                    <td className="py-2 px-3 text-right font-mono text-neutral-600 whitespace-nowrap">
+                      {term}m
+                    </td>
+                    <td className="py-2 px-3 text-right font-finance tabular-nums text-neutral-700 whitespace-nowrap">
+                      {formatCOP(sales)}
+                    </td>
+                    <td className="py-2 px-3 text-right font-finance font-semibold tabular-nums text-emerald-800 whitespace-nowrap">
+                      {formatCOP(monthlyPayment)}
+                    </td>
+                    <td className="py-2 px-3 text-center whitespace-nowrap">
+                      <button
+                        onClick={() => handleOpenDetail(emp)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded bg-neutral-900 text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+                      >
+                        <span>Ficha</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        /* VISTA 2: Tarjetas de Análisis de Oportunidad */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredList.map((emp) => {
             const sales = Number(emp.monthly_sales) || 0;
             const costs = Number(emp.monthly_costs) || 0;
@@ -362,117 +465,113 @@ export default function FinancierDashboard() {
             return (
               <div
                 key={emp.id}
-                className="bg-white rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-xl hover:border-indigo-300 transition-all duration-300 flex flex-col justify-between overflow-hidden group"
+                className="bg-white rounded border border-neutral-200 shadow-subtle hover:border-neutral-300 transition-colors flex flex-col justify-between overflow-hidden"
               >
-                {/* Card Top */}
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-2 mb-2.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+                {/* Cabecera de la Tarjeta */}
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
                       {emp.sector}
                     </span>
                     
-                    {/* Semáforo de Riesgo */}
-                    {capacity.status === 'success' && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                        Saludable
-                      </span>
-                    )}
-                    {capacity.status === 'warning' && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                        <AlertTriangle className="w-3 h-3 text-amber-600" />
-                        Moderado
-                      </span>
-                    )}
-                    {capacity.status === 'danger' && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                        <ShieldAlert className="w-3 h-3 text-rose-600" />
-                        Riesgoso
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-base font-black text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
-                    {emp.name}
-                  </h3>
-
-                  <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
-                    <span className="truncate">Por: <strong>{emp.founder}</strong></span>
-                    <span>•</span>
-                    <span className="flex items-center gap-0.5 text-slate-400 shrink-0">
-                      <MapPin className="w-3 h-3" />
-                      {emp.city}
+                    <span className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${
+                        capacity.color === 'emerald' ? 'bg-emerald-600' :
+                        capacity.color === 'amber' ? 'bg-amber-600' : 'bg-rose-600'
+                      }`} />
+                      <span>{capacity.pillLabel}</span>
                     </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-bold text-neutral-900 truncate">
+                      {emp.name}
+                    </h3>
+                    <p className="text-[11px] text-neutral-500 flex items-center gap-1.5 mt-0.5">
+                      <span>{emp.founder}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-0.5">
+                        <MapPin className="w-3 h-3 text-neutral-400" />
+                        {emp.city}
+                      </span>
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-neutral-600 line-clamp-2 leading-relaxed">
+                    {emp.description || 'Sin descripción detallada de propuesta de valor.'}
                   </p>
 
-                  <p className="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
-                    {emp.description || 'Sin descripción detallada disponible.'}
-                  </p>
-
-                  {/* Bloque de Requerimiento de Capital */}
-                  <div className="mt-4 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                    <div className="flex items-center justify-between text-xs">
-                      <div>
-                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">Monto Solicitado</span>
-                        <span className="text-sm font-black text-slate-900 tabular-nums">
-                          {formatCOP(amount)}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[10px] text-slate-400 uppercase font-semibold block">Plazo</span>
-                        <span className="text-sm font-bold text-slate-700">
-                          {term} meses
-                        </span>
-                      </div>
+                  {/* Rejilla 2x2 de Métricas Clave */}
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-neutral-50 border border-neutral-200 text-xs">
+                    <div>
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Monto Solicitado</span>
+                      <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
+                        {formatCOP(amount)}
+                      </span>
                     </div>
 
-                    <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-500">Destino:</span>
-                      <span className="font-semibold text-indigo-700 truncate max-w-[170px]">
-                        {emp.purpose}
+                    <div>
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Plazo de Pago</span>
+                      <span className="font-mono font-medium text-neutral-800 block mt-0.5">
+                        {term} meses
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-neutral-200">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Ventas Mensuales</span>
+                      <span className="font-finance tabular-nums text-neutral-700 block mt-0.5">
+                        {formatCOP(sales)}
+                      </span>
+                    </div>
+
+                    <div className="pt-2 border-t border-neutral-200">
+                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Cuota Proyectada</span>
+                      <span className="font-finance font-bold tabular-nums text-emerald-800 block mt-0.5">
+                        {formatCOP(monthlyPayment)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Indicadores Financieros Rápidos */}
-                  <div className="grid grid-cols-2 gap-2 mt-3 text-[11px]">
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-100">
-                      <span className="text-[10px] text-slate-400 block font-medium">Ventas / mes</span>
-                      <span className="font-bold text-slate-800 tabular-nums">{formatCOP(sales)}</span>
+                  {/* Barra de apalancamiento sobre flujo operativo */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[11px] font-mono text-neutral-500">
+                      <span>Carga sobre facturación:</span>
+                      <span className="font-bold text-neutral-900">{capacity.debtRatio}%</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-slate-50 border border-slate-100">
-                      <span className="text-[10px] text-slate-400 block font-medium">Margen Operativo</span>
-                      <span className={`font-bold ${margin >= 15 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                        {margin}%
-                      </span>
+                    <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
+                      <div 
+                        style={{ width: `${Math.min(100, Number(capacity.debtRatio))}%` }} 
+                        className={`h-full ${
+                          capacity.color === 'emerald' ? 'bg-emerald-600' :
+                          capacity.color === 'amber' ? 'bg-amber-600' : 'bg-rose-600'
+                        }`}
+                      />
                     </div>
                   </div>
-
                 </div>
 
-                {/* Card Footer Action */}
-                <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                  <div className="text-[10px] text-slate-400">
-                    Etapa: <strong className="text-slate-600">{emp.stage}</strong>
-                  </div>
+                {/* Pie de Ficha con Acción */}
+                <div className="p-3 bg-neutral-50 border-t border-neutral-200 flex items-center justify-between text-xs">
+                  <span className="font-mono text-[10px] text-neutral-500">
+                    Etapa: {emp.stage}
+                  </span>
 
                   <button
                     type="button"
                     onClick={() => handleOpenDetail(emp)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 border border-indigo-200 transition-all duration-200 shadow-xs"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded bg-neutral-900 text-white hover:bg-neutral-800 transition-colors cursor-pointer"
                   >
-                    <span>Ver Ficha</span>
+                    <span>Auditar Ficha</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
-
               </div>
             );
           })}
         </div>
       )}
 
-      {/* Modal de Ficha Detallada */}
+      {/* Expediente de Debida Diligencia */}
       <EmprendimientoDetailModal
         emprendimiento={selectedEmprendimiento}
         isOpen={isDetailOpen}

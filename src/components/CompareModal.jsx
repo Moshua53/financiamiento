@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
-  X, CheckCircle2, XCircle, Calculator, ExternalLink, Award, 
-  ShieldAlert, Clock, Building2, Check 
+  X, Calculator, ShieldCheck, Clock, Building2, 
+  Award, AlertCircle, Check
 } from 'lucide-react';
 import { formatCOP, calculateLoanSummary } from '../utils/financialCalculations';
 
@@ -17,49 +17,72 @@ export default function CompareModal({
 
   const comparedOptions = options.filter(opt => selectedIds.includes(opt.id));
 
-  // Determinar cuál tiene la menor tasa E.A. (excluyendo subsidios 0%)
+  // Determinar menor tasa comercial (excluyendo subsidios 0%)
   const commercialOptions = comparedOptions.filter(o => o.rateEA > 0);
   const lowestRateOption = commercialOptions.length > 0 
     ? commercialOptions.reduce((prev, curr) => prev.rateEA < curr.rateEA ? prev : curr) 
     : null;
 
+  // Asignar esquema de garantías según categoría
+  const getGuaranteeScheme = (opt) => {
+    switch (opt.category) {
+      case 'Bancario':
+        return 'Garantía FGA (Fondo Nacional de Garantías) / Pagaré formal con codeudor o respaldo patrimonial';
+      case 'Fintech':
+        return 'Pagaré desmaterializado / Fianza digital institucional (sin hipoteca)';
+      case 'Capital Semilla':
+        return 'Acuerdo de condonación de deuda contra cumplimiento de metas de empleo (SENA)';
+      case 'Microcrédito':
+        return 'Firma solidaria / Aval personal y visita domiciliaria al establecimiento';
+      case 'Crowdfunding':
+        return 'Pagaré colectivo registrado ante la Bolsa de Valores de Colombia (BVC)';
+      case 'Inversionistas':
+        return 'Pacto de accionistas / Cesión de porcentaje accionario (Equity)';
+      default:
+        return 'Pagaré en blanco con carta de instrucciones';
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
+      <div 
+        className="bg-white rounded border border-neutral-300 w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden shadow-elevated"
+        onClick={(e) => e.stopPropagation()}
+      >
         
-        {/* Modal Header */}
-        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        {/* Cabecera Institucional del Modal */}
+        <div className="px-5 py-3.5 border-b border-neutral-200 flex items-center justify-between bg-neutral-50">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 uppercase tracking-wider">
-                Análisis Comparativo
+              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-200 px-1.5 py-0.5 rounded">
+                Mesa Técnica
               </span>
-              <h2 className="text-base sm:text-xl font-extrabold text-slate-900">
-                Matriz Comparativa Frente a Frente
+              <h2 className="text-base font-bold text-neutral-900 tracking-tight">
+                Matriz Comparativa de Fuentes de Financiación
               </h2>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5 font-mono">
-              Proyección calculada para {formatCOP(need.amount)} a {need.termMonths} meses
+            <p className="text-xs text-neutral-500 font-mono mt-0.5">
+              Cálculos proyectados para {formatCOP(need.amount)} a {need.termMonths} meses
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1.5 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200 transition-colors cursor-pointer"
             aria-label="Cerrar modal de comparativa"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Scrollable Content Matrix */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-6">
+        {/* Contenido: Tabla Comparativa Paralela */}
+        <div className="p-5 overflow-y-auto space-y-6">
           {comparedOptions.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
+            <div className="text-center py-12 text-neutral-500 text-xs">
               No has seleccionado alternativas para comparar. Regresa al catálogo y marca hasta 3 opciones.
             </div>
           ) : (
-            <div className={`grid gap-6 ${
+            <div className={`grid gap-4 ${
               comparedOptions.length === 1 
                 ? 'grid-cols-1 max-w-lg mx-auto' 
                 : comparedOptions.length === 2 
@@ -76,96 +99,101 @@ export default function CompareModal({
                 return (
                   <div
                     key={opt.id}
-                    className={`rounded-3xl p-6 flex flex-col justify-between space-y-5 border-2 transition-all ${
+                    className={`rounded border flex flex-col justify-between p-4 space-y-4 ${
                       isBestRate
-                        ? 'border-emerald-500 bg-emerald-500/[0.02] shadow-glow-sm'
-                        : 'border-slate-200 bg-slate-50/40'
+                        ? 'border-neutral-900 bg-neutral-50/50'
+                        : 'border-neutral-200 bg-white'
                     }`}
                   >
-                    {/* Header Block */}
-                    <div className="space-y-2">
+                    {/* Encabezado de Opción */}
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-md uppercase">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
                           {opt.category}
                         </span>
 
                         {isBestRate && (
-                          <span className="text-[10px] font-black text-emerald-950 bg-emerald-400 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs">
+                          <span className="text-[10px] font-mono text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded flex items-center gap-1 font-semibold">
                             <Award className="w-3 h-3" />
-                            Menor Tasa
+                            Menor Tasa E.A.
                           </span>
                         )}
                       </div>
 
-                      <h3 className="font-extrabold text-slate-900 text-lg leading-tight">
+                      <h3 className="font-bold text-neutral-900 text-base leading-tight">
                         {opt.name}
                       </h3>
-                      <p className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-slate-400" />
+                      <p className="text-xs font-medium text-neutral-500 flex items-center gap-1">
+                        <Building2 className="w-3.5 h-3.5 text-neutral-400" />
                         {opt.institution}
                       </p>
                     </div>
 
-                    {/* Estructura Financiera y Cuotas */}
-                    <div className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5 text-xs">
-                      <span className="font-bold text-slate-900 block text-xs border-b border-slate-100 pb-1.5">
-                        Estructura Financiera & Cuotas
-                      </span>
-
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Tasa Anual:</span>
-                        <span className="font-bold text-slate-900 font-mono">
-                          {opt.rateEA === 0 ? '0% (Capital Semilla)' : `${opt.rateEA}% E.A.`}
+                    {/* Estructura Financiera y Cuota Fija */}
+                    <div className="bg-neutral-50 p-3 rounded border border-neutral-200 space-y-2 text-xs">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-neutral-500">Tasa Efectiva Anual:</span>
+                        <span className="font-finance font-bold tabular-nums text-neutral-900">
+                          {opt.rateEA === 0 ? '0.00% (Subvención)' : `${opt.rateEA.toFixed(2)}% E.A.`}
                         </span>
                       </div>
 
                       {loanCalc ? (
                         <>
-                          <div className="flex justify-between items-baseline">
-                            <span className="text-slate-500">Cuota Mensual:</span>
-                            <span className="font-black text-emerald-600 text-base font-mono tabular-nums">
+                          <div className="flex justify-between items-baseline pt-1 border-t border-neutral-200">
+                            <span className="text-neutral-600 font-medium">Cuota Mensual:</span>
+                            <span className="font-finance font-bold text-neutral-950 text-sm tabular-nums">
                               {formatCOP(loanCalc.monthlyPayment)}
                             </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-500">Intereses Totales:</span>
-                            <span className="font-semibold text-slate-700 font-mono">
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-neutral-500">Intereses Totales:</span>
+                            <span className="font-finance font-medium text-neutral-700 tabular-nums">
                               {formatCOP(loanCalc.totalInterest)}
                             </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-slate-500">Total a Pagar:</span>
-                            <span className="font-bold text-slate-900 font-mono">
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-neutral-500">Costo Total Financiación:</span>
+                            <span className="font-finance font-bold text-neutral-900 tabular-nums">
                               {formatCOP(loanCalc.totalPayment)}
                             </span>
                           </div>
                         </>
                       ) : (
-                        <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 text-[11px] font-semibold">
+                        <div className="p-2 rounded bg-neutral-100 text-neutral-700 text-[11px] font-medium">
                           {opt.repaymentType}
                         </div>
                       )}
 
-                      <div className="flex justify-between pt-1.5 border-t border-slate-100">
-                        <span className="text-slate-500">Desembolso:</span>
-                        <span className="font-semibold text-slate-700 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-400" />
+                      <div className="flex justify-between pt-1 border-t border-neutral-200 text-[11px]">
+                        <span className="text-neutral-500">Tiempo de Respuesta:</span>
+                        <span className="font-medium text-neutral-700 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-neutral-400" />
                           {opt.approvalTime}
                         </span>
                       </div>
                     </div>
 
-                    {/* HU-09: Ventajas & Desventajas */}
-                    <div className="space-y-3.5 text-xs">
+                    {/* Exigencia de Garantías */}
+                    <div className="p-2.5 rounded bg-white border border-neutral-200 space-y-1 text-xs">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+                        Exigencia de Garantías:
+                      </span>
+                      <p className="text-[11px] text-neutral-700 leading-snug">
+                        {getGuaranteeScheme(opt)}
+                      </p>
+                    </div>
+
+                    {/* Ventajas y Consideraciones */}
+                    <div className="space-y-2 text-xs">
                       <div>
-                        <span className="font-bold text-emerald-600 flex items-center gap-1.5 mb-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Ventajas Clave:
+                        <span className="font-semibold text-neutral-900 block text-[11px] mb-1">
+                          Ventajas Estructuradas:
                         </span>
-                        <ul className="space-y-1.5 pl-1">
+                        <ul className="space-y-1">
                           {opt.advantages.map((adv, i) => (
-                            <li key={i} className="text-slate-600 text-[11px] flex items-start gap-1.5">
-                              <span className="text-emerald-500 font-bold">•</span>
+                            <li key={i} className="text-neutral-600 text-[11px] flex items-start gap-1.5">
+                              <span className="text-neutral-400 font-mono">•</span>
                               <span>{adv}</span>
                             </li>
                           ))}
@@ -173,14 +201,13 @@ export default function CompareModal({
                       </div>
 
                       <div>
-                        <span className="font-bold text-rose-600 flex items-center gap-1.5 mb-1.5">
-                          <ShieldAlert className="w-3.5 h-3.5" />
-                          Consideraciones:
+                        <span className="font-semibold text-neutral-900 block text-[11px] mb-1">
+                          Consideraciones de Riesgo:
                         </span>
-                        <ul className="space-y-1.5 pl-1">
+                        <ul className="space-y-1">
                           {opt.disadvantages.map((dis, i) => (
-                            <li key={i} className="text-slate-600 text-[11px] flex items-start gap-1.5">
-                              <span className="text-rose-500 font-bold">•</span>
+                            <li key={i} className="text-neutral-600 text-[11px] flex items-start gap-1.5">
+                              <span className="text-neutral-400 font-mono">•</span>
                               <span>{dis}</span>
                             </li>
                           ))}
@@ -188,29 +215,17 @@ export default function CompareModal({
                       </div>
                     </div>
 
-                    {/* HU-10: Requisitos */}
-                    <div className="pt-3 border-t border-slate-200 text-xs space-y-1.5">
-                      <span className="font-bold text-slate-700 block">
-                        Requisitos de entrada:
-                      </span>
-                      <ul className="space-y-1 text-[11px] text-slate-500 pl-1">
-                        {opt.requirements.map((req, i) => (
-                          <li key={i}>• {req}</li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* CTA Column Action */}
-                    <div className="pt-3">
+                    {/* Acción de Selección para Simulación */}
+                    <div className="pt-2">
                       <button
                         onClick={() => {
                           onClose();
                           onSelectForSimulation(opt);
                         }}
-                        className="w-full py-3 px-4 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-2xl transition-all flex items-center justify-center gap-2 shadow-sm"
+                        className="w-full py-2 px-3 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold text-xs rounded transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-subtle"
                       >
-                        <Calculator className="w-4 h-4" />
-                        <span>Simular con esta Opción</span>
+                        <Calculator className="w-3.5 h-3.5" />
+                        <span>Simular con este Instrumento</span>
                       </button>
                     </div>
 
@@ -221,13 +236,13 @@ export default function CompareModal({
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+        {/* Pie del Modal */}
+        <div className="px-5 py-3 bg-neutral-50 border-t border-neutral-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition-colors"
+            className="px-4 py-1.5 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 text-xs font-semibold rounded transition-colors cursor-pointer"
           >
-            Cerrar Comparativa
+            Cerrar Matriz
           </button>
         </div>
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { 
   X, Building2, MapPin, Calendar, Users, DollarSign, 
-  TrendingUp, ShieldAlert, ShieldCheck, CheckCircle2, 
-  Send, PhoneCall, Mail, AlertTriangle, FileText
+  TrendingUp, ShieldCheck, AlertTriangle, ShieldAlert, 
+  Send, Printer, FileText, CheckCircle2, Briefcase
 } from 'lucide-react';
 import { 
   formatCOP, 
@@ -12,13 +12,14 @@ import {
 
 export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onClose }) {
   const [interestSubmitted, setInterestSubmitted] = useState(false);
+  const [offerNotes, setOfferNotes] = useState('');
 
   if (!isOpen || !emprendimiento) return null;
 
-  // Cálculos financieros
+  // Cálculos financieros institucionales
   const sales = Number(emprendimiento.monthly_sales) || 0;
   const costs = Number(emprendimiento.monthly_costs) || 0;
-  const netFlow = sales - costs;
+  const netFlow = Math.max(0, sales - costs);
   const marginPercent = sales > 0 ? ((netFlow / sales) * 100).toFixed(1) : '0.0';
   
   const amount = Number(emprendimiento.amount) || 0;
@@ -26,234 +27,250 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
   const rateEA = Number(emprendimiento.max_acceptable_rate) || 22.0;
   
   const estimatedPayment = calculateMonthlyPayment(amount, rateEA, termMonths);
-  const healthAssessment = evaluateFinancialCapacity(estimatedPayment, sales, costs);
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'financiado':
-        return <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700">Financiado</span>;
-      case 'en_revision':
-        return <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-700">En Evaluación</span>;
-      default:
-        return <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">Solicitud Activa</span>;
-    }
-  };
-
-  const getRiskPill = () => {
-    if (healthAssessment.status === 'success') {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-          Riesgo Bajo • Saludable ({healthAssessment.debtRatio}% de ingresos)
-        </span>
-      );
-    }
-    if (healthAssessment.status === 'warning') {
-      return (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-          <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-          Riesgo Moderado ({healthAssessment.debtRatio}% de ingresos)
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
-        <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-        Riesgo Elevado ({healthAssessment.debtRatio}% de ingresos)
-      </span>
-    );
-  };
+  const capacity = evaluateFinancialCapacity(estimatedPayment, sales, costs);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-fadeIn">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6">
       <div 
-        className="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all max-h-[92vh] flex flex-col"
+        className="bg-white rounded border border-neutral-300 max-w-4xl w-full shadow-elevated overflow-hidden max-h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Header Modal */}
-        <div className="px-6 py-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-start justify-between">
+        {/* Cabecera del Dossier de Debida Diligencia */}
+        <div className="px-5 py-4 bg-neutral-900 text-white flex items-start justify-between border-b border-neutral-800">
           <div>
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/10 text-emerald-400 border border-white/10">
-                {emprendimiento.sector}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
+                Expediente de Debida Diligencia
               </span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white/10 text-slate-300">
-                {emprendimiento.stage}
+              <span className="text-[10px] font-mono text-neutral-400">
+                REF: {emprendimiento.id?.slice(0, 8) || 'EXP-001'}
               </span>
-              {getStatusBadge(emprendimiento.status)}
             </div>
-            <h3 className="text-xl sm:text-2xl font-black tracking-tight text-white">
+            <h3 className="text-lg font-bold text-white tracking-tight">
               {emprendimiento.name}
             </h3>
-            <p className="text-xs text-slate-300 mt-1 flex items-center gap-3 flex-wrap">
-              <span className="flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-emerald-400" />
-                Fundador: <strong className="text-white">{emprendimiento.founder}</strong>
-              </span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                {emprendimiento.city}
-              </span>
+            <p className="text-xs text-neutral-400 mt-0.5 flex items-center gap-2">
+              <span>Fundador: <strong>{emprendimiento.founder}</strong></span>
+              <span>•</span>
+              <span>{emprendimiento.city}</span>
+              <span>•</span>
+              <span className="font-mono text-[11px] text-neutral-300">{emprendimiento.sector}</span>
             </p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"
-            title="Cerrar modal"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => window.print()}
+              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded transition-colors cursor-pointer"
+              title="Imprimir expediente"
+            >
+              <Printer className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded transition-colors cursor-pointer"
+              title="Cerrar expediente"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Modal Scrollable Body */}
-        <div className="p-6 overflow-y-auto space-y-6 text-slate-700 text-xs">
+        {/* Cuerpo del Expediente */}
+        <div className="p-5 overflow-y-auto space-y-5 text-neutral-800 text-xs">
           
-          {/* Requerimiento de Capital Prominente */}
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-white to-emerald-50/80 border border-indigo-100 shadow-xs">
-            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700">
-                Solicitud de Inversión / Financiamiento
-              </span>
-              {getRiskPill()}
+          {/* Sección 1: Ficha de Registro Legal y Comercial */}
+          <div className="p-4 rounded bg-neutral-50 border border-neutral-200 space-y-3">
+            <div className="flex items-center gap-2 text-neutral-900 font-semibold text-xs border-b border-neutral-200 pb-2">
+              <Building2 className="w-4 h-4 text-neutral-600" />
+              <span>1. Estructura Jurídica y Capacidad Operativa</span>
             </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center sm:text-left">
-              <div>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Monto Solicitado</span>
-                <p className="text-base sm:text-lg font-black text-slate-900 tabular-nums">
-                  {formatCOP(amount)}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Plazo Proyectado</span>
-                <p className="text-base sm:text-lg font-black text-slate-900">
-                  {termMonths} meses
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Cuota Estimada</span>
-                <p className="text-base sm:text-lg font-black text-emerald-600 tabular-nums">
-                  {formatCOP(estimatedPayment)} <span className="text-[10px] text-slate-400 font-normal">/mes</span>
-                </p>
-              </div>
-
-              <div>
-                <span className="text-[10px] text-slate-500 uppercase font-semibold">Tasa Máx. Esperada</span>
-                <p className="text-base sm:text-lg font-black text-indigo-600">
-                  {rateEA}% <span className="text-[10px] text-slate-400 font-normal">E.A.</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-indigo-100/60 flex items-start gap-2">
-              <FileText className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-slate-800">Destino: </strong>
-                <span className="font-semibold text-indigo-900">{emprendimiento.purpose}</span>
-                {emprendimiento.purpose_details && (
-                  <p className="text-slate-600 mt-1 italic">
-                    "{emprendimiento.purpose_details}"
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Salud Financiera y Capacidad Operativa */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3 flex items-center gap-1.5">
-              <TrendingUp className="w-4 h-4 text-emerald-600" />
-              Radiografía Financiera del Negocio
-            </h4>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-500 font-semibold block">Ventas Mensuales</span>
-                <span className="text-sm font-black text-slate-900 tabular-nums">
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Razón Social</span>
+                <span className="font-semibold text-neutral-900 block truncate">{emprendimiento.name}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Representante Legal</span>
+                <span className="font-semibold text-neutral-900 block truncate">{emprendimiento.founder}</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Años de Operación</span>
+                <span className="font-mono font-semibold text-neutral-900 block">{emprendimiento.years_operating} años</span>
+              </div>
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Personal Ocupado</span>
+                <span className="font-mono font-semibold text-neutral-900 block">{emprendimiento.employees} colaboradores</span>
+              </div>
+            </div>
+
+            {emprendimiento.description && (
+              <div className="pt-2 border-t border-neutral-200">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block mb-1">
+                  Descripción del Modelo Operativo:
+                </span>
+                <p className="text-[11px] text-neutral-700 leading-relaxed">
+                  {emprendimiento.description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Sección 2: Diagnóstico Financiero Integral */}
+          <div className="p-4 rounded bg-neutral-50 border border-neutral-200 space-y-3">
+            <div className="flex items-center justify-between text-neutral-900 font-semibold text-xs border-b border-neutral-200 pb-2">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-neutral-600" />
+                <span>2. Diagnóstico Financiero & Calificación Crediticia</span>
+              </div>
+              <span className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
+                <span>Calificación: {capacity.code}</span>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-2.5 rounded bg-white border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 font-mono block">Facturación / Mes</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900 text-sm block mt-0.5">
                   {formatCOP(sales)}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-500 font-semibold block">Costos Operacionales</span>
-                <span className="text-sm font-black text-slate-700 tabular-nums">
+              <div className="p-2.5 rounded bg-white border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 font-mono block">Costos Operativos</span>
+                <span className="font-finance font-semibold tabular-nums text-neutral-700 text-sm block mt-0.5">
                   {formatCOP(costs)}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-500 font-semibold block">Flujo de Caja Neto</span>
-                <span className={`text-sm font-black tabular-nums ${netFlow >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+              <div className="p-2.5 rounded bg-white border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 font-mono block">Flujo de Caja Libre</span>
+                <span className="font-finance font-bold tabular-nums text-emerald-800 text-sm block mt-0.5">
                   {formatCOP(netFlow)}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-500 font-semibold block">Margen Operativo</span>
-                <span className={`text-sm font-black ${Number(marginPercent) >= 15 ? 'text-emerald-600' : 'text-amber-600'}`}>
+              <div className="p-2.5 rounded bg-white border border-neutral-200">
+                <span className="text-[10px] text-neutral-500 font-mono block">Margen Operativo</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900 text-sm block mt-0.5">
                   {marginPercent}%
                 </span>
               </div>
             </div>
+
+            <div className="p-2.5 rounded bg-white border border-neutral-200 text-xs">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-neutral-500">Relación de Apalancamiento Solicitado:</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900">
+                  {capacity.debtRatio}% de facturación mensual
+                </span>
+              </div>
+              <p className="text-[11px] text-neutral-600 mt-1 leading-snug">
+                {capacity.description}
+              </p>
+            </div>
           </div>
 
-          {/* Modelo de Negocio & Características Operacionales */}
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2 flex items-center gap-1.5">
-              <Building2 className="w-4 h-4 text-slate-700" />
-              Descripción del Modelo de Negocio
-            </h4>
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-700 leading-relaxed">
-              {emprendimiento.description || 'El emprendedor no ha registrado una descripción detallada.'}
+          {/* Sección 3: Justificación de Uso de Fondos */}
+          <div className="p-4 rounded bg-neutral-50 border border-neutral-200 space-y-3">
+            <div className="flex items-center gap-2 text-neutral-900 font-semibold text-xs border-b border-neutral-200 pb-2">
+              <FileText className="w-4 h-4 text-neutral-600" />
+              <span>3. Estructuración del Requerimiento de Capital</span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
-              <div className="flex items-center gap-2 p-2.5 bg-slate-100/70 rounded-lg text-slate-600">
-                <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                <span>Tiempo de Operación: <strong>{emprendimiento.years_operating} años</strong></span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Monto Solicitado</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
+                  {formatCOP(amount)}
+                </span>
               </div>
-              <div className="flex items-center gap-2 p-2.5 bg-slate-100/70 rounded-lg text-slate-600">
-                <Users className="w-3.5 h-3.5 text-slate-500" />
-                <span>Equipo de Trabajo: <strong>{emprendimiento.employees} colaboradores</strong></span>
+
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Plazo Amortización</span>
+                <span className="font-mono font-medium text-neutral-900 block mt-0.5">
+                  {termMonths} meses
+                </span>
               </div>
-              <div className="flex items-center gap-2 p-2.5 bg-slate-100/70 rounded-lg text-slate-600">
-                <MapPin className="w-3.5 h-3.5 text-slate-500" />
-                <span>Sede: <strong>{emprendimiento.city}</strong></span>
+
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Cuota Mensual Proyectada</span>
+                <span className="font-finance font-bold tabular-nums text-emerald-800 block mt-0.5">
+                  {formatCOP(estimatedPayment)}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Tasa Máxima Aceptada</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
+                  {rateEA.toFixed(2)}% E.A.
+                </span>
               </div>
             </div>
+
+            <div className="pt-2 border-t border-neutral-200 text-xs">
+              <div className="flex items-start gap-2">
+                <span className="font-semibold text-neutral-900 shrink-0">Destino:</span>
+                <span className="text-neutral-800">{emprendimiento.purpose}</span>
+              </div>
+              {emprendimiento.purpose_details && (
+                <p className="text-[11px] text-neutral-600 mt-1 italic pl-1 border-l-2 border-neutral-300">
+                  "{emprendimiento.purpose_details}"
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Sección 4: Consola de Acción del Financiador */}
+          <div className="p-4 rounded border border-neutral-300 bg-white space-y-3">
+            <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono block">
+              4. Registro de Decisión de Inversión
+            </span>
+
+            {interestSubmitted ? (
+              <div className="p-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>
+                  Intención de financiamiento registrada satisfactoriamente en la mesa de crédito.
+                </span>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <textarea
+                  rows={2}
+                  value={offerNotes}
+                  onChange={(e) => setOfferNotes(e.target.value)}
+                  placeholder="Observaciones de la propuesta de financiamiento, condiciones o tasa indicativa..."
+                  className="w-full px-3 py-2 text-xs bg-neutral-50 border border-neutral-300 rounded text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none"
+                />
+
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setInterestSubmitted(true)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded bg-neutral-900 hover:bg-neutral-800 text-white transition-colors cursor-pointer shadow-subtle"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Manifestar Intención de Financiamiento</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
         </div>
 
-        {/* Footer Actions */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+        {/* Pie del Modal */}
+        <div className="px-5 py-3 bg-neutral-50 border-t border-neutral-200 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-100 rounded-xl transition-all"
+            className="px-4 py-1.5 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 text-xs font-semibold rounded transition-colors cursor-pointer"
           >
-            Cerrar Ficha
+            Cerrar Expediente
           </button>
-
-          {interestSubmitted ? (
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200 animate-fadeIn">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>¡Interés manifestado! Notificación enviada al emprendedor</span>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setInterestSubmitted(true)}
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 rounded-xl shadow-md shadow-indigo-500/20 transition-all active:scale-[0.98]"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>Manifestar Interés de Inversión</span>
-            </button>
-          )}
         </div>
 
       </div>

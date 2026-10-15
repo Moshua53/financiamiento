@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Target, DollarSign, Calendar, Compass, ArrowRight, ArrowLeft, 
-  CheckCircle2, Sparkles, ShieldCheck, Zap, AlertCircle, AlertTriangle, 
-  Info, Activity
+  Check, AlertCircle, Info, ShieldCheck, Activity, Layers
 } from 'lucide-react';
 import { 
   formatCOP, 
@@ -11,21 +10,45 @@ import {
   DEFAULT_REFERENCE_RATE_EA 
 } from '../utils/financialCalculations';
 
-const quickAmounts = [10000000, 20000000, 35000000, 50000000, 80000000, 120000000];
-const termOptions = [6, 12, 18, 24, 36, 48, 60];
+const benchmarkAmounts = [10000000, 25000000, 50000000, 100000000, 150000000];
+const termMonthsOptions = [12, 24, 36, 48, 60];
 
-const purposeOptions = [
-  { id: 'Maquinaria y Tecnología', label: 'Maquinaria y Tecnología', desc: 'Equipos industriales, servidores, software o herramientas' },
-  { id: 'Capital de Trabajo', label: 'Capital de Trabajo / Stock', desc: 'Compra de inventario, materia prima o cobertura operativa' },
-  { id: 'Expansión Comercial', label: 'Expansión & Apertura', desc: 'Nuevo punto de venta, pauta comercial o ferias de negocios' },
-  { id: 'Consolidación de Pasivos', label: 'Consolidación de Deuda', desc: 'Sustituir créditos caros por opciones de menor costo' },
+const structuredPurposes = [
+  {
+    id: 'Maquinaria y Tecnología',
+    label: 'Maquinaria & Equipos de Producción',
+    description: 'Adquisición de activos fijos, tecnología o herramientas industriales.',
+    fieldHint: 'Especifica tipo de activo, vida útil estimada y proveedor previsto:',
+    placeholderHint: 'Ej: Cortadora láser industrial CNC, vida útil 8 años, cotización importación directa.'
+  },
+  {
+    id: 'Capital de Trabajo',
+    label: 'Capital de Trabajo & Inventario',
+    description: 'Adquisición de materias primas, insumos y cobertura del ciclo operativo.',
+    fieldHint: 'Detalla rotación de inventario estimada y temporada de comercialización:',
+    placeholderHint: 'Ej: Compra de lote textil orgánico para producción de colección otoño/invierno (ciclo 90 días).'
+  },
+  {
+    id: 'Expansión Comercial',
+    label: 'Expansión Comercial & Nuevas Sedes',
+    description: 'Apertura de puntos de venta físicos, pauta o desarrollo de nuevos mercados.',
+    fieldHint: 'Describe la plaza geográfica y proyección de incremento en ventas:',
+    placeholderHint: 'Ej: Habilitación de tienda concepto en Medellín y adecuación de módulo logístico.'
+  },
+  {
+    id: 'Consolidación de Pasivos',
+    label: 'Consolidación de Deuda & Pasivos',
+    description: 'Sustitución de líneas crediticias de alto costo por instrumentos institucionales.',
+    fieldHint: 'Relaciona las entidades financieras y tasas vigentes a sustituir:',
+    placeholderHint: 'Ej: Consolidación de 2 microcréditos con tasa > 35% E.A. hacia una sola línea estructurada.'
+  },
 ];
 
 export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   const referenceRateEA = need.maxAcceptableRate || DEFAULT_REFERENCE_RATE_EA;
-  const estimatedPayment = calculateMonthlyPayment(need.amount, referenceRateEA, need.termMonths || 12);
+  const estimatedPayment = calculateMonthlyPayment(need.amount, referenceRateEA, need.termMonths || 24);
   const capacity = evaluateFinancialCapacity(
     estimatedPayment,
     profile?.monthlySales || 0,
@@ -39,7 +62,7 @@ export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
     }));
   };
 
-  const isAmountValid = Number(need.amount) > 0;
+  const isAmountValid = Number(need.amount) >= 1000000;
   const isTermValid = Number(need.termMonths) > 0;
   const isPurposeValid = Boolean(need.purpose);
   const isStepValid = isAmountValid && isTermValid && isPurposeValid;
@@ -53,59 +76,75 @@ export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
     onNext();
   };
 
-  return (
-    <div className="space-y-6 animate-fadeIn">
+  const selectedPurposeConfig = structuredPurposes.find(p => p.id === need.purpose) || structuredPurposes[0];
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Controls (8 cols) */}
+  return (
+    <div className="space-y-6">
+
+      {/* Encabezado Técnico de Sección */}
+      <div className="border-b border-neutral-200 pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
+              Módulo 02 / Estructuración de Demanda
+            </span>
+            <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
+              Definición de Demanda de Capital y Destino
+            </h1>
+          </div>
+          <span className="text-xs font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
+            Parámetros de Amortización
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Controles Principales (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
-          
-          {/* Card: Monto Requerido */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center border border-emerald-500/20 shrink-0">
-                  <DollarSign className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-slate-900 text-base sm:text-lg">
-                    Monto de Capital Requerido
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Ajusta el slider o selecciona un monto típico para emprendimientos
-                  </p>
-                </div>
+
+          {/* Tarjeta 1: Calibrador Numérico de Precisión */}
+          <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-neutral-700" />
+                <span className="text-sm font-semibold text-neutral-900">
+                  1. Monto Requerido de Financiación
+                </span>
               </div>
 
-              <div className="flex flex-col items-start sm:items-end gap-1">
-                <span className="text-xl sm:text-2xl font-black text-slate-900 font-mono tabular-nums">
-                  {formatCOP(need.amount)}
-                </span>
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border transition-colors ${
-                  capacity.color === 'emerald'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : capacity.color === 'amber'
-                    ? 'bg-amber-50 text-amber-700 border-amber-200'
-                    : capacity.color === 'rose'
-                    ? 'bg-rose-50 text-rose-700 border-rose-200'
-                    : 'bg-slate-100 text-slate-600 border-slate-200'
-                }`}>
-                  <span className={`w-2 h-2 rounded-full ${
-                    capacity.color === 'emerald'
-                      ? 'bg-emerald-500 animate-pulse'
-                      : capacity.color === 'amber'
-                      ? 'bg-amber-500'
-                      : capacity.color === 'rose'
-                      ? 'bg-rose-500'
-                      : 'bg-slate-400'
+              {/* Indicador de Calificación Crediticia */}
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-semibold border ${capacity.badgeClasses}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    capacity.color === 'emerald' ? 'bg-emerald-600' :
+                    capacity.color === 'amber' ? 'bg-amber-600' : 'bg-rose-600'
                   }`} />
-                  <span>{capacity.label}</span>
+                  <span>{capacity.pillLabel}</span>
                 </span>
               </div>
             </div>
 
-            {/* Slider de Monto */}
-            <div className="space-y-2.5 pt-2">
+            {/* Input Numérico Libre y Slider Sincronizados */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <label className="text-xs font-medium text-neutral-600">
+                  Ingreso directo o calibración continua:
+                </label>
+                <div className="relative max-w-xs w-full">
+                  <span className="absolute left-3 top-2 text-xs font-mono text-neutral-400 select-none">$</span>
+                  <input
+                    type="number"
+                    min="1000000"
+                    max="150000000"
+                    step="1000000"
+                    value={need.amount || ''}
+                    onChange={(e) => handleChange('amount', Number(e.target.value))}
+                    className="w-full pl-7 pr-3 py-1.5 text-sm font-finance font-bold tabular-nums text-right bg-neutral-50 border border-neutral-300 rounded text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none"
+                  />
+                </div>
+              </div>
+
               <input
                 type="range"
                 min="2000000"
@@ -113,389 +152,230 @@ export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
                 step="1000000"
                 value={need.amount || 35000000}
                 onChange={(e) => handleChange('amount', Number(e.target.value))}
-                className={`w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer ${
-                  capacity.color === 'emerald'
-                    ? 'accent-emerald-500'
-                    : capacity.color === 'amber'
-                    ? 'accent-amber-500'
-                    : capacity.color === 'rose'
-                    ? 'accent-rose-500'
-                    : 'accent-slate-600'
-                }`}
+                className="w-full h-1.5 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-neutral-900"
               />
-              <div className="flex justify-between text-[11px] font-mono text-slate-400 font-medium px-1">
-                <span>$ 2M COP</span>
-                <span>$ 75M COP</span>
-                <span>$ 150M COP</span>
-              </div>
-            </div>
 
-            {/* Semáforo Reactivo de Capital Recomendable */}
-            <div className={`p-4 rounded-2xl border transition-all duration-300 space-y-2.5 ${
-              capacity.color === 'emerald'
-                ? 'bg-emerald-500/5 border-emerald-200'
-                : capacity.color === 'amber'
-                ? 'bg-amber-500/5 border-amber-200'
-                : capacity.color === 'rose'
-                ? 'bg-rose-500/5 border-rose-200'
-                : 'bg-slate-50 border-slate-200'
-            }`}>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                <div className="flex items-center gap-2">
-                  <Activity className={`w-4 h-4 shrink-0 ${
-                    capacity.color === 'emerald'
-                      ? 'text-emerald-600'
-                      : capacity.color === 'amber'
-                      ? 'text-amber-600'
-                      : capacity.color === 'rose'
-                      ? 'text-rose-600'
-                      : 'text-slate-500'
-                  }`} />
-                  <span className="text-xs font-bold text-slate-900">
-                    Semáforo de Capacidad Financiera:
-                  </span>
-                  <span className={`text-xs font-black ${
-                    capacity.color === 'emerald'
-                      ? 'text-emerald-700'
-                      : capacity.color === 'amber'
-                      ? 'text-amber-700'
-                      : capacity.color === 'rose'
-                      ? 'text-rose-700'
-                      : 'text-slate-600'
-                  }`}>
-                    {capacity.label}
-                  </span>
-                </div>
-
-                {profile?.monthlySales > 0 ? (
-                  <span className="text-xs font-mono text-slate-700 font-semibold">
-                    Cuota est.: <strong className="text-slate-900">{formatCOP(estimatedPayment)}/m</strong> ({capacity.debtRatio}% ventas)
-                  </span>
-                ) : (
-                  <span className="text-xs text-slate-500 font-mono">
-                    Cuota est.: {formatCOP(estimatedPayment)}/m
-                  </span>
-                )}
-              </div>
-
-              {/* Barra de rangos con segmentos tricolor */}
-              <div className="space-y-1.5">
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden flex shadow-inner">
-                  <div 
-                    className="h-full bg-emerald-500 transition-all duration-300" 
-                    style={{ width: '40%' }} 
-                    title="Zona Verde: Endeudamiento Saludable (≤20% ventas)" 
-                  />
-                  <div 
-                    className="h-full bg-amber-400 transition-all duration-300" 
-                    style={{ width: '30%' }} 
-                    title="Zona Amarilla: Endeudamiento Moderado (20% - 35% ventas)" 
-                  />
-                  <div 
-                    className="h-full bg-rose-500 transition-all duration-300" 
-                    style={{ width: '30%' }} 
-                    title="Zona Roja: Riesgo de Sobreendeudamiento (>35% ventas)" 
-                  />
-                </div>
-
-                <div className="flex justify-between items-center text-[10px] font-semibold text-slate-500 px-0.5">
-                  <span className="text-emerald-700 flex items-center gap-1 font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Saludable (≤20%)
-                  </span>
-                  <span className="text-amber-700 flex items-center gap-1 font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    Moderado (20-35%)
-                  </span>
-                  <span className="text-rose-700 flex items-center gap-1 font-bold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                    Riesgo (&gt;35%)
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Presets Rápidos */}
-            <div className="pt-2">
-              <span className="block text-xs font-bold text-slate-600 mb-2">
-                Montos predeterminados frecuentes:
-              </span>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                {quickAmounts.map((amt) => (
+              {/* Marcas de montos frecuentes */}
+              <div className="grid grid-cols-5 gap-1 pt-1">
+                {benchmarkAmounts.map((amt) => (
                   <button
                     key={amt}
                     type="button"
                     onClick={() => handleChange('amount', amt)}
-                    className={`py-2 px-2.5 text-xs font-bold font-mono rounded-xl border transition-all text-center select-none ${
+                    className={`py-1 text-[11px] font-mono rounded border transition-colors ${
                       need.amount === amt
-                        ? 'bg-emerald-500 text-slate-950 border-emerald-500 shadow-glow-sm'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-emerald-500/40'
+                        ? 'bg-neutral-900 text-white border-neutral-900 font-semibold'
+                        : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:bg-neutral-100'
                     }`}
                   >
-                    ${(amt / 1000000).toFixed(0)}M
+                    ${amt / 1000000}M
                   </button>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Card: Plazo Deseado */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center border border-blue-500/20 shrink-0">
-                  <Calendar className="w-5 h-5" />
-                </div>
-                <div>
-                  <h2 className="font-bold text-slate-900 text-base sm:text-lg">
-                    Plazo de Financiación Objetivo
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Tiempo estimado para la amortización del capital
-                  </p>
-                </div>
-              </div>
-
-              <div className="text-left sm:text-right">
-                <span className="text-lg sm:text-xl font-black text-blue-600 font-mono">
-                  {need.termMonths} Meses ({(need.termMonths / 12).toFixed(1)} años)
+            {/* Matriz de Impacto en Liquidez */}
+            <div className="p-4 rounded bg-neutral-50 border border-neutral-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-1">
+                <span className="font-semibold text-neutral-800">
+                  Impacto en Liquidez Operativa Mensual:
+                </span>
+                <span className="font-finance tabular-nums text-neutral-900">
+                  Cuota estimada: <strong>{formatCOP(estimatedPayment)} / mes</strong>
                 </span>
               </div>
+
+              {/* Rango de compromiso de ventas */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-[11px] font-mono text-neutral-500">
+                  <span>Compromiso sobre facturación:</span>
+                  <span className="font-bold text-neutral-900">{capacity.debtRatio}% de ventas</span>
+                </div>
+                <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden flex">
+                  <div style={{ width: '40%' }} className="bg-emerald-500/80 h-full border-r border-white" title="≤20% Solvencia Alta" />
+                  <div style={{ width: '30%' }} className="bg-amber-500/80 h-full border-r border-white" title="20-35% Vigilancia" />
+                  <div style={{ width: '30%' }} className="bg-rose-500/80 h-full" title=">35% Sobreendeudamiento" />
+                </div>
+                <div className="flex justify-between text-[10px] font-mono text-neutral-500 pt-0.5">
+                  <span className="text-emerald-800">A-1 (≤20%)</span>
+                  <span className="text-amber-800">B-2 (20-35%)</span>
+                  <span className="text-rose-800">C-3 (&gt;35%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tarjeta 2: Plazo de Amortización Objetivo */}
+          <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-neutral-700" />
+                <span className="text-sm font-semibold text-neutral-900">
+                  2. Plazo de Amortización del Capital
+                </span>
+              </div>
+              <span className="text-xs font-mono font-semibold text-neutral-900">
+                {need.termMonths} Meses ({(need.termMonths / 12).toFixed(1)} años)
+              </span>
             </div>
 
-            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2.5">
-              {termOptions.map((term) => (
+            <div className="grid grid-cols-5 gap-2">
+              {termMonthsOptions.map((term) => (
                 <button
                   key={term}
                   type="button"
                   onClick={() => handleChange('termMonths', term)}
-                  className={`py-2.5 px-2 text-xs font-bold font-mono rounded-xl border transition-all text-center select-none ${
+                  className={`py-2 text-xs font-mono rounded border transition-colors text-center ${
                     need.termMonths === term
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-glow-blue'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-blue-500/40'
+                      ? 'bg-neutral-900 text-white border-neutral-900 font-bold'
+                      : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
                   }`}
                 >
-                  {term}m
+                  {term} Meses
                 </button>
               ))}
             </div>
+            <p className="text-[11px] text-neutral-500">
+              Un plazo más extenso reduce la cuota mensual fija, mejorando el indicador de riesgo crediticio pero incrementando el interés acumulado.
+            </p>
           </div>
 
-          {/* Card: Destino de Fondos */}
-          <div className="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center border border-indigo-500/20">
-                <Compass className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="font-bold text-slate-900 text-base sm:text-lg">
-                  Destino Prioritario de los Recursos
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Las entidades financieras ponderan el riesgo según el destino del dinero
-                </p>
-              </div>
+          {/* Tarjeta 3: Destino de Fondos en Cuatro Cuadrantes */}
+          <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-neutral-100">
+              <Compass className="w-4 h-4 text-neutral-700" />
+              <span className="text-sm font-semibold text-neutral-900">
+                3. Destino Estructurado de los Recursos
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {purposeOptions.map((opt) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {structuredPurposes.map((opt) => (
                 <div
                   key={opt.id}
                   onClick={() => handleChange('purpose', opt.id)}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 ${
+                  className={`p-3.5 rounded border transition-colors cursor-pointer select-none ${
                     need.purpose === opt.id
-                      ? 'border-emerald-500 bg-emerald-500/5 shadow-glow-sm'
-                      : 'border-slate-200 hover:border-slate-300 bg-slate-50/50'
+                      ? 'bg-neutral-50 border-neutral-900 ring-1 ring-neutral-900'
+                      : 'bg-white border-neutral-200 hover:border-neutral-300'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs sm:text-sm text-slate-900">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-semibold text-neutral-900">
                       {opt.label}
                     </span>
                     {need.purpose === opt.id && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <Check className="w-3.5 h-3.5 text-neutral-900" strokeWidth={2.5} />
                     )}
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    {opt.desc}
+                  <p className="text-[11px] text-neutral-500 leading-relaxed">
+                    {opt.description}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Especificación del destino del dinero
+            {/* Justificación obligatoria del destino */}
+            <div className="pt-2">
+              <label className="block text-xs font-medium text-neutral-700 mb-1">
+                {selectedPurposeConfig.fieldHint}
               </label>
               <textarea
                 rows={2}
                 value={need.purposeDetails || ''}
                 onChange={(e) => handleChange('purposeDetails', e.target.value)}
-                placeholder="Describe los activos a adquirir, cantidades o destino específico..."
-                className="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                placeholder={selectedPurposeConfig.placeholderHint}
+                className="w-full px-3 py-2 text-xs bg-neutral-50 border border-neutral-300 rounded text-neutral-900 focus:bg-white focus:border-neutral-900 focus:outline-none transition-colors"
               />
             </div>
           </div>
 
         </div>
 
-        {/* Executive Summary Card (4 cols) */}
-        <div className="lg:col-span-4 space-y-6">
-
-          {/* Card: Semáforo de Capacidad Recomendada */}
-          <div className={`p-6 rounded-3xl border-2 transition-all space-y-4 shadow-xs ${
-            capacity.color === 'emerald'
-              ? 'bg-emerald-50/50 border-emerald-500/40 text-emerald-950 shadow-emerald-500/5'
-              : capacity.color === 'amber'
-              ? 'bg-amber-50/50 border-amber-500/40 text-amber-950 shadow-amber-500/5'
-              : capacity.color === 'rose'
-              ? 'bg-rose-50/50 border-rose-500/40 text-rose-950 shadow-rose-500/5'
-              : 'bg-slate-50 border-slate-200 text-slate-800'
-          }`}>
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
-              <div className="flex items-center gap-2.5">
-                {capacity.color === 'emerald' && <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />}
-                {capacity.color === 'amber' && <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />}
-                {capacity.color === 'rose' && <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />}
-                {capacity.color === 'slate' && <Info className="w-5 h-5 text-slate-500 shrink-0" />}
-                <span className="font-extrabold text-sm text-slate-900">
-                  Capacidad de Pago
-                </span>
-              </div>
-              <span className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border ${
-                capacity.color === 'emerald'
-                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                  : capacity.color === 'amber'
-                  ? 'bg-amber-100 text-amber-800 border-amber-300'
-                  : capacity.color === 'rose'
-                  ? 'bg-rose-100 text-rose-800 border-rose-300'
-                  : 'bg-slate-200 text-slate-700 border-slate-300'
-              }`}>
-                {capacity.label}
+        {/* Resumen Analítico Lateral (4 cols) */}
+        <div className="lg:col-span-4 lg:sticky lg:top-20 space-y-4">
+          
+          <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+              <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono">
+                Dictamen de Capacidad
+              </span>
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
+                {capacity.code}
               </span>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="flex justify-between items-center py-1 border-b border-slate-200/50 font-mono">
-                <span className="text-slate-600 font-sans">Cuota mensual est.:</span>
-                <span className="font-bold text-slate-900">{formatCOP(estimatedPayment)}</span>
-              </div>
-
-              {profile?.monthlySales > 0 ? (
-                <>
-                  <div className="flex justify-between items-center py-1 border-b border-slate-200/50 font-mono">
-                    <span className="text-slate-600 font-sans">Ventas mensuales:</span>
-                    <span className="font-bold text-slate-900">{formatCOP(profile.monthlySales)}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-1 font-mono">
-                    <span className="text-slate-600 font-sans">Nivel de compromiso:</span>
-                    <span className={`font-black text-sm ${
-                      capacity.color === 'emerald'
-                        ? 'text-emerald-600'
-                        : capacity.color === 'amber'
-                        ? 'text-amber-600'
-                        : 'text-rose-600'
-                    }`}>
-                      {capacity.debtRatio}%
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <p className="text-[11px] text-slate-500 italic">
-                  Registra tus ventas mensuales en el Paso 1 para calcular el porcentaje de endeudamiento.
-                </p>
-              )}
-
-              {/* Recomendación inteligente contextual */}
-              <div className="pt-2 text-[11px] leading-relaxed">
-                {capacity.color === 'emerald' && (
-                  <p className="text-emerald-900 font-medium">
-                    ✅ <strong>Capital Recomendable:</strong> La cuota representa un porcentaje saludable de tus ingresos, lo que facilita la aprobación en banca y fintechs sin asfixiar la operación.
-                  </p>
-                )}
-                {capacity.color === 'amber' && (
-                  <p className="text-amber-900 font-medium">
-                    ⚡ <strong>Capacidad Moderada:</strong> La cuota es viable pero exigente. Evalúa ampliar el plazo a {Math.min(need.termMonths + 12, 60)} meses para amortiguar el impacto en tu flujo de caja.
-                  </p>
-                )}
-                {capacity.color === 'rose' && (
-                  <p className="text-rose-900 font-medium">
-                    ⚠️ <strong>Riesgo de Sobreendeudamiento:</strong> La cuota supera el 35% de tus ventas mensuales. Te sugerimos ampliar el plazo o reducir el monto para elevar la probabilidad de aprobación.
-                  </p>
-                )}
-                {capacity.color === 'slate' && (
-                  <p className="text-slate-600">
-                    💡 Si tu negocio está en etapa de idea o sin ventas formales, en el Paso 3 podrás explorar opciones como <strong>Fondo Emprender (SENA)</strong> o <strong>Inversionistas Ángeles</strong>.
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-5">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-              <Zap className="w-4 h-4 text-emerald-500" />
-              <span>Ficha Técnica de la Solicitud</span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex justify-between items-center">
-                <span className="text-slate-500">Monto solicitado:</span>
-                <span className="font-bold text-slate-900 font-mono tabular-nums">
+              <div className="flex justify-between py-1 border-b border-neutral-100">
+                <span className="text-neutral-500">Monto solicitado:</span>
+                <span className="font-finance font-semibold text-neutral-900 tabular-nums">
                   {formatCOP(need.amount)}
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex justify-between items-center">
-                <span className="text-slate-500">Plazo proyectado:</span>
-                <span className="font-bold text-slate-900 font-mono">
+              <div className="flex justify-between py-1 border-b border-neutral-100">
+                <span className="text-neutral-500">Plazo solicitado:</span>
+                <span className="font-mono text-neutral-900">
                   {need.termMonths} meses
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-500 block mb-1">Destinación:</span>
-                <span className="font-bold text-slate-900">
-                  {need.purpose}
+              <div className="flex justify-between py-1 border-b border-neutral-100">
+                <span className="text-neutral-500">Cuota proyectada:</span>
+                <span className="font-finance font-semibold text-neutral-900 tabular-nums">
+                  {formatCOP(estimatedPayment)} / mes
                 </span>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-950 leading-relaxed text-[11px]">
-                <span className="font-bold block mb-1">Coincidencia en Catálogo:</span>
-                Al pasar al Paso 3, se activarán las opciones financieras que acepten solicitudes por {formatCOP(need.amount)}.
+              <div className="flex justify-between py-1 border-b border-neutral-100">
+                <span className="text-neutral-500">Ratio sobre ventas:</span>
+                <span className="font-finance font-bold tabular-nums text-neutral-900">
+                  {capacity.debtRatio}%
+                </span>
+              </div>
+
+              {/* Diagnóstico técnico */}
+              <div className="pt-2 text-[11px] leading-relaxed text-neutral-600 bg-neutral-50 p-3 rounded border border-neutral-200">
+                <span className="font-semibold text-neutral-900 block mb-1">
+                  Dictamen preliminar:
+                </span>
+                {capacity.description}
               </div>
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="space-y-3">
+          {/* Acciones */}
+          <div className="space-y-2">
             {showValidationErrors && !isStepValid && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2 animate-shake">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <span>
-                  Por favor ingresa un monto válido mayor a $0 y selecciona un plazo antes de continuar.
+              <div className="p-3 rounded bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
+                <span className="text-[11px]">
+                  Ingresa un monto válido y selecciona el destino de los recursos antes de continuar.
                 </span>
               </div>
             )}
 
             <button
               onClick={handleContinue}
-              className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-md shadow-emerald-500/20 focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-neutral-900 hover:bg-neutral-800 text-white font-semibold text-xs rounded transition-colors cursor-pointer shadow-subtle"
             >
-              <span>Explorar Alternativas (Paso 3)</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>Explorar Opciones Financieras (Paso 03)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
 
             <button
               onClick={onBack}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-colors cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-white hover:bg-neutral-100 text-neutral-700 font-medium text-xs rounded border border-neutral-200 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Volver al Perfil</span>
+              <span>Regresar al Perfil Operativo</span>
             </button>
           </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
