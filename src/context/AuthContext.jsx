@@ -63,21 +63,8 @@ export function AuthProvider({ children }) {
     let mounted = true;
 
     const initAuth = async () => {
-      // 1. Revisar si hay sesión demo en localStorage
-      const savedDemo = localStorage.getItem(DEMO_STORAGE_KEY);
-      if (savedDemo) {
-        try {
-          const parsed = JSON.parse(savedDemo);
-          if (mounted && parsed?.user && parsed?.profile) {
-            setUser(parsed.user);
-            setProfile(parsed.profile);
-            setLoading(false);
-            return;
-          }
-        } catch {
-          localStorage.removeItem(DEMO_STORAGE_KEY);
-        }
-      }
+      // 1. No restaurar sesiones demo: al entrar siempre se muestra el inicio de sesión
+      localStorage.removeItem(DEMO_STORAGE_KEY);
 
       // 2. Revisar sesión en Supabase si está configurado
       if (isSupabaseConfigured && supabase) {

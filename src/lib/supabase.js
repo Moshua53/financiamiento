@@ -20,7 +20,8 @@ if (!isSupabaseConfigured) {
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: true,
+        // Sesión solo en memoria: al recargar o volver a entrar se pide iniciar sesión
+        persistSession: false,
         autoRefreshToken: true,
       },
     })
