@@ -4,6 +4,36 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 const AuthContext = createContext(null);
 
 const DEMO_STORAGE_KEY = 'financia_demo_session';
+const LOCAL_ACCOUNTS_KEY = 'financia_local_accounts';
+
+// Modo demo sin Supabase: las cuentas se guardan solo en este navegador
+const readLocalAccounts = () => {
+  try {
+    return JSON.parse(localStorage.getItem(LOCAL_ACCOUNTS_KEY)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const hashPassword = async (password) => {
+  const bytes = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+};
+
+const buildLocalSession = (account) => ({
+  user: {
+    id: account.id,
+    email: account.email,
+    user_metadata: { role: account.role, full_name: account.full_name },
+  },
+  profile: {
+    id: account.id,
+    role: account.role,
+    full_name: account.full_name,
+    company_name: account.company_name,
+  },
+});
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -135,9 +165,17 @@ export function AuthProvider({ children }) {
   // Iniciar sesión con email y contraseña
   const signIn = async (email, password) => {
     if (!isSupabaseConfigured || !supabase) {
-      throw new Error(
-        'Supabase no está configurado. Agrega tus credenciales en el archivo .env o usa el modo Demo.'
-      );
+      const account = readLocalAccounts()[email.trim().toLowerCase()];
+      if (!account) {
+        throw new Error('No existe una cuenta con este correo. Créala en "Crear cuenta".');
+      }
+      if (account.password_hash !== await hashPassword(password)) {
+        throw new Error('Invalid login credentials');
+      }
+      const session = buildLocalSession(account);
+      setUser(session.user);
+      setProfile(session.profile);
+      return session;
     }
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -165,9 +203,25 @@ export function AuthProvider({ children }) {
   // Registrarse seleccionando el rol
   const signUp = async ({ email, password, fullName, role, companyName }) => {
     if (!isSupabaseConfigured || !supabase) {
-      throw new Error(
-        'Supabase no está configurado. Agrega tus credenciales en el archivo .env o usa el modo Demo.'
-      );
+      const key = email.trim().toLowerCase();
+      const accounts = readLocalAccounts();
+      if (accounts[key]) {
+        throw new Error('User already registered');
+      }
+      const account = {
+        // El prefijo demo- evita que la app consulte Supabase con este usuario
+        id: `demo-local-${Date.now()}`,
+        email: key,
+        password_hash: await hashPassword(password),
+        role,
+        full_name: fullName || splitEmailName(email),
+        company_name: companyName || null,
+      };
+      localStorage.setItem(LOCAL_ACCOUNTS_KEY, JSON.stringify({ ...accounts, [key]: account }));
+      const session = buildLocalSession(account);
+      setUser(session.user);
+      setProfile(session.profile);
+      return session;
     }
 
     const { data, error } = await supabase.auth.signUp({
