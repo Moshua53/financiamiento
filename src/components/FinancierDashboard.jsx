@@ -13,90 +13,6 @@ import {
 } from '../utils/financialCalculations';
 import EmprendimientoDetailModal from './EmprendimientoDetailModal';
 
-// Datos es de respaldo si Supabase está en modo local o la tabla está vacía
-const FALLBACK_SEED_EMPRENDIMIENTOS = [
-  {
-    id: 'a1111111-1111-1111-1111-111111111111',
-    name: 'EcoModa Sostenible SAS',
-    founder: 'Camila Morales & Moises Galindo',
-    sector: 'Moda y Manufactura',
-    stage: 'Crecimiento Temprano',
-    city: 'Medellín, Antioquia',
-    years_operating: 2,
-    employees: 5,
-    monthly_sales: 24000000,
-    monthly_costs: 14500000,
-    description: 'Marca de confección textil con algodón orgánico colombiano y fibras recicladas. Comercialización omnicanal en e-commerce y tiendas concepto.',
-    amount: 35000000,
-    term_months: 24,
-    purpose: 'Maquinaria y Tecnología',
-    purpose_details: 'Adquisición de cortadora láser industrial de bajo consumo y optimización de cadena de estampado.',
-    max_acceptable_rate: 24.5,
-    status: 'activo',
-    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-  },
-  {
-    id: 'b2222222-2222-2222-2222-222222222222',
-    name: 'AgroTech Drones Colombia',
-    founder: 'Alejandro Restrepo',
-    sector: 'Tecnología y Software',
-    stage: 'Semilla / Validación',
-    city: 'Manizales, Caldas',
-    years_operating: 1,
-    employees: 3,
-    monthly_sales: 16500000,
-    monthly_costs: 9800000,
-    description: 'Servicio de monitoreo satelital y fumigación de precisión mediante drones para caficultores y productores de aguacate Hass.',
-    amount: 50000000,
-    term_months: 36,
-    purpose: 'Expansión Comercial',
-    purpose_details: 'Compra de dos drones multiespectrales DJI Agras y apertura de sede satélite en Pereira.',
-    max_acceptable_rate: 22.0,
-    status: 'activo',
-    created_at: new Date(Date.now() - 3600000 * 24 * 4).toISOString(),
-  },
-  {
-    id: 'c3333333-3333-3333-3333-333333333333',
-    name: 'BioSnacks Andinos',
-    founder: 'Valentina Rojas',
-    sector: 'Alimentos y Gastronomía',
-    stage: 'Consolidación',
-    city: 'Bogotá D.C.',
-    years_operating: 4,
-    employees: 8,
-    monthly_sales: 42000000,
-    monthly_costs: 28000000,
-    description: 'Snacks saludables deshidratados a base de tubérculos y frutas exóticas colombianas con certificación INVIMA para exportación.',
-    amount: 80000000,
-    term_months: 48,
-    purpose: 'Capital de Trabajo',
-    purpose_details: 'Materia prima y empaques compostables para despachos a cadenas de retail nacional.',
-    max_acceptable_rate: 20.5,
-    status: 'activo',
-    created_at: new Date(Date.now() - 3600000 * 24 * 6).toISOString(),
-  },
-  {
-    id: 'd4444444-4444-4444-4444-444444444444',
-    name: 'ClinicaVet Móvil 24/7',
-    founder: 'Dra. Luisa Fernanda Gómez',
-    sector: 'Salud y Farmacéutica',
-    stage: 'Crecimiento Temprano',
-    city: 'Cali, Valle del Cauca',
-    years_operating: 2,
-    employees: 4,
-    monthly_sales: 19000000,
-    monthly_costs: 11200000,
-    description: 'Unidad médica veterinaria móvil equipada con rayos X digital y laboratorio portátil para atención domiciliaria de mascotas.',
-    amount: 28000000,
-    term_months: 18,
-    purpose: 'Maquinaria y Tecnología',
-    purpose_details: 'Equipo de ecografía veterinaria doppler de alta resolución y adecuación del vehículo.',
-    max_acceptable_rate: 25.0,
-    status: 'activo',
-    created_at: new Date(Date.now() - 3600000 * 24 * 1).toISOString(),
-  }
-];
-
 export default function FinancierDashboard() {
   const { user, profile } = useAuth();
   
@@ -128,22 +44,19 @@ export default function FinancierDashboard() {
       }
 
       const localSaved = localStorage.getItem('financia_local_emprendimientos');
-      let combined = [...FALLBACK_SEED_EMPRENDIMIENTOS];
+      let saved = [];
       if (localSaved) {
         try {
           const parsed = JSON.parse(localSaved);
-          if (Array.isArray(parsed)) {
-            const existingIds = new Set(parsed.map(p => p.id));
-            combined = [...parsed, ...FALLBACK_SEED_EMPRENDIMIENTOS.filter(s => !existingIds.has(s.id))];
-          }
+          if (Array.isArray(parsed)) saved = parsed;
         } catch {
           // ignore
         }
       }
-      setEmprendimientos(combined);
+      setEmprendimientos(saved);
     } catch (err) {
       console.warn('Error cargando solicitudes:', err);
-      setEmprendimientos(FALLBACK_SEED_EMPRENDIMIENTOS);
+      setEmprendimientos([]);
     } finally {
       setLoading(false);
     }
@@ -351,8 +264,16 @@ export default function FinancierDashboard() {
 
       {/* Listado de Oportunidades: Tarjetas o Data Grid */}
       {loading ? (
-        <div className="p-12 text-center text-xs font-mono text-neutral-500 bg-white rounded border border-neutral-200">
-          Cargando solicitudes desde el repositorio central...
+        <div className="p-12 text-center text-xs text-neutral-500 bg-white rounded border border-neutral-200">
+          Cargando solicitudes...
+        </div>
+      ) : emprendimientos.length === 0 ? (
+        <div className="bg-white p-12 rounded border border-neutral-200 text-center space-y-2">
+          <Building2 className="w-8 h-8 text-neutral-400 mx-auto" />
+          <h3 className="font-semibold text-neutral-900 text-sm">Aún no hay solicitudes</h3>
+          <p className="text-xs text-neutral-500">
+            Cuando un emprendedor publique su solicitud, aparecerá aquí.
+          </p>
         </div>
       ) : filteredList.length === 0 ? (
         <div className="bg-white p-12 rounded border border-neutral-200 text-center space-y-3">

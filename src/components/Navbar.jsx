@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Building2, Briefcase, RotateCcw, LogOut, 
-  Cloud, CloudCheck, Check, Database, Activity
+  Cloud, CloudCheck, Check, Activity
 } from 'lucide-react';
 import { formatCOP, calculateMonthlyPayment } from '../utils/financialCalculations';
 import FinanciaPlusLogo from './FinanciaPlusLogo';
@@ -10,7 +10,6 @@ import { useAuth } from '../context/AuthContext';
 export default function Navbar({ 
   currentStep, 
   setCurrentStep, 
-  onLoadDemo, 
   onReset, 
   profile, 
   need,
@@ -113,18 +112,6 @@ export default function Navbar({
                     <span className="hidden sm:inline">
                       {isPublishing ? 'Guardando...' : 'Publicar Solicitud'}
                     </span>
-                  </button>
-                )}
-
-                {/* Cargar datos demo */}
-                {onLoadDemo && (
-                  <button
-                    onClick={onLoadDemo}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border border-neutral-200 transition-colors cursor-pointer"
-                    title="Cargar datos de prueba de EcoModa Sostenible SAS"
-                  >
-                    <Database className="w-3.5 h-3.5 text-neutral-600" />
-                    <span className="hidden lg:inline">Datos de Prueba</span>
                   </button>
                 )}
 

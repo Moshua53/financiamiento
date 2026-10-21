@@ -12,20 +12,38 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
-import { 
-  mockFinancingOptions, 
-  mockDefaultProfile, 
-  mockDefaultNeed 
-} from './data/mockFinancingOptions';
+import { mockFinancingOptions } from './data/mockFinancingOptions';
+
+// Estado inicial en blanco: el usuario siempre empieza sin datos precargados
+const EMPTY_PROFILE = {
+  name: '',
+  founder: '',
+  sector: 'Tecnología y Software',
+  stage: 'Idea / Prototipo',
+  city: '',
+  yearsOperating: 0,
+  employees: 1,
+  monthlySales: 0,
+  monthlyCosts: 0,
+  description: ''
+};
+
+const EMPTY_NEED = {
+  amount: 0,
+  termMonths: 12,
+  purpose: 'Capital de Trabajo',
+  purposeDetails: '',
+  maxAcceptableRate: 22.0
+};
 
 function AppContent() {
   const { user, role, loading } = useAuth();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [maxUnlockedStep, setMaxUnlockedStep] = useState(1);
-  const [profile, setProfile] = useState(mockDefaultProfile);
-  const [need, setNeed] = useState(mockDefaultNeed);
-  const [selectedForCompare, setSelectedForCompare] = useState(['bancolombia-pyme', 'sempli-fintech']);
+  const [profile, setProfile] = useState(EMPTY_PROFILE);
+  const [need, setNeed] = useState(EMPTY_NEED);
+  const [selectedForCompare, setSelectedForCompare] = useState([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [activeOptionForSim, setActiveOptionForSim] = useState(null);
   const [notification, setNotification] = useState(null);
@@ -48,6 +66,14 @@ function AppContent() {
 
   // Cargar automáticamente el emprendimiento guardado en Supabase si el usuario ya registró uno
   useEffect(() => {
+    // Cada sesión arranca en blanco (evita heredar datos de una sesión anterior)
+    setProfile(EMPTY_PROFILE);
+    setNeed(EMPTY_NEED);
+    setSelectedForCompare([]);
+    setActiveOptionForSim(null);
+    setCurrentStep(1);
+    setMaxUnlockedStep(1);
+
     if (role !== 'emprendedor' || !user) return;
 
     const loadSavedData = async () => {
@@ -93,34 +119,9 @@ function AppContent() {
     loadSavedData();
   }, [user, role]);
 
-  const handleLoadDemo = () => {
-    setProfile(mockDefaultProfile);
-    setNeed(mockDefaultNeed);
-    setSelectedForCompare(['bancolombia-pyme', 'sempli-fintech']);
-    setMaxUnlockedStep(4);
-    showNotification('Datos de prueba cargados', 'success');
-  };
-
   const handleReset = () => {
-    setProfile({
-      name: '',
-      founder: '',
-      sector: 'Tecnología y Software',
-      stage: 'Idea / Prototipo',
-      city: '',
-      yearsOperating: 0,
-      employees: 1,
-      monthlySales: 0,
-      monthlyCosts: 0,
-      description: ''
-    });
-    setNeed({
-      amount: 15000000,
-      termMonths: 12,
-      purpose: 'Capital de Trabajo',
-      purposeDetails: '',
-      maxAcceptableRate: 22.0
-    });
+    setProfile(EMPTY_PROFILE);
+    setNeed(EMPTY_NEED);
     setSelectedForCompare([]);
     setActiveOptionForSim(null);
     setCurrentStep(1);
@@ -292,7 +293,6 @@ function AppContent() {
             showNotification('Completa el paso anterior para continuar', 'warning');
           }
         }}
-        onLoadDemo={handleLoadDemo}
         onReset={handleReset}
         profile={profile}
         need={need}
