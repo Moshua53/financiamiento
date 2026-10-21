@@ -13,7 +13,7 @@ import {
 } from '../utils/financialCalculations';
 import EmprendimientoDetailModal from './EmprendimientoDetailModal';
 
-// Datos institucionales de respaldo si Supabase está en modo local o la tabla está vacía
+// Datos es de respaldo si Supabase está en modo local o la tabla está vacía
 const FALLBACK_SEED_EMPRENDIMIENTOS = [
   {
     id: 'a1111111-1111-1111-1111-111111111111',
@@ -202,15 +202,12 @@ export default function FinancierDashboard() {
   return (
     <div className="space-y-6 pb-16">
       
-      {/* Encabezado Institucional del Portal */}
+      {/* Encabezado */}
       <div className="border-b border-neutral-200 pb-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Portal Financiadores & Inversionistas / Mesa de Evaluación
-            </span>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Pipeline de Oportunidades y Auditoría Crediticia
+              Solicitudes de financiación
             </h1>
           </div>
 
@@ -220,58 +217,46 @@ export default function FinancierDashboard() {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded bg-neutral-900 text-white hover:bg-neutral-800 transition-colors disabled:opacity-50 cursor-pointer self-start md:self-auto shadow-subtle"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Actualizar Pipeline</span>
+            <span>Actualizar</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Bar Superior en Tipografía Mono */}
+      {/* KPI Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-            Solicitudes Activas
+          <span className="text-[11px] text-neutral-500 block">
+            Solicitudes activas
           </span>
           <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
             {stats.totalSolicitudes}
           </span>
-          <span className="text-[10px] font-mono text-emerald-800 block mt-0.5">
-            Verificación en línea
-          </span>
         </div>
 
         <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-            Capital Agregado Solicitado
+          <span className="text-[11px] text-neutral-500 block">
+            Capital solicitado
           </span>
           <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
             ${(stats.totalCapital / 1000000).toFixed(0)}M COP
           </span>
-          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
-            Demanda acumulada en pipeline
-          </span>
         </div>
 
         <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-            Ticket Promedio
+          <span className="text-[11px] text-neutral-500 block">
+            Ticket promedio
           </span>
           <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
             ${(stats.avgTicket / 1000000).toFixed(1)}M COP
           </span>
-          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
-            Por solicitud empresarial
-          </span>
         </div>
 
         <div className="bg-white p-4 rounded border border-neutral-200 shadow-subtle">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-            Tasa Promedio Esperada
+          <span className="text-[11px] text-neutral-500 block">
+            Tasa promedio
           </span>
           <span className="text-2xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
             {stats.avgRate.toFixed(1)}% E.A.
-          </span>
-          <span className="text-[10px] font-mono text-neutral-500 block mt-0.5">
-            Expectativa de mercado
           </span>
         </div>
       </div>
@@ -388,7 +373,7 @@ export default function FinancierDashboard() {
         <div className="bg-white rounded border border-neutral-200 shadow-subtle overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-neutral-100/70 border-b border-neutral-200 text-neutral-600 font-mono text-[10px] uppercase">
+              <tr className="bg-neutral-100/70 border-b border-neutral-200 text-neutral-600 text-[11px]">
                 <th className="py-2.5 px-3">Razón Social & Fundador</th>
                 <th className="py-2.5 px-3">Sector</th>
                 <th className="py-2.5 px-3">Calificación</th>
@@ -470,7 +455,7 @@ export default function FinancierDashboard() {
                 {/* Cabecera de la Tarjeta */}
                 <div className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
+                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
                       {emp.sector}
                     </span>
                     
@@ -504,28 +489,28 @@ export default function FinancierDashboard() {
                   {/* Rejilla 2x2 de Métricas Clave */}
                   <div className="grid grid-cols-2 gap-2 p-2.5 rounded bg-neutral-50 border border-neutral-200 text-xs">
                     <div>
-                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Monto Solicitado</span>
+                      <span className="text-[11px] text-neutral-400 block">Monto Solicitado</span>
                       <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
                         {formatCOP(amount)}
                       </span>
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Plazo de Pago</span>
+                      <span className="text-[11px] text-neutral-400 block">Plazo de Pago</span>
                       <span className="font-mono font-medium text-neutral-800 block mt-0.5">
                         {term} meses
                       </span>
                     </div>
 
                     <div className="pt-2 border-t border-neutral-200">
-                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Ventas Mensuales</span>
+                      <span className="text-[11px] text-neutral-400 block">Ventas Mensuales</span>
                       <span className="font-finance tabular-nums text-neutral-700 block mt-0.5">
                         {formatCOP(sales)}
                       </span>
                     </div>
 
                     <div className="pt-2 border-t border-neutral-200">
-                      <span className="text-[10px] text-neutral-400 uppercase font-mono block">Cuota Proyectada</span>
+                      <span className="text-[11px] text-neutral-400 block">Cuota Proyectada</span>
                       <span className="font-finance font-bold tabular-nums text-emerald-800 block mt-0.5">
                         {formatCOP(monthlyPayment)}
                       </span>
@@ -571,7 +556,7 @@ export default function FinancierDashboard() {
         </div>
       )}
 
-      {/* Expediente de Debida Diligencia */}
+      {/* Detalle de la solicitud */}
       <EmprendimientoDetailModal
         emprendimiento={selectedEmprendimiento}
         isOpen={isDetailOpen}

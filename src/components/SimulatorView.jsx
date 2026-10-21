@@ -61,11 +61,8 @@ export default function SimulatorView({
       <div className="border-b border-neutral-200 pb-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Módulo 04 / Ingeniería Financiera
-            </span>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Simulación de Amortización & Dictamen de Crédito
+              Simulador de crédito
             </h1>
           </div>
 
@@ -205,7 +202,7 @@ export default function SimulatorView({
               <div className="flex justify-between text-[10px] font-mono text-neutral-400">
                 <span>0.00%</span>
                 <span>21.00% (Banca)</span>
-                <span>38.50% (Usura)</span>
+                <span>Límite legal</span>
               </div>
 
               {/* Conversión Explícita a Tasa Mensual Vencida */}
@@ -217,16 +214,13 @@ export default function SimulatorView({
               </div>
             </div>
 
-            {/* Advertencia Técnica de Tasa de Usura Colombiana */}
+            {/* Advertencia de tasa de usura */}
             {summary.isUsury && (
               <div className="p-3 rounded bg-rose-50 border border-rose-200 text-rose-900 text-xs flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-rose-700 shrink-0 mt-0.5" />
-                <div className="space-y-0.5">
-                  <span className="font-semibold block">Límite de Tasa de Usura Superado</span>
-                  <p className="text-[11px] leading-relaxed text-rose-800">
-                    La tasa simulada ({simRateEA.toFixed(2)}% E.A.) sobrepasa el límite legal de certificación de la Superintendencia Financiera de Colombia ({COLOMBIAN_USURY_RATE_EA}% E.A.). Esta tasa no es legalmente aplicable en el mercado comercial ordinario.
-                  </p>
-                </div>
+                <span>
+                  <span className="font-semibold">Tasa por encima del límite legal</span> ({simRateEA.toFixed(2)}% vs. {COLOMBIAN_USURY_RATE_EA}% E.A.)
+                </span>
               </div>
             )}
           </div>
@@ -238,18 +232,14 @@ export default function SimulatorView({
           {/* Bloque Monumental de Cuota Fija */}
           <div className="bg-neutral-900 text-white p-5 rounded border border-neutral-800 shadow-elevated space-y-4">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
-                Sistema Francés de Cuota Constante
-              </span>
+              <span className="text-neutral-400">Cuota fija</span>
               <span className="font-mono text-neutral-400">
                 {simTerm} periodos mensuales
               </span>
             </div>
 
             <div>
-              <span className="text-[11px] text-neutral-400 uppercase tracking-wider block font-mono">
-                Cuota Mensual Fija Calculada
-              </span>
+              <span className="text-xs text-neutral-400 block">Cuota mensual</span>
               <div className="text-3xl sm:text-4xl font-bold font-finance tabular-nums text-white mt-1">
                 {formatCOP(summary.monthlyPayment)}
                 <span className="text-xs font-normal font-sans text-neutral-400 ml-1.5">/ mes</span>
@@ -259,8 +249,8 @@ export default function SimulatorView({
             {/* Cinta de Métricas Financieras */}
             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-800 text-xs">
               <div className="p-2.5 rounded bg-neutral-800/60 border border-neutral-700">
-                <span className="text-[10px] font-mono uppercase text-neutral-400 block">
-                  Intereses Totales
+                <span className="text-[11px] text-neutral-400 block">
+                  Intereses totales
                 </span>
                 <span className="font-finance font-bold tabular-nums text-amber-400 text-sm mt-0.5 block">
                   {formatCOP(summary.totalInterest)}
@@ -268,8 +258,8 @@ export default function SimulatorView({
               </div>
 
               <div className="p-2.5 rounded bg-neutral-800/60 border border-neutral-700">
-                <span className="text-[10px] font-mono uppercase text-neutral-400 block">
-                  Costo Total Desembolsado
+                <span className="text-[11px] text-neutral-400 block">
+                  Costo total
                 </span>
                 <span className="font-finance font-bold tabular-nums text-white text-sm mt-0.5 block">
                   {formatCOP(summary.totalPayment)}
@@ -281,7 +271,7 @@ export default function SimulatorView({
             <div className="space-y-1.5 pt-1">
               <div className="flex justify-between text-[11px] font-mono text-neutral-400">
                 <span>Amortización Capital: {capitalPercent}%</span>
-                <span className="text-amber-400">Intereses Totales: {interestPercent}%</span>
+                <span className="text-amber-400">Intereses totales: {interestPercent}%</span>
               </div>
               <div className="w-full h-2 bg-neutral-800 rounded-full overflow-hidden flex">
                 <div style={{ width: `${capitalPercent}%` }} className="bg-blue-600 h-full transition-all duration-300" />
@@ -295,8 +285,8 @@ export default function SimulatorView({
             <div className="flex items-center justify-between pb-2 border-b border-neutral-100">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-neutral-800" />
-                <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono">
-                  Dictamen de Viabilidad Crediticia
+                <span className="text-xs font-semibold text-neutral-900">
+                  Viabilidad
                 </span>
               </div>
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
@@ -325,7 +315,7 @@ export default function SimulatorView({
           <div className="bg-white rounded border border-neutral-200 shadow-subtle overflow-hidden">
             <div className="p-4 border-b border-neutral-200 flex items-center justify-between bg-neutral-50">
               <div>
-                <h3 className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono">
+                <h3 className="text-xs font-semibold text-neutral-900">
                   Tabla de Amortización ({simTerm} periodos)
                 </h3>
                 <span className="text-[11px] text-neutral-500">
@@ -356,7 +346,7 @@ export default function SimulatorView({
             <div className="overflow-x-auto max-h-80">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-neutral-100/70 border-b border-neutral-200 text-neutral-600 font-mono text-[10px] uppercase">
+                  <tr className="bg-neutral-100/70 border-b border-neutral-200 text-neutral-600 text-[11px]">
                     <th className="py-2 px-3">Mes</th>
                     <th className="py-2 px-3 text-right">Cuota Fija</th>
                     <th className="py-2 px-3 text-right">Interés</th>

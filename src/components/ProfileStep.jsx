@@ -70,16 +70,10 @@ export default function ProfileStep({ profile, setProfile, onNext }) {
       <div className="border-b border-neutral-200 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Módulo 01 / Captura de Solvencia
-            </span>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Perfil Operativo y Declaración Financiera
+              Perfil de tu empresa
             </h1>
           </div>
-          <span className="text-xs font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
-            Norma NIIF PYMES
-          </span>
         </div>
       </div>
 
@@ -277,21 +271,21 @@ export default function ProfileStep({ profile, setProfile, onNext }) {
 
         </div>
 
-        {/* Columna Derecha: Cockpit Financiero Flotante Sticky (4 cols) */}
+        {/* Columna Derecha: Resumen financiero Flotante Sticky (4 cols) */}
         <div className="lg:col-span-4 lg:sticky lg:top-20 space-y-4">
           
           <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-              <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono">
-                Cockpit Financiero
+              <span className="text-xs font-semibold text-neutral-900">
+                Resumen financiero
               </span>
               <span className="w-2 h-2 rounded-full bg-emerald-600" />
             </div>
 
             {/* Métrica 1: Flujo Operativo Neto */}
             <div className="p-3.5 rounded bg-neutral-50 border border-neutral-200">
-              <span className="text-[11px] text-neutral-500 uppercase tracking-wider block font-medium">
-                Flujo Operativo Libre
+              <span className="text-[11px] text-neutral-500 block font-medium">
+                Flujo libre mensual
               </span>
               <span className="text-xl font-bold font-finance tabular-nums text-neutral-900 mt-1 block">
                 {formatCOP(netMonthlyCash)}
@@ -322,8 +316,8 @@ export default function ProfileStep({ profile, setProfile, onNext }) {
 
             {/* Métrica 3: Techo Máximo Recomendado */}
             <div className="p-3.5 rounded bg-emerald-50/60 border border-emerald-200 space-y-1">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-emerald-900 block">
-                Techo de Cuota Prudente (35%)
+              <span className="text-[11px] font-semibold text-emerald-900 block">
+                Cuota máxima sugerida (35%)
               </span>
               <span className="text-lg font-bold font-finance tabular-nums text-emerald-950 block">
                 {formatCOP(maxSafeMonthlyPayment)} / mes

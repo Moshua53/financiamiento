@@ -95,7 +95,7 @@ export default function Stepper({
                 {/* Texto del Paso */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">
+                    <span className="text-[11px] text-neutral-500">
                       Paso {step.code}
                     </span>
                     {isCurrent && (
@@ -117,7 +117,7 @@ export default function Stepper({
         <div className="md:hidden py-3">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider block">
+              <span className="text-[11px] text-neutral-500 block">
                 Paso {currentStep} de 4
               </span>
               <p className="text-xs font-bold text-neutral-900">

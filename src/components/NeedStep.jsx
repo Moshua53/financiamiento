@@ -38,7 +38,7 @@ const structuredPurposes = [
   {
     id: 'Consolidación de Pasivos',
     label: 'Consolidación de Deuda & Pasivos',
-    description: 'Sustitución de líneas crediticias de alto costo por instrumentos institucionales.',
+    description: 'Sustitución de líneas crediticias de alto costo por instrumentos es.',
     fieldHint: 'Relaciona las entidades financieras y tasas vigentes a sustituir:',
     placeholderHint: 'Ej: Consolidación de 2 microcréditos con tasa > 35% E.A. hacia una sola línea estructurada.'
   },
@@ -85,11 +85,8 @@ export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
       <div className="border-b border-neutral-200 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Módulo 02 / Estructuración de Demanda
-            </span>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Definición de Demanda de Capital y Destino
+              ¿Cuánto necesitas y para qué?
             </h1>
           </div>
           <span className="text-xs font-mono px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
@@ -297,8 +294,8 @@ export default function NeedStep({ need, setNeed, profile, onNext, onBack }) {
           
           <div className="bg-white p-5 rounded border border-neutral-200 shadow-subtle space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-              <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono">
-                Dictamen de Capacidad
+              <span className="text-xs font-semibold text-neutral-900">
+                Capacidad de pago
               </span>
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded border ${capacity.badgeClasses}`}>
                 {capacity.code}

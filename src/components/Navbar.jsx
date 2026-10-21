@@ -93,15 +93,11 @@ export default function Navbar({
               <div className="flex items-center gap-2 px-3 py-1 rounded bg-neutral-50 border border-neutral-200 text-xs text-neutral-700">
                 <Activity className="w-3.5 h-3.5 text-blue-600" />
                 <span className="font-semibold text-neutral-900">Mesa de Evaluación</span>
-                <span className="text-neutral-300">|</span>
-                <span className="text-neutral-500">Pipeline de Inversión en Colombia</span>
-                <span className="text-neutral-300">|</span>
-                <span className="font-finance font-medium text-blue-700">PostgreSQL</span>
               </div>
             )}
           </div>
 
-          {/* Bloque 3: Consola de Acciones Institucionales */}
+          {/* Bloque 3: Acciones */}
           <div className="flex items-center gap-2 shrink-0">
             {role === 'emprendedor' && (
               <>
@@ -153,7 +149,7 @@ export default function Navbar({
                   <span className="text-xs font-semibold text-neutral-900 truncate max-w-[120px]">
                     {authProfile?.full_name || user.email?.split('@')[0]}
                   </span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-mono mt-0.5">
+                  <span className="text-[11px] text-neutral-500 capitalize mt-0.5">
                     {role}
                   </span>
                 </div>

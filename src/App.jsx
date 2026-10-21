@@ -82,7 +82,7 @@ function AppContent() {
               maxAcceptableRate: Number(data.max_acceptable_rate) || 24,
             });
             setMaxUnlockedStep(4);
-            showNotification('Proyecto cargado automáticamente desde Supabase PostgreSQL', 'success');
+            showNotification('Proyecto cargado', 'success');
           }
         }
       } catch (err) {
@@ -98,7 +98,7 @@ function AppContent() {
     setNeed(mockDefaultNeed);
     setSelectedForCompare(['bancolombia-pyme', 'sempli-fintech']);
     setMaxUnlockedStep(4);
-    showNotification('Datos de prueba cargados: Flujo completo desbloqueado', 'success');
+    showNotification('Datos de prueba cargados', 'success');
   };
 
   const handleReset = () => {
@@ -125,7 +125,7 @@ function AppContent() {
     setActiveOptionForSim(null);
     setCurrentStep(1);
     setMaxUnlockedStep(1);
-    showNotification('Formularios restablecidos a valores por defecto (Paso 01)', 'info');
+    showNotification('Formulario restablecido', 'info');
   };
 
   const handleToggleCompare = (id) => {
@@ -134,7 +134,7 @@ function AppContent() {
         return prev.filter(item => item !== id);
       }
       if (prev.length >= 3) {
-        showNotification('Límite alcanzado: Puedes comparar un máximo de 3 alternativas a la vez', 'warning');
+        showNotification('Puedes comparar máximo 3 opciones', 'warning');
         return prev;
       }
       return [...prev, id];
@@ -151,7 +151,7 @@ function AppContent() {
   // Guardar y publicar solicitud de emprendimiento en Supabase
   const handlePublish = async () => {
     if (!profile.name || !profile.founder) {
-      showNotification('Completa la Razón Social y el Fundador en el Paso 01 antes de publicar.', 'warning');
+      showNotification('Completa el nombre de la empresa y el fundador antes de publicar.', 'warning');
       setCurrentStep(1);
       return;
     }
@@ -210,8 +210,8 @@ function AppContent() {
       <div className="min-h-screen flex items-center justify-center bg-neutral-900 text-white">
         <div className="text-center space-y-2">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
-          <p className="text-xs font-mono text-neutral-400 tracking-wider uppercase">
-            Iniciando plataforma institucional Financia+...
+          <p className="text-xs text-neutral-400">
+            Cargando...
           </p>
         </div>
       </div>
@@ -228,7 +228,7 @@ function AppContent() {
     return (
       <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900">
         
-        {/* Toast Notification Institucional */}
+        {/* Toast Notification */}
         {notification && (
           <div className="fixed top-16 right-4 z-50 bg-neutral-900 text-white px-3.5 py-2.5 rounded border border-neutral-700 shadow-elevated text-xs font-medium flex items-center gap-2">
             {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
@@ -247,7 +247,7 @@ function AppContent() {
           <FinancierDashboard />
         </main>
 
-        {/* Footer Institucional Académico */}
+        {/* Footer */}
         <footer className="bg-white border-t border-neutral-200 py-6 text-xs text-neutral-500 mt-auto">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div>
@@ -255,16 +255,10 @@ function AppContent() {
                 <span className="font-bold text-neutral-900 text-sm tracking-tight">
                   financia<span className="text-emerald-600 font-bold">+</span>
                 </span>
-                <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-1.5 py-0.5 rounded border border-neutral-200">
-                  Módulo Financiadores
-                </span>
               </div>
               <p className="text-[11px] text-neutral-500 mt-1">
                 Equipo de Desarrollo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
               </p>
-            </div>
-            <div className="text-[11px] text-neutral-400 font-mono">
-              Ecosistema de Financiamiento & Inversión • Supabase PostgreSQL
             </div>
           </div>
         </footer>
@@ -277,7 +271,7 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-50 text-neutral-900">
       
-      {/* Toast Notification Institucional */}
+      {/* Toast Notification */}
       {notification && (
         <div className="fixed top-16 right-4 z-50 bg-neutral-900 text-white px-3.5 py-2.5 rounded border border-neutral-700 shadow-elevated text-xs font-medium flex items-center gap-2">
           {notification.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
@@ -295,7 +289,7 @@ function AppContent() {
           if (step <= maxUnlockedStep) {
             setCurrentStep(step);
           } else {
-            showNotification(`Paso restringido: Completa los pasos anteriores para acceder al Paso 0${step}`, 'warning');
+            showNotification('Completa el paso anterior para continuar', 'warning');
           }
         }}
         onLoadDemo={handleLoadDemo}
@@ -315,7 +309,7 @@ function AppContent() {
         }}
         maxUnlockedStep={maxUnlockedStep}
         onLockedClick={(stepId) => {
-          showNotification(`Paso 0${stepId} bloqueado: Completa el paso actual para continuar el análisis.`, 'warning');
+          showNotification('Completa el paso actual para continuar', 'warning');
         }}
       />
 
@@ -395,7 +389,7 @@ function AppContent() {
         onSelectForSimulation={handleSelectForSimulation}
       />
 
-      {/* Footer Institucional Académico */}
+      {/* Footer */}
       <footer className="bg-white border-t border-neutral-200 py-6 text-xs text-neutral-500 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <div>
@@ -403,17 +397,10 @@ function AppContent() {
               <span className="font-bold text-neutral-900 text-sm tracking-tight">
                 financia<span className="text-emerald-600 font-bold">+</span>
               </span>
-              <span className="text-[10px] font-mono bg-neutral-100 text-neutral-600 px-1.5 py-0.5 rounded border border-neutral-200">
-                Módulo Emprendedores
-              </span>
             </div>
             <p className="text-[11px] text-neutral-500 mt-1">
               Equipo de Desarrollo: Moises Joshua Herrera Galindo • Juan Sebastián Molina Ballesteros • Miguel Angel Gallego Franco • Sebastián Rendón Grisales
             </p>
-          </div>
-
-          <div className="text-[11px] text-neutral-400 font-mono">
-            Búsqueda de alternativas de financiamiento • Supabase PostgreSQL
           </div>
         </div>
       </footer>

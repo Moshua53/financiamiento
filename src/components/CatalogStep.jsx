@@ -30,7 +30,7 @@ export default function CatalogStep({
   const [onlyMatchAmount, setOnlyMatchAmount] = useState(false);
   const [sortBy, setSortBy] = useState('rate'); // 'rate' | 'time'
 
-  // Filtrado y ordenamiento reactivo institucional
+  // Filtrado y ordenamiento reactivo 
   const processedOptions = useMemo(() => {
     let result = options.filter(opt => {
       if (selectedCategory !== 'Todas' && opt.category !== selectedCategory) {
@@ -68,11 +68,8 @@ export default function CatalogStep({
       <div className="border-b border-neutral-200 pb-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-              Módulo 03 / Arquitectura de Fuentes
-            </span>
             <h1 className="text-xl font-bold text-neutral-900 tracking-tight">
-              Matriz Técnica de Alternativas de Financiación
+              Opciones de financiación
             </h1>
           </div>
           <button
@@ -200,7 +197,7 @@ export default function CatalogStep({
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
+                        <span className="text-[11px] text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
                           {opt.category}
                         </span>
                         {opt.badge && (

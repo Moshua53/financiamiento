@@ -29,7 +29,7 @@ export default function CompareModal({
       case 'Bancario':
         return 'Garantía FGA (Fondo Nacional de Garantías) / Pagaré formal con codeudor o respaldo patrimonial';
       case 'Fintech':
-        return 'Pagaré desmaterializado / Fianza digital institucional (sin hipoteca)';
+        return 'Pagaré desmaterializado / Fianza digital (sin hipoteca)';
       case 'Capital Semilla':
         return 'Acuerdo de condonación de deuda contra cumplimiento de metas de empleo (SENA)';
       case 'Microcrédito':
@@ -50,12 +50,12 @@ export default function CompareModal({
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Cabecera Institucional del Modal */}
+        {/* Cabecera  del Modal */}
         <div className="px-5 py-3.5 border-b border-neutral-200 flex items-center justify-between bg-neutral-50">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-200 px-1.5 py-0.5 rounded">
-                Mesa Técnica
+              <span className="text-[11px] text-neutral-600 bg-neutral-200 px-1.5 py-0.5 rounded">
+                Comparación
               </span>
               <h2 className="text-base font-bold text-neutral-900 tracking-tight">
                 Matriz Comparativa de Fuentes de Financiación
@@ -108,7 +108,7 @@ export default function CompareModal({
                     {/* Encabezado de Opción */}
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-1">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
+                        <span className="text-[11px] text-neutral-600 bg-neutral-100 px-1.5 py-0.5 rounded border border-neutral-200">
                           {opt.category}
                         </span>
 
@@ -147,7 +147,7 @@ export default function CompareModal({
                             </span>
                           </div>
                           <div className="flex justify-between items-baseline">
-                            <span className="text-neutral-500">Intereses Totales:</span>
+                            <span className="text-neutral-500">Intereses totales:</span>
                             <span className="font-finance font-medium text-neutral-700 tabular-nums">
                               {formatCOP(loanCalc.totalInterest)}
                             </span>
@@ -176,8 +176,8 @@ export default function CompareModal({
 
                     {/* Exigencia de Garantías */}
                     <div className="p-2.5 rounded bg-white border border-neutral-200 space-y-1 text-xs">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 block">
-                        Exigencia de Garantías:
+                      <span className="text-[11px] text-neutral-500 block">
+                        Garantías:
                       </span>
                       <p className="text-[11px] text-neutral-700 leading-snug">
                         {getGuaranteeScheme(opt)}

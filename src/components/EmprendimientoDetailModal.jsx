@@ -16,7 +16,7 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
 
   if (!isOpen || !emprendimiento) return null;
 
-  // Cálculos financieros institucionales
+  // Cálculos financieros es
   const sales = Number(emprendimiento.monthly_sales) || 0;
   const costs = Number(emprendimiento.monthly_costs) || 0;
   const netFlow = Math.max(0, sales - costs);
@@ -40,8 +40,8 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
         <div className="px-5 py-4 bg-neutral-900 text-white flex items-start justify-between border-b border-neutral-800">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
-                Expediente de Debida Diligencia
+              <span className="text-[11px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700">
+                Detalle de la solicitud
               </span>
               <span className="text-[10px] font-mono text-neutral-400">
                 REF: {emprendimiento.id?.slice(0, 8) || 'EXP-001'}
@@ -89,27 +89,27 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Razón Social</span>
+                <span className="text-[11px] text-neutral-500 block">Razón Social</span>
                 <span className="font-semibold text-neutral-900 block truncate">{emprendimiento.name}</span>
               </div>
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Representante Legal</span>
+                <span className="text-[11px] text-neutral-500 block">Representante Legal</span>
                 <span className="font-semibold text-neutral-900 block truncate">{emprendimiento.founder}</span>
               </div>
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Años de Operación</span>
+                <span className="text-[11px] text-neutral-500 block">Años de Operación</span>
                 <span className="font-mono font-semibold text-neutral-900 block">{emprendimiento.years_operating} años</span>
               </div>
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Personal Ocupado</span>
+                <span className="text-[11px] text-neutral-500 block">Personal Ocupado</span>
                 <span className="font-mono font-semibold text-neutral-900 block">{emprendimiento.employees} colaboradores</span>
               </div>
             </div>
 
             {emprendimiento.description && (
               <div className="pt-2 border-t border-neutral-200">
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block mb-1">
-                  Descripción del Modelo Operativo:
+                <span className="text-[11px] text-neutral-500 block mb-1">
+                  Descripción:
                 </span>
                 <p className="text-[11px] text-neutral-700 leading-relaxed">
                   {emprendimiento.description}
@@ -182,28 +182,28 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Monto Solicitado</span>
+                <span className="text-[11px] text-neutral-500 block">Monto Solicitado</span>
                 <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
                   {formatCOP(amount)}
                 </span>
               </div>
 
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Plazo Amortización</span>
+                <span className="text-[11px] text-neutral-500 block">Plazo Amortización</span>
                 <span className="font-mono font-medium text-neutral-900 block mt-0.5">
                   {termMonths} meses
                 </span>
               </div>
 
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Cuota Mensual Proyectada</span>
+                <span className="text-[11px] text-neutral-500 block">Cuota Mensual Proyectada</span>
                 <span className="font-finance font-bold tabular-nums text-emerald-800 block mt-0.5">
                   {formatCOP(estimatedPayment)}
                 </span>
               </div>
 
               <div>
-                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Tasa Máxima Aceptada</span>
+                <span className="text-[11px] text-neutral-500 block">Tasa Máxima Aceptada</span>
                 <span className="font-finance font-bold tabular-nums text-neutral-900 block mt-0.5">
                   {rateEA.toFixed(2)}% E.A.
                 </span>
@@ -225,8 +225,8 @@ export default function EmprendimientoDetailModal({ emprendimiento, isOpen, onCl
 
           {/* Sección 4: Consola de Acción del Financiador */}
           <div className="p-4 rounded border border-neutral-300 bg-white space-y-3">
-            <span className="text-xs font-semibold text-neutral-900 uppercase tracking-wider font-mono block">
-              4. Registro de Decisión de Inversión
+            <span className="text-xs font-semibold text-neutral-900 block">
+              Tu decisión
             </span>
 
             {interestSubmitted ? (
